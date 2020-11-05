@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WiFi Service Page</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body style="background: #F9F9F9; color: #373737; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 17px; line-height: 24px; max-width: 100%; width: 100% !important; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; margin: 0 auto; padding: 0;">
+  <!--[if mso]>
+      <style type="text/css">
+	
+	td { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important; }
+	
+      </style>
+      <![endif]-->
+
+		
+       <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="top">
+	     <table  width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="bottom" style="padding: 20px 16px 12px;">
+
+                   <br>
+                   <br>
+                   <br>
+                   <br>
+                   <br>
+                   <div style="text-align: center;">
+                     <p style="font-size:96px">👋</p>
+                   </div>
+		   <div>current network</div>
+		   <div id="connection">• • •</div>
+                 </td>
+               </tr></table></td>
+         </tr><tr><td valign="top">
+				
+<table  cellpadding="32" cellspacing="0" border="0" align="center" style="background: white; border-radius: 0.5rem; margin-bottom: 1rem;"><tr><td width="546" valign="top">
+      <div style="max-width: 600px; margin: 0 auto;">
+	<center>
+<h2>WiFi Setup</h2>
+	</center>
+
+<p style="font-size: 20px; line-height: 26px; margin: 0 0 16px;">
+<br>
+<center>
+	  <form id="connect" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px;">
+	   	<label for="ssid">Network Name </label>
+		<input type="text" name="ssid" style="font-size:24px" required></input><br><br>
+	   	<label for="password">&nbsp;WiFi Password </label>
+		<input type="password" name="password" style="font-size:24px"></input> 👁️<br><br> 
+
+
+<span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
+	<button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+			Connect!
+				</button>
+			</span>
+	  </form>
+</center>
+
+<br>
+</td></tr>
+</table></td>
+					</tr><tr><td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; border-collapse: collapse;">
+<br>
+<br>
+<br>
+<br>
+</td>
+
+</tr></table>
+  <div id="statusdiv"></div>
+  <div id="signaldiv"></div>
+  <div id="scandiv"></div>
+  <script src="client.js"></script>
+  <script>
+    window.client.init();
+  </script>
+</body>
+</html>
