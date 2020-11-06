@@ -3,6 +3,7 @@ https://www.raspberrypi.org/documentation/configuration/wireless/access-point-ro
 https://help.ubuntu.com/community/WifiDocs/WirelessAccessPoint
 https://medium.com/@arnab.k/ubuntu-how-to-setup-a-wi-fi-hotspot-access-point-mode-192cbb2eeb90
 https://www.cberner.com/2013/02/03/using-hostapd-on-ubuntu-to-create-a-wifi-access-point/
+https://bugs.launchpad.net/ubuntu/+source/dnsmasq/+bug/1531184
 
 
 
@@ -34,11 +35,6 @@ gateway 10.99.0.1
 
 # sed -i~ 's/auto lo/auto lo wlp0s20f3/' /etc/network/interfaces
 
-# cat > /etc/sysctl.conf
-net.ipv4.ip_forward=1
-net.ipv6.conf.all.forwarding=1
-<ctrl-d>
-
 $ cat /etc/network/interfaces
 /etc/interfaces should look like this:
 
@@ -49,6 +45,12 @@ iface wlp0s20f3 inet static
 address 10.99.0.1
 netmask 255.255.255.0
 gateway 10.99.0.1
+
+
+# cat >> /etc/sysctl.conf
+net.ipv4.ip_forward=1
+net.ipv6.conf.all.forwarding=1
+<ctrl-d>
 
 
 
@@ -71,7 +73,7 @@ rsn_pairwise=CCMP
 
 except the ssid above should be changed to be your actual hostname
 
-# sed -i~ 's/s02-n00-nuc-102/`hostname`' /etc/hostapd/
+# sed -i~ "s/s02-n00-nuc-102/`hostname`/" /etc/hostapd/hostapd.conf
 
 
 # echo "DAEMON_CONF=/etc/hostapd/hostapd.conf" >> /etc/default/hostapd
@@ -85,20 +87,22 @@ no-hosts
 addn-hosts=/etc/hosts.dnsmasq
 domain=wlan
 address=/gw.wlan/10.99.0.1
-root@s02-n00-nuc-101:~# cat /etc/dnsmasq.conf
-interface=wlp0s20f3
-dhcp-range=10.99.0.2,10.99.0.20,255.255.255.0,24h
-no-hosts
-addn-hosts=/etc/hosts.dnsmasq
-domain=wlan
-address=/gw.wlan/10.99.0.1
 <ctrl-d>
 
 # touch /etc/hosts.dnsmasq
 
+make sure the wireless subsystem's conuntry is set to "US"
 # iw reg get
+The first line should say
+If it says "countery 00: DFS-UNSET" then it's not set
+(actually, I think the hostapd.conf file above will take care of this upon reboot)
 
-make sure the wifi radio is enabled
+
+make sure the wifi radios are not blocked (they are likely not blocked)
+# rfkill list
+
+to unblock:
+# rfwill unblock wlan
 
 
 edit /lib/systemd/system/dnsmasq.service and add the two lines:
@@ -127,14 +131,14 @@ iptables -A FORWARD -i wlp0s20f3 -o eno1 -j ACCEPT
 
 
 To install the jibo-station-wifi-service:
-cd /usr/local
-sudo mkdir jibo-station-wifi-service
-sudo chown prg jibo-station-wifi-service
-git clone https://github.mit.edu/jibo/jibo-station-wifi-service
-cd jibo-station-wifi-service
-./install.sh
+$ cd /usr/local
+$ sudo mkdir jibo-station-wifi-service
+$ sudo chown prg jibo-station-wifi-service
+$ git clone https://github.mit.edu/jibo/jibo-station-wifi-service
+$ cd jibo-station-wifi-service
+$ ./install.sh
 
-reboot
+$ sudo reboot
 
 Jibo and the tablet need to be configured to connect to the new s02-nXX-nux-XXX network
 PW is JiboHasWiFi
