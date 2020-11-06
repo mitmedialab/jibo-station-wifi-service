@@ -8,7 +8,7 @@ export PATH=$VIRTUALENV_ROOT/bin:$VIRTUALENV_ROOT/node/bin:$PATH
 export N_PREFIX=$VIRTUALENV_ROOT/node
 
 interface=$1
-if [ -z ${interface+x} ]; then
+if [ -z ${interface} ]; then
     interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
 fi
 
