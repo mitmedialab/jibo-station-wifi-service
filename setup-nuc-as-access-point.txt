@@ -134,7 +134,7 @@ To install the jibo-station-wifi-service:
 $ cd /usr/local
 $ sudo mkdir jibo-station-wifi-service
 $ sudo chown prg jibo-station-wifi-service
-$ git clone https://github.mit.edu/jibo/jibo-station-wifi-service
+$ git clone https://github.com/mitmedialab/jibo-station-wifi-service
 $ cd jibo-station-wifi-service
 $ ./install.sh
 
