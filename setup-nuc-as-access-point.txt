@@ -1,0 +1,165 @@
+References to pages used when putting this all together:
+https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md
+https://help.ubuntu.com/community/WifiDocs/WirelessAccessPoint
+https://medium.com/@arnab.k/ubuntu-how-to-setup-a-wi-fi-hotspot-access-point-mode-192cbb2eeb90
+https://www.cberner.com/2013/02/03/using-hostapd-on-ubuntu-to-create-a-wifi-access-point/
+
+
+
+$ sudo apt update
+$ sudo apt install -y hostapd haveged dnsmasq
+
+
+look for the usb wifi adaptor
+$ ifconfig -a
+$ ip address
+
+wlp0s20f3 should be the built in wifi, make sure this is true!
+the usb wifi will be something like wlx28f366231a6a
+
+$ echo `ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
+
+the startup scripts use the above trick to get the correct interface
+name to use, so make sure it's matching it correctly
+
+
+$ cat /etc/network/interfaces
+$ sudo -s
+# cat >> /etc/network/interfaces
+iface wlp0s20f3 inet static
+address 10.99.0.1
+netmask 255.255.255.0
+gateway 10.99.0.1
+<ctrl-d>
+
+# sed -i~ 's/auto lo/auto lo wlp0s20f3/' /etc/network/interfaces
+
+# cat > /etc/sysctl.conf
+net.ipv4.ip_forward=1
+net.ipv6.conf.all.forwarding=1
+<ctrl-d>
+
+$ cat /etc/network/interfaces
+/etc/interfaces should look like this:
+
+# interfaces(5) file used by ifup(8) and ifdown(8)
+auto lo wlp0s20f3
+iface lo inet loopback
+iface wlp0s20f3 inet static
+address 10.99.0.1
+netmask 255.255.255.0
+gateway 10.99.0.1
+
+
+
+# cat > /etc/hostapd/hostapd.conf
+country_code=US
+interface=wlp0s20f3
+driver=nl80211
+ssid=s02-n00-nuc-102
+hw_mode=g
+channel=6
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=3
+wpa_passphrase=JiboHasWiFi1
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+<ctrl-d>
+
+except the ssid above should be changed to be your actual hostname
+
+# sed -i~ 's/s02-n00-nuc-102/`hostname`' /etc/hostapd/
+
+
+# echo "DAEMON_CONF=/etc/hostapd/hostapd.conf" >> /etc/default/hostapd
+
+
+# mv /etc/dnsmasq.conf /etc/dnsmasq.conf.dist
+# cat > /etc/dnsmasq.conf
+interface=wlp0s20f3
+dhcp-range=10.99.0.2,10.99.0.20,255.255.255.0,24h
+no-hosts
+addn-hosts=/etc/hosts.dnsmasq
+domain=wlan
+address=/gw.wlan/10.99.0.1
+root@s02-n00-nuc-101:~# cat /etc/dnsmasq.conf
+interface=wlp0s20f3
+dhcp-range=10.99.0.2,10.99.0.20,255.255.255.0,24h
+no-hosts
+addn-hosts=/etc/hosts.dnsmasq
+domain=wlan
+address=/gw.wlan/10.99.0.1
+<ctrl-d>
+
+# touch /etc/hosts.dnsmasq
+
+# iw reg get
+
+make sure the wifi radio is enabled
+
+
+edit /lib/systemd/system/dnsmasq.service and add the two lines:
+
+After=network-online.target
+Wants=network-online.target
+
+to the bottom of the "[Unit]" section, after "Requires=network.target",
+thus making them the fourth and fifth lines in the file
+
+see https://bugs.launchpad.net/ubuntu/+source/dnsmasq/+bug/1531184
+for explanation of above
+
+add these 10 lines to /etc/rc.local *before* the "exit 0" as the bottom:
+
+interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
+iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlp0s20f3 -o $interface -j ACCEPT
+
+iptables -t nat -A POSTROUTING -o eno1 -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlp0s20f3 -o eno1 -j ACCEPT
+
+/usr/local/jibo-station-wifi-service/start.sh $interface >/dev/null 2>&1 &
+
+
+To install the jibo-station-wifi-service:
+cd /usr/local
+sudo mkdir jibo-station-wifi-service
+sudo chown prg jibo-station-wifi-service
+git clone https://github.mit.edu/jibo/jibo-station-wifi-service
+cd jibo-station-wifi-service
+./install.sh
+
+reboot
+
+Jibo and the tablet need to be configured to connect to the new s02-nXX-nux-XXX network
+PW is JiboHasWiFi
+
+on Jibo:
+
+# cat > /var/etc/wpa_supplicant.conf
+ctrl_interface=/var/run/wpa_supplicant
+update_config=1
+country=US
+bgscan="simple:30:-75:120"
+<ctrl-d>
+
+# wpa_passphrase s02-n00-nuc-102 JiboHasWiFi >> /var/etc/wpa_supplicant.conf
+(but put your hostname in ^^^)
+# wpa_cli -i wlan0 reconfigure
+(or just reboot him)
+
+On tablet:
+configure for the new s02-nXX-nux-XXX network
+Then go to http://10.99.0.1 in the browser to pull up the
+"WiFi Setup" page and use the "..." menu to add it to the homepage
+
+Done!
+
+
+
+
