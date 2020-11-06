@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
 window.client = window.client || {};
 
-const status_request = new Request('/status')
-const scan_request = new Request('/scan')
-const signal_request = new Request('/signal')
+const status_request = new Request('/status');
+const scan_request = new Request('/scan');
+const signal_request = new Request('/signal');
 
 
 const STATUS_INTERVAL = 1 * 1000;  // 1 second
@@ -12,75 +12,97 @@ const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
 const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
 
 async function monitorStatus() {
-    let statusdiv = document.querySelector('#statusdiv');
-    let json;
     try {
         let response = await fetch(status_request);
-        json = await response.json();
-	console.log('json', json);
-	if (json.retry) {
-	    return false;
+        let json = await response.json();
+	if (json && !json.retry && Object.keys(json).length !== 0) {
+	    showStatus(json);
 	}
-    } catch (e) {
-        console.error(e);
-	return false;
+    } catch(err) {
+        console.error(err);
     }
+    setTimeout(monitorStatus, STATUS_INTERVAL);
+}
 
-    console.log(json);
-    statusdiv.innerHTML = JSON.stringify(json);
+
+function showStatus(json) {
     let connectiondiv = document.querySelector('#connection');
-    if (json.ssid) {
-	connectiondiv.innerHTML = json.ssid + ` &nbsp; <button onclick="fetch(new Request('/disconnect',{method:'POST'}))">❌</button>`;
-    } else {
-	connectiondiv.innerHTML = '<i>not connected</i>';
+    let state = json.wpa_state;
+    let status = '• • •';
+    if (state) {
+	if (state === 'COMPLETED') {
+	    status = 'connected to <i>' + (json.ssid || 'unknown') + '</i>';
+	} else {
+	    console.log('state =', state);
+	}
     }
-    //if (onair) {
-    //    document.body.classList.add('onair');
-    //} else {
-    //    document.body.classList.remove('onair');
-    //}
-    //for (let i=0; i<shownames.length; i++) {
-    //    shownames[i].innerHTML = show || '';
-    //}
-    return true;
+    //connectiondiv.innerHTML = json.ssid + ` &nbsp; <button onclick="fetch(new Request('/disconnect',{method:'POST'}))">&#x274c/button>`;
+    connectiondiv.innerHTML = status;
+    //let statusdiv = document.querySelector('#statusdiv');
+    //statusdiv.innerHTML = JSON.stringify(json);
 }
 
 
 async function monitorScan() {
-    let scandiv = document.querySelector('#scandiv');
-    let json;
     try {
         let response = await fetch(scan_request);
-        json = await response.json();
-	if (json.retry) {
-	    return false;
+        let json = await response.json();
+	if (json && !json.retry && Object.keys(json).length !== 0) {
+	    showScan(json);
 	}
-    } catch (e) {
-        console.error(e);
-	return false;
+    } catch(err) {
+        console.error(err);
     }
+    setTimeout(monitorScan, SCAN_INTERVAL);
+}
 
+
+function showScan(json) {
+    let networks_ul = document.querySelector('#networks');
+    let html = '';
+    let seen = [];
+    try {
+	for (let n=0; n<json.length; n++) {
+	    let network = json[n];
+	    let ssid = network.ssid;
+	    if (!ssid || ssid.includes('\x00') || ssid.includes('\\x00')) {
+		continue;
+	    }
+	    if (ssid.startsWith('s02-') || ssid.startsWith('JiboStation')) {
+		continue;
+	    }
+	    if (seen.includes(ssid)) {
+		continue;
+	    }
+	    seen.push(ssid);
+	    html += '<li onclick="window.client.click_network(event)">' + ssid + '</li>\n';
+	}
+    } catch(err) {
+	console.error(err);
+    }
+    networks_ul.innerHTML = html;
+    let scandiv = document.querySelector('#scandiv');
     scandiv.innerHTML = JSON.stringify(json);
-    return true;
 }
 
 
 async function monitorSignal() {
-    let signaldiv = document.querySelector('#signaldiv');
-    let json;
     try {
         let response = await fetch(signal_request);
-        json = await response.json();
-	if (json.retry) {
-	    return false;
+        let json = await response.json();
+	if (json && !json.retry && Object.keys(json).length !== 0) {
+	    showSignal(json);
 	}
-    } catch (e) {
-        console.error(e);
-	return false;
+    } catch(err) {
+        console.error(err);
     }
+    setTimeout(monitorSignal, SIGNAL_INTERVAL);
+}
 
-    signaldiv.innerHTML = JSON.stringify(json);
-    return true;
+
+function showSignal(json) {
+    //let signaldiv = document.querySelector('#signaldiv');
+    //signaldiv.innerHTML = JSON.stringify(json);
 }
 
 
@@ -90,15 +112,9 @@ async function init() {
     let form = document.getElementById('connect');
     form.addEventListener('submit', connect);
 
-    setInterval(function() {
-	let working = monitorStatus();
-    }, STATUS_INTERVAL);
-    setInterval(function() {
-	let working = monitorScan();
-    }, SCAN_INTERVAL);
-    setInterval(function() {
-	let working = monitorSignal();
-    }, SIGNAL_INTERVAL);
+    monitorStatus();
+    monitorScan();
+    //monitorSignal();
 }
 
 
@@ -145,5 +161,28 @@ async function connect(event) {
 }
 
 
+function toggle_password_visibility(event) {
+    let password = document.getElementById('password');
+    let toggle = document.getElementById('visibility');
+    if (password.type !== 'password') {
+	password.type = 'password';
+	visibility.innerHTML = '😆';
+    } else {
+	password.type = 'text';
+	visibility.innerHTML = '👁️';
+    }	
+    event.preventDefault();  // keep from stealing keyboard focus
+}
+
+
+function click_network(event) {
+    let network_li = event.target;
+    let ssid = network_li.innerHTML;
+    let ssid_input = document.getElementById('ssid');
+    ssid_input.value = ssid;
+}
+
 window.client.init = init;
 window.client.connect = connect;
+window.client.toggle_password_visibility = toggle_password_visibility;
+window.client.click_network = click_network;

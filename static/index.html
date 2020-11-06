@@ -16,49 +16,74 @@
       <![endif]-->
 
 		
-       <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="top">
-	     <table  width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="bottom" style="padding: 20px 16px 12px;">
-
-                   <br>
-                   <br>
-                   <br>
-                   <br>
-                   <br>
+       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:-20px"><tr><td valign="top">
+	     <table  width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="bottom" style="padding: 0px 16px 2px">
                    <div style="text-align: center;">
-                     <p style="font-size:96px">👋</p>
+                     <h2 style="font-size:76px">👋
+		       <span style="font-size:64px">WiFi Setup</span></h2>
+		     <br>
                    </div>
-		   <div>current network</div>
-		   <div id="connection">• • •</div>
                  </td>
                </tr></table></td>
          </tr><tr><td valign="top">
 				
-<table  cellpadding="32" cellspacing="0" border="0" align="center" style="background: white; border-radius: 0.5rem; margin-bottom: 1rem;"><tr><td width="546" valign="top">
+<table  cellpadding="18" cellspacing="0" border="0" align="center" style="background: white; border-radius: 0.5rem; margin-bottom: 1rem;"><tr><td width="546" valign="top">
       <div style="max-width: 600px; margin: 0 auto;">
 	<center>
-<h2>WiFi Setup</h2>
+	  <div style="font-size:22px;font-weight:700;color:blue;margin-bottom:20px">WiFi Status - <span id="connection">• • •</span></div>
 	</center>
 
-<p style="font-size: 20px; line-height: 26px; margin: 0 0 16px;">
-<br>
 <center>
-	  <form id="connect" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px;">
-	   	<label for="ssid">Network Name </label>
-		<input type="text" name="ssid" style="font-size:24px" required></input><br><br>
-	   	<label for="password">&nbsp;WiFi Password </label>
-		<input type="password" name="password" style="font-size:24px"></input> 👁️<br><br> 
-
-
-<span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
-	<button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
-			Connect!
-				</button>
-			</span>
-	  </form>
+  <form id="connect" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
+  <table>
+    <tr>
+      <td style="text-align:right;font-size:20px;font-weight:900">
+	<label for="ssid">Network Name</label>
+      </td>
+      <td style="text-align:center">
+	<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="24" style="font-size:24px" required></input>
+      </td>
+      <td></td>
+    </tr>
+    <tr><td colspan=3 style="height:10px"></td></tr>
+    <tr>
+      <td style="text-align:right;font-size:20px;font-weight:900">
+	<label for="password">&nbsp;WiFi Password<div style="font-size:11px;margin-top:-8px;"></i>Leave blank if no password</i></div></label>
+      </td>
+      <td style="text-align:center">
+	<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="24" style="font-size:24px"></input>
+      </td>
+      <td style="text-align:left">
+	<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)">👁️</button>
+      </td>
+    </tr>
+    <tr><td colspan=3 style="height:10px"></td></tr>
+  <tr>
+    <td></td>
+      <td style="text-align:right">
+	<span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
+	  <button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	    Connect!
+	  </button>
+	</span>&nbsp;&nbsp;&nbsp;
+      </td>
+      <td></td>
+  </tr>
+    </table>
+  </form>
 </center>
-
-<br>
 </td></tr>
+<tr>
+  <td>
+    <center>
+      <div style="width:600px">
+	<ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;text-align:left">
+	  <li><i>looking for networks...</i></li>
+	</ul>
+      </div>
+    </center>
+  </td>
+</tr>
 </table></td>
 					</tr><tr><td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; border-collapse: collapse;">
 <br>
