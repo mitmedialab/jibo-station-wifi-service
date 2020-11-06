@@ -96,6 +96,7 @@ make sure the wireless subsystem's conuntry is set to "US"
 The first line should say
 If it says "countery 00: DFS-UNSET" then it's not set
 (actually, I think the hostapd.conf file above will take care of this upon reboot)
+(yup, it does, do the iw reg get test after rebooting)
 
 
 make sure the wifi radios are not blocked (they are likely not blocked)
@@ -130,6 +131,7 @@ iptables -A FORWARD -i wlp0s20f3 -o eno1 -j ACCEPT
 /usr/local/jibo-station-wifi-service/start.sh $interface >/dev/null 2>&1 &
 
 
+
 To install the jibo-station-wifi-service:
 $ cd /usr/local
 $ sudo mkdir jibo-station-wifi-service
@@ -156,6 +158,34 @@ bgscan="simple:30:-75:120"
 (but put your hostname in ^^^)
 # wpa_cli -i wlan0 reconfigure
 (or just reboot him)
+
+We might want to trim the wpa_supplicant.conf down to something like, say:
+
+ctrl_interface=/var/run/wpa_supplican$
+update_config=1
+country=US
+bgscan="simple:30:-75:120"
+
+network={
+        ssid="SquidDisco 5GHz"
+        psk=cf0ba3aceef787616471c206c3e5f6fe400fad78a65c5bade078e5ed20e264f4
+        disabled=1
+}
+
+network={
+        ssid="PRG-MIT"
+        psk=eaaf33ae234217c783d8e1c21eb6e1b1b4534171a0aa8befa386b2d55a84bac0
+        disabled=1
+}
+
+network={
+        ssid="s02-n00-nuc-104"
+        #psk="JiboHasWiFi1"
+        psk=7b6b94817acac9575f007690fc995912e349a5e72255b95875b6dbb162dcee44
+}
+
+
+Oh, and we should remove the plaintext wifi password line!
 
 On tablet:
 configure for the new s02-nXX-nux-XXX network
