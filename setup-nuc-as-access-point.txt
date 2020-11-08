@@ -10,6 +10,15 @@ https://bugs.launchpad.net/ubuntu/+source/dnsmasq/+bug/1531184
 $ sudo apt update
 $ sudo apt install -y hostapd haveged dnsmasq
 
+if packages won't install and you get the following dependency message,
+```
+The following packages have unmet dependencies:
+ haveged : Depends: libhavege1 (>= 1.9.0) but it is not going to be installed
+ hostapd : Depends: libnl-route-3-200 (>= 3.2.7) but it is not going to be installed
+```
+do
+$ sudo apt-get -f install
+
 
 look for the usb wifi adaptor
 $ ifconfig -a
