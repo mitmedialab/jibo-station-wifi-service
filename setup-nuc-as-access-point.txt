@@ -151,7 +151,7 @@ The first line should say "country US: DFS-FCC"
 If it says "country 00: DFS-UNSET" then it's not set
 
 Jibo and the tablet need to be configured to connect to the new s02-nXX-nux-XXX network
-PW is JiboHasWiFi
+PW is JiboHasWiFi1
 
 on Jibo:
 
@@ -162,7 +162,7 @@ country=US
 bgscan="simple:30:-75:120"
 <ctrl-d>
 
-$ wpa_passphrase s02-n00-nuc-102 JiboHasWiFi >> /var/etc/wpa_supplicant.conf
+$ wpa_passphrase s02-n00-nuc-102 JiboHasWiFi1 >> /var/etc/wpa_supplicant.conf
 (but put your hostname in ^^^)
 $ wpa_cli -i wlan0 reconfigure
 (or just reboot him)
