@@ -25,7 +25,7 @@ async function monitorStatus() {
 }
 
 
-function showStatus(json) {
+async function showStatus(json) {
     let connectiondiv = document.querySelector('#connection');
     let state = json.wpa_state;
     let status = '• • •';
@@ -40,6 +40,10 @@ function showStatus(json) {
     connectiondiv.innerHTML = status;
     //let statusdiv = document.querySelector('#statusdiv');
     //statusdiv.innerHTML = JSON.stringify(json);
+
+    //let response = await fetch('http://captive.apple.com');
+    let response = await fetch('http://connectivity-check.ubuntu.com');
+    console.log(response);
 }
 
 
