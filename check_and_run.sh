@@ -1,6 +1,7 @@
 #!/bin/bash
-SERVICE="jibo-station-wifi-service"
+SERVICE="jibo-station-wifi-service/start.sh"
 result=`ps aux | grep -i $SERVICE | grep -v "grep" | wc -l`
+echo $result
 if [ $result -ge 1 ]
 then
         echo "$SERVICE is running"
