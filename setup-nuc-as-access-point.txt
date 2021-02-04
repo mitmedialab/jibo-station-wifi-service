@@ -10,6 +10,15 @@ https://bugs.launchpad.net/ubuntu/+source/dnsmasq/+bug/1531184
 $ sudo apt update
 $ sudo apt install -y hostapd haveged dnsmasq
 
+if packages won't install and you get the following dependency message,
+```
+The following packages have unmet dependencies:
+ haveged : Depends: libhavege1 (>= 1.9.0) but it is not going to be installed
+ hostapd : Depends: libnl-route-3-200 (>= 3.2.7) but it is not going to be installed
+```
+do
+$ sudo apt-get -f install
+
 
 look for the usb wifi adaptor
 $ ifconfig -a
@@ -26,19 +35,19 @@ name to use, so make sure it's matching it correctly
 
 $ cat /etc/network/interfaces
 $ sudo -s
-# cat >> /etc/network/interfaces
+$ cat >> /etc/network/interfaces
 iface wlp0s20f3 inet static
 address 10.99.0.1
 netmask 255.255.255.0
 gateway 10.99.0.1
 <ctrl-d>
 
-# sed -i~ 's/auto lo/auto lo wlp0s20f3/' /etc/network/interfaces
+$ sed -i~ 's/auto lo/auto lo wlp0s20f3/' /etc/network/interfaces
 
 $ cat /etc/network/interfaces
 /etc/interfaces should look like this:
 
-# interfaces(5) file used by ifup(8) and ifdown(8)
+$ interfaces(5) file used by ifup(8) and ifdown(8)
 auto lo wlp0s20f3
 iface lo inet loopback
 iface wlp0s20f3 inet static
@@ -47,14 +56,14 @@ netmask 255.255.255.0
 gateway 10.99.0.1
 
 
-# cat >> /etc/sysctl.conf
+$ cat >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
 net.ipv6.conf.all.forwarding=1
 <ctrl-d>
 
 
 
-# cat > /etc/hostapd/hostapd.conf
+$ cat > /etc/hostapd/hostapd.conf
 country_code=US
 interface=wlp0s20f3
 driver=nl80211
@@ -73,14 +82,14 @@ rsn_pairwise=CCMP
 
 except the ssid above should be changed to be your actual hostname
 
-# sed -i~ "s/s02-n00-nuc-102/`hostname`/" /etc/hostapd/hostapd.conf
+$ sed -i~ "s/s02-n00-nuc-102/`hostname`/" /etc/hostapd/hostapd.conf
 
 
-# echo "DAEMON_CONF=/etc/hostapd/hostapd.conf" >> /etc/default/hostapd
+$ echo "DAEMON_CONF=/etc/hostapd/hostapd.conf" >> /etc/default/hostapd
 
 
-# mv /etc/dnsmasq.conf /etc/dnsmasq.conf.dist
-# cat > /etc/dnsmasq.conf
+$ mv /etc/dnsmasq.conf /etc/dnsmasq.conf.dist
+$ cat > /etc/dnsmasq.conf
 interface=wlp0s20f3
 dhcp-range=10.99.0.2,10.99.0.20,255.255.255.0,24h
 no-hosts
@@ -89,20 +98,15 @@ domain=wlan
 address=/gw.wlan/10.99.0.1
 <ctrl-d>
 
-# touch /etc/hosts.dnsmasq
+$ touch /etc/hosts.dnsmasq
 
-make sure the wireless subsystem's conuntry is set to "US"
-# iw reg get
-The first line should say
-If it says "countery 00: DFS-UNSET" then it's not set
-(actually, I think the hostapd.conf file above will take care of this upon reboot)
 
 
 make sure the wifi radios are not blocked (they are likely not blocked)
-# rfkill list
+$ rfkill list
 
 to unblock:
-# rfwill unblock wlan
+$ rfwill unblock wlan
 
 
 edit /lib/systemd/system/dnsmasq.service and add the two lines:
@@ -130,32 +134,66 @@ iptables -A FORWARD -i wlp0s20f3 -o eno1 -j ACCEPT
 /usr/local/jibo-station-wifi-service/start.sh $interface >/dev/null 2>&1 &
 
 
+
 To install the jibo-station-wifi-service:
 $ cd /usr/local
 $ sudo mkdir jibo-station-wifi-service
 $ sudo chown prg jibo-station-wifi-service
-$ git clone https://github.mit.edu/jibo/jibo-station-wifi-service
+$ git clone https://github.com/mitmedialab/jibo-station-wifi-service
 $ cd jibo-station-wifi-service
 $ ./install.sh
 
 $ sudo reboot
 
+make sure the wireless subsystem's conuntry is set to "US"
+$ iw reg get
+The first line should say "country US: DFS-FCC"
+If it says "country 00: DFS-UNSET" then it's not set
+
 Jibo and the tablet need to be configured to connect to the new s02-nXX-nux-XXX network
-PW is JiboHasWiFi
+PW is JiboHasWiFi1
 
 on Jibo:
 
-# cat > /var/etc/wpa_supplicant.conf
+$ cat > /var/etc/wpa_supplicant.conf
 ctrl_interface=/var/run/wpa_supplicant
 update_config=1
 country=US
 bgscan="simple:30:-75:120"
 <ctrl-d>
 
-# wpa_passphrase s02-n00-nuc-102 JiboHasWiFi >> /var/etc/wpa_supplicant.conf
+$ wpa_passphrase s02-n00-nuc-102 JiboHasWiFi1 >> /var/etc/wpa_supplicant.conf
 (but put your hostname in ^^^)
-# wpa_cli -i wlan0 reconfigure
+$ wpa_cli -i wlan0 reconfigure
 (or just reboot him)
+
+We might want to trim the wpa_supplicant.conf down to something like, say:
+
+ctrl_interface=/var/run/wpa_supplican$
+update_config=1
+country=US
+bgscan="simple:30:-75:120"
+
+network={
+        ssid="SquidDisco 5GHz"
+        psk=cf0ba3aceef787616471c206c3e5f6fe400fad78a65c5bade078e5ed20e264f4
+        disabled=1
+}
+
+network={
+        ssid="PRG-MIT"
+        psk=eaaf33ae234217c783d8e1c21eb6e1b1b4534171a0aa8befa386b2d55a84bac0
+        disabled=1
+}
+
+network={
+        ssid="s02-n00-nuc-104"
+        #psk="JiboHasWiFi1"
+        psk=7b6b94817acac9575f007690fc995912e349a5e72255b95875b6dbb162dcee44
+}
+
+
+Oh, and we should remove the plaintext wifi password line!
 
 On tablet:
 configure for the new s02-nXX-nux-XXX network

@@ -1,49 +1,20 @@
 'use strict';
+
 const os = require('os');
-const fs = require('fs').promises;
-const path = require('path');
-const util = require('util');
-const net = require('net');
-const http = require('http');
-const connect = require('connect');
-const Router = require('router');
-const bodyParser = require('body-parser');
-const serveIndex = require('serve-index');
-const serveStatic = require('serve-static');
 const child_process = require('child_process');
 const {Wireless, Monitor} = require('wirelesser');
-const nmcli = require('./nmcli');
+//const nmcli = require('./nmcli');
 
-const PORT = 80;
 const INTERFACE = process.argv[2] || 'wlan1';  // node index.js <INTERFACE>
 const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
-
-
-async function init() {
-    if (USE_NM) {
-	console.log('using nmcli');
-    } else {
-	console.log('using wpa_cli');
-    }
-    let wifi = new WiFi();
-    wifi.init(
-        (err) =>
-            {
-                if (err) {
-                    console.error(err);
-                } else {
-                    console.log('wifi listening');
-                }
-            });
-}
-
 
 class WiFi {
     constructor() {
     }
 
-    init(callback) {
-        this.app = connect();
+    init(app, callback) {
+        //this.app = connect();
+        this.app = app;
 
         this.wireless = new Wireless(INTERFACE);
         //this.monitor = new Monitor(INTERFACE);
@@ -54,20 +25,8 @@ class WiFi {
         //    console.log('control', control, args);
         //});
 
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.router = new Router();
+        this.router = app;
         this.routes(this.router);
-        this.app.use(this.router);
-
-        this.staticDir = path.join(__dirname, 'static');
-        this.app.use(serveStatic(this.staticDir));  // html and friends
-
-        let httpOptions = {};
-        this.server = http.createServer(httpOptions, this.app);
-
-        this.hostname = '10.99.0.1';
-        this.server.listen(PORT, this.hostname, callback);
     }
 
 
@@ -134,5 +93,4 @@ class WiFi {
     }
 }
 
-
-module.exports.init = init;
+module.exports = WiFi;

@@ -1,0 +1,173 @@
+sudo apt update
+sudo apt install -y hostapd haveged dnsmasq
+
+
+Enable the wireless access point service and set it to start when your Raspberry Pi boots:
+
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+
+
+look for the usb wifi adaptor
+$ ifconfig -a
+$ ip address
+
+
+Add to the end of /etc/dhcpcd.conf:
+
+interface wlan0
+static ip_address=10.99.0.1/24
+nohook wpa_supplicant
+static routers=
+static domain_name_servers=
+static domain_search=
+
+use raspi-config to set the hostname to, e.g. jibostation02
+
+Enable ip traffic forwarding between interfaces:
+$ cat >> /etc/sysctl.conf
+net.ipv4.ip_forward=1
+net.ipv6.conf.all.forwarding=1
+<ctrl-d>
+
+
+$ cat > /etc/hostapd/hostapd.conf
+country_code=US
+interface=wlan0
+ssid=JiboStation02
+hw_mode=g
+channel=6
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=JiboHasWiFi1
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+<ctrl-d>
+
+except the ssid above should be changed to be your actual hostname
+
+$ sed -i~ "s/JiboStation02/JiboStation23/" /etc/hostapd/hostapd.conf
+
+Now to configure the dnsmasq side of things:
+
+$ mv /etc/dnsmasq.conf /etc/dnsmasq.conf.dist
+$ cat > /etc/dnsmasq.conf
+interface=wlan0 # Listening interface
+dhcp-range=10.99.0.2,10.99.0.20,255.255.255.0,24h
+                # Pool of IP addresses served via DHCP
+domain=wlan     # Local wireless DNS domain
+address=/gw.wlan/10.99.0.1
+                # Alias for this router
+<ctrl-d>
+
+$ touch /etc/hosts.dnsmasq
+
+make sure the wifi radios are not blocked (they are likely not blocked)
+$ rfkill list
+
+to unblock:
+$ rfwill unblock wlan
+
+edit /lib/systemd/system/dnsmasq.service and modifiy the Wants and After
+lines in the Unit section to look like this:
+
+Wants=nss-lookup.target network-online.target
+After=network.target network-online.target
+
+see https://bugs.launchpad.net/ubuntu/+source/dnsmasq/+bug/1531184
+for (a Ubuntu specific) explanation of above
+
+Edit rc.local to configure ip tables. Add these line to the end, but before the "exit 0":
+
+iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlan0 -o wlan1 -j ACCEPT
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+
+
+
+To install the jibo-station-wifi-service:
+$ cd /usr/local
+$ sudo mkdir jibo-station-wifi-service
+$ sudo chown pi jibo-station-wifi-service
+$ git clone https://github.com/mitmedialab/jibo-station-wifi-service
+$ cd jibo-station-wifi-service
+$ ./install.sh
+
+(Tweak start.sh to have interface="wlan1" if needed)
+
+$ sudo cp jibo-station-wifi-service.service /etc/systemd/system/
+$ sudo systemctl start jibo-station-wifi-service
+(check that you can see the wifi web interface)
+$ sudo systemctl enable jibo-station-wifi-service
+
+$ sudo reboot
+
+
+make sure the wireless subsystem's conuntry is set to "US"
+$ iw reg get
+The first line should say "country US: DFS-FCC"
+If it says "country 00: DFS-UNSET" then it's not set
+
+Jibo and the tablet need to be configured to connect to the new s02-nXX-nux-XXX network
+PW is JiboHasWiFi1
+
+on Jibo:
+
+$ cat > /var/etc/wpa_supplicant.conf
+ctrl_interface=/var/run/wpa_supplicant
+update_config=1
+country=US
+bgscan="simple:30:-75:120"
+<ctrl-d>
+
+$ wpa_passphrase JiboStation02 JiboHasWiFi1 >> /var/etc/wpa_supplicant.conf
+(but put your hostname in ^^^)
+$ wpa_cli -i wlan0 reconfigure
+(or just reboot him)
+
+We might want to trim the wpa_supplicant.conf down to something like, say:
+
+ctrl_interface=/var/run/wpa_supplican$
+update_config=1
+country=US
+bgscan="simple:30:-75:120"
+
+network={
+        ssid="SquidDisco 5GHz"
+        psk=cf0ba3aceef787616471c206c3e5f6fe400fad78a65c5bade078e5ed20e264f4
+        disabled=1
+}
+
+network={
+        ssid="PRG-MIT"
+        psk=eaaf33ae234217c783d8e1c21eb6e1b1b4534171a0aa8befa386b2d55a84bac0
+        disabled=1
+}
+
+network={
+        ssid="JiboStation02"
+        #psk="JiboHasWiFi1"
+        psk=7b6b94817acac95xxxxxxxxxxxxxxxxxxxxxxxxxx5875b6dbb162dcee44
+}
+
+
+Oh, and we should remove the plaintext wifi password line!
+
+On tablet:
+configure for the new JiboStationXX network
+Then go to http://10.99.0.1 in the browser to pull up the
+"WiFi Setup" page and use the "..." menu to add it to the homepage
+
+Done!
+
+
+
+
