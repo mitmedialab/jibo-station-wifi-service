@@ -14,7 +14,7 @@ echo "newmac=$newmac"
 
 # change all old mac addresses to new mac address in NetworkManager
 for f in /etc/NetworkManager/system-connections/*; do
-    sed -i 's/$oldmac/$newmac/g' "$f"
+    sed -i "s/$oldmac/$newmac/g" "$f"
 done
 
 # tweak NetworkManager systemd startup file to create new virtual interface
