@@ -30,6 +30,7 @@ static domain_search=
 use raspi-config to set the hostname to, e.g. jibostation00
 or use
 # sed -i~ "s/jibostation00/jibostation23/" /etc/hostname
+# sed -i~ "s/jibostation00/jibostation23/" /etc/hosts
 
 Enable ip traffic forwarding between interfaces:
 # cat >> /etc/sysctl.conf
