@@ -27,7 +27,7 @@ static domain_name_servers=
 static domain_search=
 <ctrl-d>
 
-use raspi-config to set the hostname to, e.g. jibostation02
+use raspi-config to set the hostname to, e.g. jibostation00
 
 Enable ip traffic forwarding between interfaces:
 # cat >> /etc/sysctl.conf
@@ -39,7 +39,7 @@ hostapd.conf doesn't exists yet, so we create it from scratch:
 # cat > /etc/hostapd/hostapd.conf
 country_code=US
 interface=wlan1
-ssid=JiboStation02
+ssid=JiboStation00
 hw_mode=g
 channel=6
 macaddr_acl=0
@@ -54,7 +54,7 @@ rsn_pairwise=CCMP
 
 except the ssid above should be changed to be your actual hostname
 
-# sed -i~ "s/JiboStation02/JiboStation23/" /etc/hostapd/hostapd.conf
+# sed -i~ "s/JiboStation00/JiboStation23/" /etc/hostapd/hostapd.conf
 
 Now to configure the dnsmasq side of things:
 
