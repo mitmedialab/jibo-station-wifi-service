@@ -20,6 +20,11 @@ batch@0.6.1:
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY=
 
+bindings@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.1.1.tgz#951f7ae010302ffc50b265b124032017ed2bf6f3"
+  integrity sha1-lR964BAwL/xQsmWxJAMgF+0r9vM=
+
 body-parser@^1.19.0:
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.19.0.tgz#96b2709e57c9c4e09a6fd66a8fd979844f69f08a"
@@ -239,6 +244,11 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
+nan@~2.3.2:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.3.5.tgz#822a0dc266290ce4cd3a12282ca3e7e364668a08"
+  integrity sha1-gioNwmYpDOTNOhIoLKPn42Rmigg=
+
 negotiator@0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
@@ -401,6 +411,14 @@ typescript@^3.6.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
   integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
 
+unix-dgram@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/unix-dgram/-/unix-dgram-1.0.0.tgz#c16aba9e77b6c98d124774f259694460bbb24fa2"
+  integrity sha1-wWq6nne2yY0SR3TyWWlEYLuyT6I=
+  dependencies:
+    bindings "~1.1.1"
+    nan "~2.3.2"
+
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
@@ -431,6 +449,13 @@ wirelesser@^2.2.0:
     child-process-promise "^2.2.1"
     debug "^3.1.0"
     wireless-tools "^0.19.0"
+
+wpa-ctrl@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/wpa-ctrl/-/wpa-ctrl-1.1.2.tgz#412a2a126c7428d1e2aa8f1b1792129e0bbae801"
+  integrity sha512-/QurVWta2+C6LIx8dYRTlf67cOilqLLUhWp6d8wDvXDVPla8Jh2oDdCTYI06Ql5InWOj/ZRkk1U0YVspXc8tIA==
+  dependencies:
+    unix-dgram "^1.0.0"
 
 yallist@^2.1.2:
   version "2.1.2"

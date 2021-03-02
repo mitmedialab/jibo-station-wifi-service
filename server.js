@@ -11,12 +11,13 @@ const bodyParser = require('body-parser');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
 const child_process = require('child_process');
-const {Wireless, Monitor} = require('wirelesser');
+const {Wireless, Monitor, WPA} = require('wirelesser');
 const nmcli = require('./nmcli');
 
 const PORT = 80;
 const INTERFACE = process.argv[2] || 'wlan1';  // node index.js <INTERFACE>
-const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
+//const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Raspbian
+const USE_NM = false;  // dear god, i hope we are rid of NetworkManager -jon
 
 
 async function init() {
@@ -46,6 +47,7 @@ class WiFi {
         this.app = connect();
 
         this.wireless = new Wireless(INTERFACE);
+	this.wpa = new WPA(INTERFACE);
         //this.monitor = new Monitor(INTERFACE);
         //this.monitor.on('data', data => {
         //    console.log('data', data);
@@ -87,7 +89,8 @@ class WiFi {
         router.get('/scan', async (req, res) => {
             let json = '{}';
             try {
-                let data = await this.wireless.scan()
+                //let data = await this.wireless.scan()
+                let data = await this.wpa.scan()
                 json = JSON.stringify(data);
             } catch(err) {
                 console.error(err);
