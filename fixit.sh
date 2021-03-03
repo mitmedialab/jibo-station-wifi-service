@@ -2,29 +2,76 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "please run as root" ; exit 1 ; fi
 
-# get usb interface name
-interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
-# get mac address of usb interface
-oldmac=`ifconfig $interface | head -1 | cut -d" " -f6 | tr a-z A-Z`
-echo "oldmac=$oldmac"
-# use iw add temporarily to get mac address of new wl0
-iw phy phy0 interface add wl0 type station
-newmac=`ifconfig wl0 | head -1 | awk '{print $5}' | tr a-z A-Z`
-echo "newmac=$newmac"
+# disable the unique network interface names, go back to wlan0 & wlan1
+echo "disabling complex names"
+ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
 
-# change all old mac addresses to new mac address in NetworkManager
-for f in /etc/NetworkManager/system-connections/*; do
-    sed -i "s/$oldmac/$newmac/g" "$f"
+# fix things to use the new simpler names
+sed -i 's/wlp0s20f3/wlan0/' /etc/rc.local
+sed -i 's/wlp0s20f3/wlan0/' /etc/hostapd/hostapd.conf
+sed -i 's/wlp0s20f3/wlan0/' /etc/dnsmasq.conf
+sed -i 's/wlp0s20f3/wlan0/' /etc/network/interfaces
+
+sed -i 's/ [$]interface/ wlan1/' /etc/rc.local
+sed -i 's/^interface=/#interface=/' /etc/rc.local
+
+echo "installing dhcpcd5"
+apt update
+apt install dhcpcd5
+systemctl enable dhcpcd
+
+echo "configuring wpa_supplicant"
+echo "ctrl_interface=/var/run/wpa_supplicant" > /etc/wpa_supplicant.conf
+
+# attempt to transfer WiFi credentials
+id="`ls -rt /etc/NetworkManager/system-connections | tail -1`"
+file="/etc/NetworkManager/system-connections/$id"
+ssid="`grep '^ssid=' $file | cut -d= -f2`"
+psk="`grep '^psk=' $file | cut -d= -f2`"
+
+echo ""
+echo "**************************************"
+echo ""
+echo "got ssid $ssid and psk $psk"
+echo "adding to wpa_supplicant"
+(echo ""; wpa_passphrase "$ssid" "$psk") >> /etc/wpa_supplicant.conf
+echo ""
+echo "**************************************"
+echo ""
+
+# can we do anything here to transfer the wifi credentials from NM to wpa?
+
+cat > /etc/systemd/system/wpa_supplicant.service <<EOF
+[Unit]
+Description=WPA supplicant
+Before=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=dbus
+BusName=fi.epitest.hostap.WPASupplicant
+Restart=always
+RestartSec=1
+ExecStart=/sbin/wpa_supplicant -u -s -O /run/wpa_supplicant -c/etc/wpa_supplicant.conf -iwlan1
+
+[Install]
+WantedBy=multi-user.target
+Alias=dbus-fi.epitest.hostap.WPASupplicant.service
+EOF
+
+# probably not needed
+systemctl enable wpa_supplicant.service
+
+# diable Network Manager
+#systemctl stop NetworkManager  # nah! probably don't wanna do this
+for f in NetworkManager NetworkManager-wait-online.service NetworkManager-dispatcher.service network-manager.service; do
+    echo "disabling $f"
+    systemctl disable $f
 done
 
-# tweak NetworkManager systemd startup file to create new virtual interface
-# add "ExecStartPre=-/sbin/iw phy phy0 interface add wl0 type station"
-# after "ExecStart=" line
-cp /lib/systemd/system/NetworkManager.service /etc/systemd/system/
-sed -i '/ExecStart=/a ExecStartPre=-/sbin/iw phy phy0 interface add wl0 type station' /etc/systemd/system/NetworkManager.service
-
-#change rc.local so jibo-station-wifi-service uses wl0 instead of $interface
-sed -i 's/ [$]interface/ wl0/' /etc/rc.local
+echo "fixing wifi setup server to use wpa_supplicant"
+# force wifi setup page to WPA, not NM
+sed -i 's/const USE_NM =.*/const USE_NM = false;/' /usr/local/jibo-station-wifi-service/server.js
 
 echo "done!"
 read -p "reboot [y]? " yn
