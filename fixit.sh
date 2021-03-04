@@ -21,7 +21,11 @@ apt install dhcpcd5
 systemctl enable dhcpcd
 
 echo "configuring wpa_supplicant"
-echo "ctrl_interface=/var/run/wpa_supplicant" > /etc/wpa_supplicant.conf
+cat > /etc/wpa_supplicant.conf <<EOF
+ctrl_interface=/var/run/wpa_supplicant
+update_config=1
+country=US
+EOF
 
 # attempt to transfer WiFi credentials
 id="`ls -rt /etc/NetworkManager/system-connections | tail -1`"
@@ -33,8 +37,13 @@ echo ""
 echo "**************************************"
 echo ""
 echo "got ssid $ssid and psk $psk"
-echo "adding to wpa_supplicant"
-(echo ""; wpa_passphrase "$ssid" "$psk") >> /etc/wpa_supplicant.conf
+if [[ -z "$ssid" || -z "$psk" ]]; then
+    echo "not sure about the wifi info, so not setting it"
+    echo "wifi will need to be reconfigured!"
+else
+    echo "adding to wpa_supplicant"
+    (echo ""; wpa_passphrase "$ssid" "$psk") >> /etc/wpa_supplicant.conf
+fi
 echo ""
 echo "**************************************"
 echo ""
