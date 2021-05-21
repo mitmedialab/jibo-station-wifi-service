@@ -6,6 +6,7 @@ const path = require('path');
 const util = require('util');
 const net = require('net');
 const http = require('http');
+const https = require('https');
 const express = require('express');
 const bodyParser = require('body-parser');
 const serveStatic = require('serve-static');
@@ -14,6 +15,7 @@ const socketio = require('socket.io');
 const WiFi = require ('./wifi');
 
 const PORT = 80;
+const PORTS = 443;
 //const BIND = '10.99.0.1';
 const BIND = '0.0.0.0';
 const STATIC_DIR = __dirname + '/../static';
@@ -45,6 +47,15 @@ async function init() {
 
     server.listen(PORT, BIND, () => {
 	console.log(`server started on port ${PORT}`);
+    });
+
+    let key = fs.readFileSync('cert/server.key');
+    let cert = fs.readFileSync('cert/server.crt');
+
+    let serverS = https.createServer({ key, cert }, app);
+
+    serverS.listen(PORTS, BIND, () => {
+	console.log(`server started on port ${PORTS}`);
     });
 
     //let io = new socketio(server);

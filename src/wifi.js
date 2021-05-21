@@ -33,12 +33,12 @@ class WiFi {
     routes(router) {
         router.get('/status', async (req, res) => {
             let json = '{}';
-            try {
-                let data = await this.wireless.status()
-                json = JSON.stringify(data);
-            } catch(err) {
-                console.error(err);
-            }
+            //try {
+            //    let data = await this.wireless.status()
+            //    json = JSON.stringify(data);
+            //} catch(err) {
+            //    console.error(err);
+            //}
             res.setHeader('Content-Type', 'application/json');
             res.end(json);
         });
