@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/jibo-station-wifi-service/start.sh
+ExecStart=/usr/local/jibo-station-wifi-service/run.sh
 
 [Install]
 WantedBy=multi-user.target
