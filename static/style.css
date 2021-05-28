@@ -1,17 +1,84 @@
 /* Template styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    width: 100%;
+    width: 100% !important;
     max-width: 100%;
+    //overflow-y: hidden;
+    overscroll-behaviour: contain;
     font-size: 17px;
     line-height: 24px;
-    color: #373737;
+    color: white;
     background: #F9F9F9;
+    
+    margin: 0 auto;
+    padding: 0;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
 }
+
+form {
+  max-width: 800px;
+}
+
+#sectionholder {
+  font-family: sans-serif;
+  scroll-snap-type: x mandatory;	
+  display: flex;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: scroll;
+}
+
+section {
+  width: 100vw;
+  min-width: 100vw;
+  height: 150vh;
+  //border-right: 1px solid white;
+  //padding: 1rem;
+  padding-top: 80px;
+  scroll-snap-align: start;
+  //scroll-snap-stop: always;
+  text-align: center;
+  position: relative;
+}
+
+section:nth-child(even) {
+    background-color: #13343D;
+    // https://www.colorhexa.com/006994  // old
+}
+section:nth-child(odd) {
+    background-color: #1B3C45;
+}
+
+.header {
+    position:sticky;
+    top:0;
+    left:0;
+    height:80px;
+    z-index:900;
+    width:100%;
+}
+
 h1, h2, h3, h4 {
-    color: #2ab27b;
+    //color: #2ab27b;
+    color: #FFFFFF;
     margin-bottom: 12px;
     line-height: 26px;
+}
+h1.pagenum {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   text-align: center;
+   color: white;
+   width: 100%;
+   left: 0;
+   font-size: calc(1rem + 3vw);
 }
 p, ul, ul li {
     font-size: 17px;
@@ -65,26 +132,12 @@ a:active, a:hover {
     font-size: 12px;
 }
 
-/* Client-specific Styles */
-#outlook a {padding:0;}
-body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0 auto; padding:0;}
-.ExternalClass {width:100%;}
-.ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
-#backgroundTable {margin:0; padding:0; width:100%; line-height: 100% !important;}
-
 /* Some sensible defaults for images
 		Bring inline: Yes. */
 img {outline:none; text-decoration:none; -ms-interpolation-mode: bicubic;}
 a img {border:none;}
 .image_fix {display:block;}
 
-/* Outlook 07, 10 Padding issue fix
-		Bring inline: No.*/
-table td {border-collapse: collapse;}
-
-/* Fix spacing around Outlook 07, 10 tables
-	    Bring inline: Yes */
-table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
 
 table {
     line-height: 24px;
@@ -92,7 +145,7 @@ table {
     padding: 0;
     width: 100%;
     font-size: 17px;
-    color: #373737;
+    color: lightgray;
     background: #F9F9F9;
 }
 

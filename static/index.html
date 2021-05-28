@@ -3,92 +3,74 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WiFi Setup</title>
+  <title>Jibo Station Setup</title>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link rel="shortcut icon" href="favicon.ico" />
 </head>
 <body>
 		
-       <table><tr><td valign="top">
-	     <table><tr><td valign="bottom" style="padding: 0px 16px 2px">
-                   <div style="text-align: center;">
-                     <h2 style="font-size:76px">👋
-		       <span style="font-size:64px">WiFi Setup</span></h2>
-		     <br>
-                   </div>
-                 </td>
-               </tr></table></td>
-         </tr><tr><td valign="top">
-				
-<table><tr><td width="546" valign="top">
-      <div style="max-width: 600px; margin: 0 auto;">
-	<center>
-	  <div style="font-size:22px;font-weight:700;color:blue;margin-bottom:20px">WiFi Status - <span id="connection">• • •</span></div>
-	</center>
+<div id="sectionholder">
+<section id="wifi_section">
+  <h2 style="font-size:64px">📶
+    <span style="font-size:58px">Jibo Station Setup</span>
+  </h2>
 
-<center>
-  <form id="connect" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
-  <table>
-    <tr>
-      <td style="text-align:right;font-size:20px;font-weight:900">
-	<label for="ssid">Network Name</label>
-      </td>
-      <td style="text-align:center">
-	<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="24" style="font-size:24px" required></input>
-      </td>
-      <td></td>
-    </tr>
-    <tr><td colspan=3 style="height:10px"></td></tr>
-    <tr>
-      <td style="text-align:right;font-size:20px;font-weight:900">
-	<label for="password">&nbsp;WiFi Password<div style="font-size:11px;margin-top:-8px;"></i>Leave blank if no password</i></div></label>
-      </td>
-      <td style="text-align:center">
-	<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="24" style="font-size:24px"></input>
-      </td>
-      <td style="text-align:left">
-	<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)">👁️</button>
-      </td>
-    </tr>
-    <tr><td colspan=3 style="height:10px"></td></tr>
-  <tr>
-    <td></td>
-      <td style="text-align:right">
-	<span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
-	  <button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
-	    Connect!
-	  </button>
-	</span>&nbsp;&nbsp;&nbsp;
-      </td>
-      <td></td>
-  </tr>
-    </table>
-  </form>
-</center>
-</td></tr>
-<tr>
-  <td>
-    <center>
-      <div style="width:600px">
-	<ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;text-align:left">
+  <br>
+  <br>
+  <center>
+    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:20px"><span id="connection">• • •<br>&nbsp;</span></div>
+  </center>
+
+  <center>
+      <form width="70%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
+	<table width="400" style="display:grid;place-items:center;background-color:#1B3C45">
+	  <tr><td>
+	      <br>
+	      <br>
+	      <div style="font-size:20px;font-weight:900">
+		<label for="ssid">Network Name</label><br>
+		<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required></input>
+	      </div>
+	  </td></tr><tr><td style="height:10px">
+	  </td></tr><tr><td style="font-size:20px;font-weight:900">
+	      <div style="font-size:20px;font-weight:900">
+		<label for="password">WiFi Password<div style="font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
+		<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"></input>
+		<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)" style="width:30px;height:30px;position:absolute;margin-left:6px;margin-top:1px;border-radius:2px;border-width:1px;background-color:#BBEBFF">👁️</button>
+	      </div>
+	  </td></tr><tr><td style="height:25px">
+	  </td></tr><tr><td style="text-align:center">
+	    <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
+	      <button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+		Connect WiFi
+	      </button>
+	    </span>
+	    <br>
+	    <br>
+	    <br>
+	</td></tr>
+      </table>
+    </form>
+  </center>
+  <br>
+  <center>
+    <div style="display:grid;place-items:center">
+      <div style="width:220px;text-align:left">
+	<font color="gray">Visible networks</font>
+	<ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
 	  <li><i>looking for networks...</i></li>
 	</ul>
       </div>
-    </center>
-  </td>
-</tr>
-</table></td>
-					</tr><tr><td style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; border-collapse: collapse;">
-<br>
-<br>
-<br>
-<br>
-</td>
+      </div>
+  </center>
 
-</tr></table>
   <div id="statusdiv"></div>
   <div id="signaldiv"></div>
-  <!-- <div id="scandiv"></div> -->
+<!--  <div id="scandiv"></div> -->
+
+</section>
+</div>
+
   <script src="client.js"></script>
   <script>
     window.client.init();

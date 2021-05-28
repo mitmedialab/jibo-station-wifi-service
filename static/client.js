@@ -11,39 +11,54 @@ const STATUS_INTERVAL = 1 * 1000;  // 1 second
 const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
 const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
 
+let current_rssid;
+
+
+// setTimeout but then wait for the first full frame after that
+// (so we can check isVisible without triggering any reflows)
+function setTimeoutAnimationFrame(callback, interval) {
+    setTimeout(() => window.requestAnimationFrame(callback), interval);
+}
+
+
 async function monitorStatus() {
     try {
         let response = await fetch(status_request);
-        let json = await response.json();
-	if (json && !json.retry && Object.keys(json).length !== 0) {
-	    showStatus(json);
+        let data = await response.json();
+	if (data && !data.retry && Object.keys(data).length !== 0) {
+	    showStatus(data);
 	}
     } catch(err) {
         console.error(err);
     }
-    setTimeout(monitorStatus, STATUS_INTERVAL);
+    setTimeoutAnimationFrame(monitorStatus, STATUS_INTERVAL);
 }
 
 
-async function showStatus(json) {
+function showStatus(status) {
     let connectiondiv = document.querySelector('#connection');
-    let state = json.wpa_state;
-    let status = '• • •';
+    let state = status.wpa_state;
+    let html = '• • •<br>&nbsp;';
+    console.log(status);
     if (state) {
+	let ssid = status.ssid.replace(/\n$/, '');  // remove newline at end of string
 	if (state === 'COMPLETED') {
-	    status = 'connected to <i>' + (json.ssid || 'unknown') + '</i>';
+	    html = '<div style="position:relative" data-ssid="' + (ssid || '') + '"><font color="gray">connected to </font>' + (ssid || 'unknown') + '&nbsp;&nbsp;';
+	    if (current_rssid) {
+		html += '<span style="position:absolute;color:#AAAAAA">' + current_rssid + '</span>';
+	    }
+	    html += '</div>';
 	} else {
 	    console.log('state =', state);
 	}
+	if (status.ip_address) {
+	    html += '<br><span style="position:absolute;color:#4F4F4F">' + status.ip_address + '</span>';
+	} else {
+	    html += '<br>&nbsp;';
+	}
     }
-    //connectiondiv.innerHTML = json.ssid + ` &nbsp; <button onclick="fetch(new Request('/disconnect',{method:'POST'}))">&#x274c/button>`;
-    connectiondiv.innerHTML = status;
-    //let statusdiv = document.querySelector('#statusdiv');
-    //statusdiv.innerHTML = JSON.stringify(json);
-
-    //let response = await fetch('http://captive.apple.com');
-    let response = await fetch('http://connectivity-check.ubuntu.com');
-    console.log(response);
+    //connectiondiv.innerHTML = status.ssid + ` &nbsp; <button onclick="fetch(new Request('/disconnect',{method:'POST'}))">&#x274c/button>`;
+    connectiondiv.innerHTML = html;
 }
 
 
@@ -51,13 +66,14 @@ async function monitorScan() {
     try {
         let response = await fetch(scan_request);
         let json = await response.json();
+	console.log(json);
 	if (json && !json.retry && Object.keys(json).length !== 0) {
 	    showScan(json);
 	}
     } catch(err) {
         console.error(err);
     }
-    setTimeout(monitorScan, SCAN_INTERVAL);
+    setTimeoutAnimationFrame(monitorScan, SCAN_INTERVAL);
 }
 
 
@@ -79,14 +95,19 @@ function showScan(json) {
 		continue;
 	    }
 	    seen.push(ssid);
-	    html += '<li onclick="window.client.click_network(event)">' + ssid + '</li>\n';
+	    html += '<li onclick="window.client.click_network(event)">'
+		+ '<div style="position:relative">'
+		+ '<div style="position:absolute;color:#AAAAAA;left:-38px">' + network.signal + '</div>'
+		+ '<div style="position:absolute;color:#AAAAAA;left:-62px;font-size:14px;opacity:0.6">' + (network.security ? '🔒' : '') + '</div>'
+		+ '<span class="clickssid">' + ssid + '</span></li>\n';  // FIXME unsafe!
+	    current_rssid = network.signal;
 	}
     } catch(err) {
 	console.error(err);
     }
     networks_ul.innerHTML = html;
-    let scandiv = document.querySelector('#scandiv');
-    scandiv.innerHTML = JSON.stringify(json);
+    //let scandiv = document.querySelector('#scandiv');
+    //scandiv.innerHTML = JSON.stringify(json);
 }
 
 
@@ -100,7 +121,7 @@ async function monitorSignal() {
     } catch(err) {
         console.error(err);
     }
-    setTimeout(monitorSignal, SIGNAL_INTERVAL);
+    setTimeoutAnimationFrame(monitorSignal, SIGNAL_INTERVAL);
 }
 
 
@@ -111,8 +132,6 @@ function showSignal(json) {
 
 
 async function init() {
-    //document.body.classList.add('horizontal-mode');
-
     if ('serviceWorker' in navigator) {
 	console.log('CLIENT: service worker registration in progress.');
 	navigator.serviceWorker.register('/service-worker.js').then(function() {
@@ -123,9 +142,9 @@ async function init() {
     } else {
 	console.log('CLIENT: service worker is not supported.');
     }
-    
-    let form = document.getElementById('connect');
-    form.addEventListener('submit', connect);
+
+    let wifi_form = document.getElementById('connect_wifi_form');
+    wifi_form.addEventListener('submit', connect_wifi);
 
     monitorStatus();
     monitorScan();
@@ -151,7 +170,7 @@ function reset_scroll(id) {
 }
 
 
-async function connect(event) {
+async function connect_wifi(event) {
     console.log(event);
     console.log(event.target);
     event.preventDefault();
@@ -190,14 +209,15 @@ function toggle_password_visibility(event) {
 }
 
 
+
 function click_network(event) {
-    let network_li = event.target;
-    let ssid = network_li.innerHTML;
+    let network_li = event.target.parentElement;  // FIXME breaks if there's any li element padding, or li children go deeper than one level
+    let clickssid = network_li.querySelector('.clickssid');
     let ssid_input = document.getElementById('ssid');
-    ssid_input.value = ssid;
+    ssid_input.value = clickssid.textContent;
 }
 
 window.client.init = init;
-window.client.connect = connect;
+window.client.connect_wifi = connect_wifi;
 window.client.toggle_password_visibility = toggle_password_visibility;
 window.client.click_network = click_network;

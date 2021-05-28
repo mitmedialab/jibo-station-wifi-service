@@ -1,6 +1,6 @@
 'use strict';
 
-const version = 'v1::';
+const version = 'v1::1';
 
 self.addEventListener('install', function(event) {
   console.log('WORKER: install event in progress.');
@@ -46,6 +46,9 @@ self.addEventListener('fetch', function(event) {
     console.log('WORKER: fetch event ignored.', event.request.method, event.request.url);
     return;
   }
+
+    console.log('fetch event', event);
+
   /* Similar to event.waitUntil in that it blocks the fetch event on a promise.
      Fulfillment result will be used as the response, and rejection will end in a
      HTTP response indicating failure.
