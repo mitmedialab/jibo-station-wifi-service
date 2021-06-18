@@ -22,6 +22,139 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
+#notconnected {
+    display: block;
+}
+.wifi-connected #notconnected {
+    display: none;
+}
+.connecting #notconnected {
+    display: none;
+}
+.disconnecting #notconnected {
+    display: none;
+}
+
+#connected {
+    display: none;
+}
+.wifi-connected #connected {
+    display: block;
+}
+.connecting #connected {
+    display: none;
+}
+.disconnecting #connected {
+    display: none;
+}
+
+#disconnecting {
+    display: none;
+}
+.disconnecting #disconnecting {
+    display: block;
+}
+
+#connecting {
+    display: none;
+}
+.connecting #connecting {
+    display: block;
+}
+
+
+#stage-1-pending {
+    display: block;
+}
+#stage-1-good {
+    display: none;
+}
+#stage-1-bad {
+    display: none;
+}
+.jibo-connected #stage-1-pending {
+    display: none;
+}
+.jibo-connected #stage-1-good {
+    display: block;
+}
+.jibo-connected #stage-1-bad {
+    display: none;
+}
+.jibo-not-connected #stage-1-pending {
+    display: none;
+}
+.jibo-not-connected #stage-1-good {
+    display: none;
+}
+.jibo-not-connected #stage-1-bad {
+    display: block;
+}
+
+#stage-2-pending {
+    display: block;
+}
+#stage-2-good {
+    display: none;
+}
+#stage-2-bad {
+    display: none;
+}
+.internet-connected #stage-2-pending {
+    display: none;
+}
+.internet-connected #stage-2-good {
+    display: block;
+}
+.internet-connected #stage-2-bad {
+    display: none;
+}
+.internet-not-connected #stage-2-pending {
+    display: none;
+}
+.internet-not-connected #stage-2-good {
+    display: none;
+}
+.internet-not-connected #stage-2-bad {
+    display: block;
+}
+
+#stage-3-pending {
+    display: block;
+}
+#stage-3-good {
+    display: none;
+}
+#stage-3-bad {
+    display: none;
+}
+.server-connected #stage-3-pending {
+    display: none;
+}
+.server-connected #stage-3-good {
+    display: block;
+}
+.server-connected #stage-3-bad {
+    display: none;
+}
+.server-not-connected #stage-3-pending {
+    display: none;
+}
+.server-not-connected #stage-3-good {
+    display: none;
+}
+.server-not-connected #stage-3-bad {
+    display: block;
+}
+
+#contactus {
+    display: none;
+}
+
+.contactus #contactus {
+    display: block;
+}
+
 form {
   max-width: 800px;
 }
@@ -37,10 +170,10 @@ form {
 section {
   width: 100vw;
   min-width: 100vw;
-  height: 150vh;
+  height: 100vh;
   //border-right: 1px solid white;
   //padding: 1rem;
-  padding-top: 80px;
+  padding-top: 50px;
   scroll-snap-align: start;
   //scroll-snap-stop: always;
   text-align: center;
@@ -90,6 +223,7 @@ ul {
 }
 ul li {
     margin-bottom: 8px;
+    font-size: 21px;
 }
 p.mini {
     font-size: 12px;
@@ -130,6 +264,32 @@ a:active, a:hover {
 #footer p {
     margin-top: 16px;
     font-size: 12px;
+}
+
+.bars-0, .bars-1, .bars-2, .bars-3 {
+    width: 117px;
+    height: 117px;
+    background-image: url('wifi-signal.png');
+    background-repeat: no-repeat;
+    transform: scale(0.2, 0.2);
+    transform-origin: top left;
+}
+
+.bars-bigger {
+    transform: scale(0.25, 0.25);
+    position: relative;
+    top: -4px;
+    left: -5px;
+}
+
+.bars-1 {
+    background-position: -117px 0;
+}
+.bars-2 {
+    background-position: 0 -117px;
+}
+.bars-3 {
+    background-position: -117px -117px;
 }
 
 /* Some sensible defaults for images

@@ -16,13 +16,14 @@
   </h2>
 
   <br>
-  <br>
   <center>
     <div style="font-size:22px;font-weight:700;color:white;margin-bottom:20px"><span id="connection">• • •<br>&nbsp;</span></div>
   </center>
 
-  <center>
-      <form width="70%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
+  <div id="notconnected">
+    <div style="display:inline-block;width:600px;position:relative;top:-50px">
+      <center>
+      <form width="1000%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
 	<table width="400" style="display:grid;place-items:center;background-color:#1B3C45">
 	  <tr><td>
 	      <br>
@@ -34,39 +35,146 @@
 	  </td></tr><tr><td style="height:10px">
 	  </td></tr><tr><td style="font-size:20px;font-weight:900">
 	      <div style="font-size:20px;font-weight:900">
-		<label for="password">WiFi Password<div style="font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
+		<label for="password">WiFi Password<div style="color:gray;font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
 		<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"></input>
 		<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)" style="width:30px;height:30px;position:absolute;margin-left:6px;margin-top:1px;border-radius:2px;border-width:1px;background-color:#BBEBFF">👁️</button>
 	      </div>
 	  </td></tr><tr><td style="height:25px">
 	  </td></tr><tr><td style="text-align:center">
+	      <br>
 	    <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
-	      <button style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	      <button id="connect" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
 		Connect WiFi
 	      </button>
 	    </span>
-	    <br>
-	    <br>
-	    <br>
 	</td></tr>
       </table>
-    </form>
-  </center>
-  <br>
-  <center>
-    <div style="display:grid;place-items:center">
-      <div style="width:220px;text-align:left">
-	<font color="gray">Visible networks</font>
-	<ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
-	  <li><i>looking for networks...</i></li>
-	</ul>
-      </div>
-      </div>
-  </center>
+      </form>
+      </center>
+    </div>
 
-  <div id="statusdiv"></div>
-  <div id="signaldiv"></div>
-<!--  <div id="scandiv"></div> -->
+    <div style="display:inline-block;position:relative;top:-100px">
+      <center>
+	<div style="display:grid;place-items:center">
+	  <div style="width:250px;text-align:left">
+	    <font color="lightgray">Visible networks &nbsp;<font color="gray">tap to select</font></font>
+	    <ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
+	      <li><i>looking for networks...</i></li>
+	    </ul>
+	  </div>
+	</div>
+      </center>
+    </div>
+  </div>
+
+  <div id="connected">
+    <center>
+      <div>
+	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:60px">
+	  <div id="stage-1-pending">
+	    <font size="72px">➖ </font>
+	    <br>
+	    <br>
+	    <h2>Jibo</h2>
+	  </div>
+	  <div id="stage-1-good">
+	    <font size="72px">✅ </font>
+	    <br>
+	    <br>
+	    <h2>Jibo connected</h2>
+	  </div>
+	  <div id="stage-1-bad">
+	    <font size="72px">❓ </font>
+	    <br>
+	    <br>
+	    <h2>Jibo not connected</h2>
+	  </div>
+	</div>
+
+	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:6px">
+	  <div id="stage-2-pending">
+	    <font size="72px">➖ </font>
+	    <br>
+	    <br>
+	    <h2>Internet</h2>
+	  </div>
+	  <div id="stage-2-good">
+	    <font size="72px">✅ </font>
+	    <br>
+	    <br>
+	    <h2>Internet connected</h2>
+	  </div>
+	  <div id="stage-2-bad">
+	    <font size="72px">❓ </font>
+	    <br>
+	    <br>
+	    <h2>Internet not connected</h2>
+	  </div>
+	</div>
+	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:60px">
+	  <div id="stage-3-pending">
+	    <font size="72px">➖ </font>
+	    <br>
+	    <br>
+	    <h2>Station Status</h2>
+	  </div>
+	  <div id="stage-3-good">
+	    <font size="72px">✅ </font>
+	    <br>
+	    <br>
+	    <h2>All Systems Go!</h2>
+	  </div>
+	  <div id="stage-3-bad">
+	    <font size="72px">❓ </font>
+	    <br>
+	    <br>
+	    <h2>There is a problem</h2>
+	  </div>
+	</div>
+	<br>
+	<div id="contactus">
+	  <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
+	      <br>
+	  Please contact us at<br>
+	  jibo-wellness@media.mit.edu<br>
+	  or<br>
+	  617-921-6515</font></h1>
+	</div>
+      </div>
+
+      <br>
+      <button onclick="window.client.disconnect_wifi()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	Disconnect
+      </button>
+    </center>
+  </div>
+
+  <div id="connecting">
+    <div style="display:inline-block;width:600px;position:relative;top:-50px">
+      <center>
+	<br>
+	<br>
+	<br>
+	<h2><span id="feedback"></span></h2>
+	<br>
+	<br>
+	<button onclick="window.client.cancel_connecting()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	  Cancel
+	</button>
+      </center>
+    </div>
+  </div>
+
+  <div id="disconnecting">
+    <div style="display:inline-block;width:600px;position:relative;top:-50px">
+      <center>
+	<br>
+	<br>
+	<br>
+	<h2>Disconnecting...</h2>
+      </center>
+    </div>
+  </div>
 
 </section>
 </div>
