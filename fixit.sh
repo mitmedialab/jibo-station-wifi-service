@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# fail on first error
+set -e
+
 if [[ $(id -u) -ne 0 ]] ; then echo "please run as root" ; exit 1 ; fi
 
 # disable the unique network interface names, go back to wlan0 & wlan1
