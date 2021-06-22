@@ -7,7 +7,8 @@ const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
 
 const INTERFACE = process.argv[2] || 'wlan1';  // node index.js <INTERFACE>
-const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
+//const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
+const USE_NM = false;
 
 const SERVER_TEST_ADDRESS = 'prg-webhost.media.mit.edu';
 const SERVER_TEST_PORT = 80;
