@@ -155,6 +155,10 @@ body {
     display: block;
 }
 
+li.matched {
+    background-color: gray;
+}
+
 form {
   max-width: 800px;
 }
@@ -215,15 +219,15 @@ h1.pagenum {
 }
 p, ul, ul li {
     font-size: 17px;
-    margin: 0 0 16px;
     line-height: 24px;
 }
 ul {
     margin-bottom: 24px;
 }
 ul li {
-    margin-bottom: 8px;
-    font-size: 21px;
+    padding-top: 12px;
+    padding-bottom: 4px;
+    font-size: 24px;
 }
 p.mini {
     font-size: 12px;

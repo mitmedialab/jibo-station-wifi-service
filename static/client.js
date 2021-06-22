@@ -61,15 +61,11 @@ function showStatus(status) {
 	    if (connection_timeout) {
 		clearTimeout(connection_timeout);
 	    }
-	    console.log('1');
 	    connection_timeout = setTimeout( () => {
-		console.log('2');
 		connection_timeout = undefined;
 		if (wifi_connected && !(document.body.classList.contains('server-connected'))) {
-		    console.log('3');
 		    document.body.classList.add('contactus');
 		} else {
-		    console.log('4');
 		    document.body.classList.remove('contactus');
 		}
 	    }, 10 * 1000);
@@ -187,6 +183,7 @@ function showScan(json) {
 	console.error(err);
     }
     networks_ul.innerHTML = html;
+    ssid_changed();
     //let scandiv = document.querySelector('#scandiv');
     //scandiv.innerHTML = JSON.stringify(json);
 }
@@ -340,6 +337,27 @@ function toggle_password_visibility(event) {
 }
 
 
+function ssid_changed(event) {
+    console.log('ssid changed');
+    let ssid_input = document.querySelector('#ssid');
+    let ssid_value = ssid_input.value;
+    let li_entries = document.querySelectorAll('li');
+    for (let li_entry of li_entries) {
+	let clickssid = li_entry.querySelector('.clickssid');
+	console.log('.clickssid', clickssid);
+	if (!clickssid) {
+	    continue;
+	}
+	if (clickssid.textContent === ssid_value) {
+	    console.log('matched!');
+	    li_entry.classList.add('matched');
+	} else {
+	    li_entry.classList.remove('matched');
+	}
+    }
+}
+
+
 function password_focused(event) {
     let connect_button = document.querySelector('#connect');
     connect_button.scrollIntoView(false);
@@ -352,6 +370,7 @@ function click_network(event) {
     let ssid_input = document.querySelector('#ssid');
     let password_input = document.querySelector('#password');
     ssid_input.value = clickssid.textContent;
+    ssid_changed();
     password.value = '';
     password_input.focus();
 }
@@ -375,7 +394,9 @@ async function init() {
     let wifi_form = document.querySelector('#connect_wifi_form');
     wifi_form.addEventListener('submit', connect_wifi);
 
+    let ssid_input = document.querySelector('#ssid');
     let password_input = document.querySelector('#password');
+    ssid_input.addEventListener('input', ssid_changed);
     password_input.addEventListener('focus', password_focused);
 
     monitorStatus();
