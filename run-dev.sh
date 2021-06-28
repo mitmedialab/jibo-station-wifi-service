@@ -13,7 +13,4 @@ if [ -z ${interface} ]; then
 fi
 
 echo "starting jibo-station-wifi-service on interface $interface"
-while true; do
-    NODE_ENV=production node server/index.js $interface
-    sleep 1;
-done
+node_modules/.bin/nodemon --watch server server/index.js $interface

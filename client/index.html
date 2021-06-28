@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jibo Station Setup</title>
-  <link rel="stylesheet" type="text/css" href="/style.e308ff8e.css">
-  <link rel="shortcut icon" href="/favicon.26242483.ico">
-<script src="/style.e308ff8e.js"></script></head>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="shortcut icon" href="favicon.ico" />
+</head>
 <body>
 		
 <div id="sectionholder">
@@ -28,13 +28,13 @@
 	  <tr><td>
 	      <div style="font-size:20px;font-weight:900">
 		<label for="ssid">Network Name</label><br>
-		<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required="">
+		<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required></input>
 	      </div>
 	  </td></tr><tr><td style="height:10px">
 	  </td></tr><tr><td style="font-size:20px;font-weight:900">
 	      <div style="font-size:20px;font-weight:900">
 		<label for="password">WiFi Password<div style="color:gray;font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
-		<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px">
+		<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"></input>
 		<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)" style="width:30px;height:30px;position:absolute;margin-left:6px;margin-top:1px;border-radius:2px;border-width:1px;background-color:#BBEBFF">👁️</button>
 	      </div>
 	  </td></tr><tr><td style="height:25px">
@@ -68,7 +68,7 @@
 	<div style="display:grid;place-items:center">
 	  <div style="width:250px;text-align:left">
 	    <font color="lightgray">Visible networks &nbsp;<font color="gray">tap to select</font></font>
-	    <ul width="300" id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
+	    <ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
 	      <li><i>looking for networks...</i></li>
 	    </ul>
 	  </div>
@@ -221,12 +221,12 @@
 	<td>Local IP address</td><td>&nbsp;</td><td><div id="local_ip_address">➖</div></td>
       </tr>
       <tr><td>&nbsp;</td>
-      </tr><tr>
+      <tr>
 	<td>Rover IP address</td><td>&nbsp;</td><td><div id="rover_ip_address">➖</div></td>
       </tr>
       <tr><td>&nbsp;</td>
-      </tr><tr>
-	<td>Trim spaces</td><td>&nbsp;</td><td><input id="trim_spaces" type="checkbox" checked="" style="width:30px;height:30px"></td>
+      <tr>
+	<td>Trim spaces</td><td>&nbsp;</td><td><input id="trim_spaces" type="checkbox" checked style="width:30px;height:30px"></input></td>
       </tr>
     </table>
     </center>
@@ -243,7 +243,9 @@
 </section>
 </div>
 
-  <script src="/client.62456f60.js"></script>
-  <script>window.client.init();</script>
+  <script src="client.js"></script>
+  <script>
+    window.client.init();
+  </script>
 </body>
 </html>

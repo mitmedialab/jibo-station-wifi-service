@@ -19,6 +19,7 @@ const PORTS = 443;
 //const BIND = '10.99.0.1';
 const BIND = '0.0.0.0';
 const STATIC_DIR = __dirname + '/../static';
+const CLIENT_DIR = __dirname + '/../client';
 
 
 async function init() {
@@ -43,14 +44,20 @@ async function init() {
                 }
             });
 
+    if (process.env.NODE_ENV !== 'production') {
+	let Bundler = require('parcel-bundler');
+	let bundler = new Bundler(CLIENT_DIR + '/index.html', { outDir: STATIC_DIR });
+	app.use(bundler.middleware());  // does not play well with others, must come last
+    }
+
     let server = http.createServer(app);
 
     server.listen(PORT, BIND, () => {
 	console.log(`server started on port ${PORT}`);
     });
 
-    let key = fs.readFileSync('cert/server.key');
-    let cert = fs.readFileSync('cert/server.crt');
+    let key = fs.readFileSync('certs/server.key');
+    let cert = fs.readFileSync('certs/server.crt');
 
     let serverS = https.createServer({ key, cert }, app);
 
