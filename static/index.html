@@ -17,17 +17,15 @@
 
   <br>
   <center>
-    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:20px"><span id="connection">• • •<br>&nbsp;</span></div>
+    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:20px"><span id="connection">➖</span></div>
   </center>
 
   <div id="notconnected">
-    <div style="display:inline-block;width:600px;position:relative;top:-50px">
+    <div style="display:inline-block;width:600px;position:relative">
       <center>
-      <form width="1000%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
+      <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
 	<table width="400" style="display:grid;place-items:center;background-color:#1B3C45">
 	  <tr><td>
-	      <br>
-	      <br>
 	      <div style="font-size:20px;font-weight:900">
 		<label for="ssid">Network Name</label><br>
 		<input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required></input>
@@ -47,6 +45,18 @@
 		Connect WiFi
 	      </button>
 	    </span>
+	</td></tr>
+	<tr><td>
+	    <div id="contactus2">
+	      <center>
+		<h1><font color="#AAAAAA"><br>If you are having trouble<br>connecting your station<br>
+		    please contact us at<br>
+		    <br>
+		    jibo-wellness@media.mit.edu<br>
+		    or<br>
+		    617-921-6515</font></h1>
+	      </center>
+	    </div>
 	</td></tr>
       </table>
       </form>
@@ -70,7 +80,14 @@
   <div id="connected">
     <center>
       <div>
-	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:60px">
+	<div style="height:30px">
+	  <div id="checking">
+	    <center>
+	      <h1><font color="gray">Checking connection...</font></h1>
+	    </center>
+	  </div>
+	</div>
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
 	  <div id="stage-1-pending">
 	    <font size="72px">➖ </font>
 	    <br>
@@ -91,7 +108,7 @@
 	  </div>
 	</div>
 
-	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:6px">
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
 	  <div id="stage-2-pending">
 	    <font size="72px">➖ </font>
 	    <br>
@@ -111,7 +128,7 @@
 	    <h2>Internet not connected</h2>
 	  </div>
 	</div>
-	<div style="width:300px;height:100px;display:inline-block;text-align:center;padding-top:60px">
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
 	  <div id="stage-3-pending">
 	    <font size="72px">➖ </font>
 	    <br>
@@ -175,6 +192,53 @@
       </center>
     </div>
   </div>
+
+
+  <div id="infobutton">
+    <div id="clickinfo">
+      <span style="font-size:42px;color:darkgray">ⓘ</span>
+    </div>
+  </div>
+
+  <div id="infopanel">
+    <div id="dismiss">
+      <span style="font-size:48px">✖</span>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <center>
+    <table style="width:350px;font-size:24px">
+      <tr>
+	<td>Local IP address</td><td>&nbsp;</td><td><div id="local_ip_address">➖</div></td>
+      </tr>
+      <tr><td>&nbsp;</td>
+      <tr>
+	<td>Rover IP address</td><td>&nbsp;</td><td><div id="rover_ip_address">➖</div></td>
+      </tr>
+      <tr><td>&nbsp;</td>
+      <tr>
+	<td>Trim spaces</td><td>&nbsp;</td><td><input id="trim_spaces" type="checkbox" checked style="width:30px;height:30px"></input></td>
+      </tr>
+    </table>
+    </center>
+  </div>
+
+
+  <div id="nomatchpanel">
+    <div id="dismiss">
+      <span style="font-size:48px">✖</span>
+    </div>
+  </div>
+
 
 </section>
 </div>

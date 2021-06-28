@@ -37,11 +37,12 @@ async function monitorStatus() {
     setTimeoutAnimationFrame(monitorStatus, STATUS_INTERVAL);
 }
 
-
+let last_status;
 function showStatus(status) {
     let connectiondiv = document.querySelector('#connection');
     let state = status.wpa_state;
     let wifi_connected = (state === 'COMPLETED');
+    last_status = status;
 
     console.log('wifi_connected', wifi_connected);
 
@@ -57,22 +58,28 @@ function showStatus(status) {
     if (wifi_connected) {
 	if (!(document.body.classList.contains('wifi-connected'))) {
 	    document.body.classList.add('wifi-connected');
+	    document.body.classList.add('checking');
 
 	    if (connection_timeout) {
 		clearTimeout(connection_timeout);
 	    }
 	    connection_timeout = setTimeout( () => {
 		connection_timeout = undefined;
+		document.body.classList.remove('checking');
 		if (wifi_connected && !(document.body.classList.contains('server-connected'))) {
 		    document.body.classList.add('contactus');
+		    document.body.classList.add('contactus2');
 		} else {
 		    document.body.classList.remove('contactus');
+		    document.body.classList.remove('contactus2');
+		    connect_attempts = 0;
 		}
-	    }, 10 * 1000);
+	    }, 15 * 1000);
 	}
     } else {
 	document.body.classList.remove('wifi-connected');
 	document.body.classList.remove('contactus');
+	document.body.classList.remove('checking');
     }
 
     document.body.classList.remove('jibo-connected');
@@ -107,9 +114,9 @@ function showStatus(status) {
 
     let html;
     if (connection_error) {
-	html = '<font color="red">' + connection_error + '</font><br>&nbsp;';  // FIXME not html safe if ssid name is in connection_error
+	html = '<font color="red">' + connection_error + '</font>';  // FIXME not html safe if ssid name is in connection_error
     } else {
-	html = '<font color="lightgray">Station needs to be connected to WiFi</font><br>&nbsp;';
+	html = '<font color="lightgray">Station needs to be connected to WiFi</font>';
     }
     console.log(status);
     current_ssid = undefined;
@@ -126,11 +133,6 @@ function showStatus(status) {
 	} else {
 	    console.log('state =', state);
 	}
-	//if (status.ip_address) {
-	//    html += '<br><span style="position:absolute;color:#4F4F4F">' + status.ip_address + '</span>';
-	//} else {
-	    html += '<br>&nbsp;';
-	//}
     }
     connectiondiv.innerHTML = html;
 }
@@ -246,6 +248,7 @@ function reset_scroll(selector) {
 }
 
 
+let connect_attempts = 0;
 async function connect_wifi(event) {
     console.log(event);
     console.log(event.target);
@@ -257,6 +260,11 @@ async function connect_wifi(event) {
     let feedbackdiv = document.querySelector('#feedback');
 
     document.body.classList.add('connecting');
+    connect_attempts++;
+    if (connect_attempts > 2) {
+	document.body.classList.add('contactus2');
+    }
+
     try {
 	reset_scroll('#wifi_section');
 
@@ -267,8 +275,12 @@ async function connect_wifi(event) {
 	feedback.textContent = "Connecting to " + ssid + "...";
 	connection_error = undefined;
 
-	ssid = ssid.trim();
-	password = password.trim();
+	let trim_space = document.querySelector('#trim_spaces');
+	if (!trim_space || trim_space.checked) {
+	    console.log('trimming spaces');
+	    ssid = ssid.trim();
+	    password = password.trim();
+	}
 
 	//await fetch(new Request('/connect',{method:'POST',body:formdata}))
 
@@ -290,7 +302,7 @@ async function connect_wifi(event) {
     connection_timeout = setTimeout( () => {
 	connection_timeout = undefined;
 	if (document.body.classList.contains('connecting')) {
-	    connection_error = `Could not connect to ${ssid}`;
+	    connection_error = `Could not connect to ${ssid} password might be incorrect`;
 	    document.body.classList.remove('connecting');
 	}
     }, 10 * 1000);
@@ -340,11 +352,14 @@ function toggle_password_visibility(event) {
 function ssid_changed(event) {
     console.log('ssid changed');
     let ssid_input = document.querySelector('#ssid');
+    let trim_space = document.querySelector('#trim_spaces');
     let ssid_value = ssid_input.value;
+    if (!trim_space || trim_space.checked) {
+	ssid_value = ssid_value.trim();
+    }
     let li_entries = document.querySelectorAll('li');
     for (let li_entry of li_entries) {
 	let clickssid = li_entry.querySelector('.clickssid');
-	console.log('.clickssid', clickssid);
 	if (!clickssid) {
 	    continue;
 	}
@@ -376,6 +391,34 @@ function click_network(event) {
 }
 
 
+function show_nomatch_panel() {
+    document.body.classList.add('shownomatchpanel');
+}
+
+
+function show_info_panel() {
+    document.body.classList.add('showinfopanel');
+    let local_ip_address = document.querySelector('#local_ip_address');
+    if (last_status && last_status.ip_address) {
+	local_ip_address.textContent = last_status.ip_address;
+    } else {
+	local_ip_address.textContent = '➖';
+    }
+    let rover_ip_address = document.querySelector('#rover_ip_address');
+    if (last_status && last_status.rover_ip_address) {
+	rover_ip_address.textContent = last_status.rover_ip_address;
+    } else {
+	rover_ip_address.textContent = '➖';
+    }
+}
+
+
+function dismiss_all_panels() {
+    document.body.classList.remove('showinfopanel');
+    document.body.classList.remove('shownomatchpanel');
+}
+
+
 async function init() {
     //if ('serviceWorker' in navigator) {
     //	console.log('CLIENT: service worker registration in progress.');
@@ -398,6 +441,13 @@ async function init() {
     let password_input = document.querySelector('#password');
     ssid_input.addEventListener('input', ssid_changed);
     password_input.addEventListener('focus', password_focused);
+
+    let clickinfo = document.querySelector('#clickinfo');
+    clickinfo.addEventListener('click', show_info_panel);
+    let dismiss_buttons = document.querySelectorAll('#dismiss');
+    for (let dismiss_button of dismiss_buttons) {
+	dismiss_button.addEventListener('click', dismiss_all_panels);
+    }
 
     monitorStatus();
     monitorScan();

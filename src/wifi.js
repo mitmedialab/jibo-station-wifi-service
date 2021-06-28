@@ -7,6 +7,7 @@ const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
 
 const INTERFACE = process.argv[2] || 'wlan1';  // node index.js <INTERFACE>
+const ROVER_INTERFACE = 'tun0';
 //const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
 const USE_NM = false;  // dear god, i hope we are rid of NetworkManager -jon
 
@@ -37,21 +38,8 @@ class WiFi {
         //    log.log('control', control, args);
         //});
 
-        // this.app.use(bodyParser.json());
-        // this.app.use(bodyParser.urlencoded({ extended: false }));
-        // this.router = new Router();
         this.router = app;
         this.routes(this.router);
-        // this.app.use(this.router);
-
-        // this.staticDir = path.join(STATIC_DIR);
-        // this.app.use(serveStatic(this.staticDir));  // html and friends
-
-        // let httpOptions = {};
-        // this.server = http.createServer(httpOptions, this.app);
-
-        // this.hostname = '10.99.0.1';
-        // this.server.listen(PORT, this.hostname, callback);
     }
 
 
@@ -135,6 +123,7 @@ class WiFi {
 		this.phase++;
 	    } else {
 		data.ip_address = await this.determineIPAddress();
+		data.rover_ip_address = await this.determineRoverIPAddress();
 		data.jibo_connected = await this.isJiboConnected();
 		if (data.jibo_connected) {
 		    if (this.phase < 2) {
@@ -161,6 +150,19 @@ class WiFi {
 	let interfaces = os.networkInterfaces();
 	if (interfaces[INTERFACE]) {
 	    for (let address of interfaces[INTERFACE]) {
+		if (address.family === 'IPv4') {
+		    return address.address;
+		}
+	    }
+	}
+	return undefined;
+    }
+
+
+    async determineRoverIPAddress() {
+	let interfaces = os.networkInterfaces();
+	if (interfaces[ROVER_INTERFACE]) {
+	    for (let address of interfaces[ROVER_INTERFACE]) {
 		if (address.family === 'IPv4') {
 		    return address.address;
 		}

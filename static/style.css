@@ -22,6 +22,61 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
+#infopanel {
+    display: none;
+}
+
+#nomatchpanel {
+    display: none;
+}
+
+.showinfopanel #infopanel {
+    position: absolute;
+    display: block;
+    top: 0vh;
+    right: 0vw;
+    width: 100vw;
+    min-width: 100vw;
+    height: 100vh;
+    background-color: #33546D;
+}
+
+#checking,
+#contactus2
+{
+    display: none;
+}
+
+.checking #checking
+{
+    display: block;
+}
+
+.contactus2 #contactus2
+{
+    display: block;
+}
+
+#infobutton {
+    position: absolute;
+    top: 30px;
+    right: 80px;
+}
+
+#clickinfo {
+    padding: 30px;
+}
+
+
+#dismiss {
+    position: absolute;
+    padding: 20px 10px 10px 10px;
+    top: 50px;
+    right: 100px;
+    border: solid 5px;
+}
+
+
 #notconnected {
     display: block;
 }
@@ -309,8 +364,8 @@ table {
     padding: 0;
     width: 100%;
     font-size: 17px;
-    color: lightgray;
-    background: #F9F9F9;
+    //color: lightgray;
+    //background: #F9F9F9;
 }
 
 td {
