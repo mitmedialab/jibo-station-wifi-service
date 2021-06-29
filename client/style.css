@@ -7,19 +7,37 @@
 
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    width: 100% !important;
-    max-width: 100%;
+    //width: 100% !important;
+    //max-width: 100%;
+    width: 100vw;
+    height: 100vh;
     //overflow-y: hidden;
+    overflow: hidden;
     overscroll-behaviour: contain;
     font-size: 17px;
     line-height: 24px;
     color: white;
-    background: #F9F9F9;
+    background: #13343D;
     
     margin: 0 auto;
     padding: 0;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+}
+
+#noserverpanel {
+    display: none;
+}
+
+.noserver #noserverpanel{
+    position: absolute;
+    display: block;
+    top: 0vh;
+    right: 0vw;
+    width: 100vw;
+    min-width: 100vw;
+    height: 100vh;
+    background-color: #33546D;
 }
 
 #infopanel {
@@ -211,7 +229,7 @@ body {
 }
 
 li.matched {
-    background-color: gray;
+    background-color: gray !important;
 }
 
 form {

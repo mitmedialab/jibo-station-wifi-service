@@ -2,7 +2,7 @@
 
 const os = require('os');
 const child_process = require('child_process');
-const {Wireless, Monitor} = require('wirelesser');
+const { Wireless, Monitor } = require('wirelesser');
 const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
 
@@ -44,6 +44,12 @@ class WiFi {
 
 
     routes(router) {
+        router.get('/ping', async (req, res) => {
+            let json = JSON.stringify({ ping: true });
+            res.setHeader('Content-Type', 'application/json');
+            res.end(json);
+        });
+
         router.get('/status', async (req, res) => {
             let json = '{}';
             try {
@@ -113,6 +119,7 @@ class WiFi {
     async getStatus() {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
+	data.hostname = os.hostname();
 	if (state === 'COMPLETED') {
 	    if (this.last_state !== state) {
 		this.last_state = state;

@@ -7,7 +7,7 @@
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link rel="shortcut icon" href="favicon.ico" />
 </head>
-<body>
+<body class="noserver wifi-connected checking">
 		
 <div id="sectionholder">
 <section id="wifi_section">
@@ -17,13 +17,41 @@
 
   <br>
   <center>
-    <div style="font-size:22px;font-weight:700;color:white;margin-bottom:20px"><span id="connection">➖</span></div>
+    <div id="connection" style="font-size:22px;font-weight:700;color:white;margin-bottom:20px">
+      <div>
+	<div id="line1">➖</div>
+	<div id="line2">&nbsp;</div>
+      </div>
+    </div>
+    <template id="wifi_connection_none">
+      <div>
+	<div id="line1" style="color:lightgray">Station needs to be connected to WiFi</div>
+	<div id="line2">&nbsp;</div>
+      </div>
+    </template>
+    <template id="wifi_connection_good">
+      <div>
+	<div id="line1" style="position:relative">
+	  <font color="gray">connected to </font><span id="wifi_ssid">unknown</span>
+	  &nbsp;<span style="position:absolute"><div id="wifi_bars"></div></span>
+	</div>
+	<div id="line2">&nbsp;</div>
+      </div>
+    </template>
+    <template id="wifi_connection_error">
+      <div>
+	<div id="line1" style="color:red">Could not connect to <span id="wifi_ssid">unknown</span></div>
+	<div id="line2" style="color:red">Password might be incorrect</div>
+      </div>
+    </template>
   </center>
 
   <div id="notconnected">
     <div style="display:inline-block;width:600px;position:relative">
+      <br>
+      <br>
       <center>
-      <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size: 20px; line-height: 26px; margin: 0 0 16px">
+      <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size:20px;line-height:26px;padding-bottom:16px">
 	<table width="400" style="display:grid;place-items:center;background-color:#1B3C45">
 	  <tr><td>
 	      <div style="font-size:20px;font-weight:900">
@@ -37,9 +65,8 @@
 		<input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"></input>
 		<button id="visibility" type="button" onclick="window.client.toggle_password_visibility(event)" style="width:30px;height:30px;position:absolute;margin-left:6px;margin-top:1px;border-radius:2px;border-width:1px;background-color:#BBEBFF">👁️</button>
 	      </div>
-	  </td></tr><tr><td style="height:25px">
+	  </td></tr><tr><td style="height:35px">
 	  </td></tr><tr><td style="text-align:center">
-	      <br>
 	    <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
 	      <button id="connect" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
 		Connect WiFi
@@ -63,14 +90,25 @@
       </center>
     </div>
 
-    <div style="display:inline-block;position:relative;top:-100px">
+    <div style="display:inline-block;position:relative;top:-12px">
       <center>
-	<div style="display:grid;place-items:center">
-	  <div style="width:250px;text-align:left">
+	  <div style="text-align:left;margin-bottom:12px">
 	    <font color="lightgray">Visible networks &nbsp;<font color="gray">tap to select</font></font>
-	    <ul width=300 id="networks" style="list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
+	  </div>
+	<div style="display:grid;place-items:center">
+	  <div style="width:100%;height:50vh;text-align:left;overflow-y:scroll">
+	    <ul width=300 id="network_list" style="width:450px;list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
 	      <li><i>looking for networks...</i></li>
 	    </ul>
+	    <template id="network_list_entry">
+	      <li class="network_list_entry" style="background-color:#2B4C56">
+		<div style="position:relative;pointer-events:none">
+		  <span id="wifi_security" style="position:relative;top:-2px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
+		  <div style="display:inline-block;position:relative;height:20px;width:24px;top:1px;pointer-events:none"><div id="wifi_bars" style="pointer-events:none"></div></div>
+		  <span id="wifi_ssid" style="pointer-events:none"></span>
+		</div>
+	      </li>
+	    </template>
 	  </div>
 	</div>
       </center>
@@ -79,11 +117,12 @@
 
   <div id="connected">
     <center>
+      <br>
       <div>
 	<div style="height:30px">
 	  <div id="checking">
 	    <center>
-	      <h1><font color="gray">Checking connection...</font></h1>
+	      <h1><font color="lightgray">Checking connection...</font></h1>
 	    </center>
 	  </div>
 	</div>
@@ -161,7 +200,10 @@
 
       <br>
       <button onclick="window.client.disconnect_wifi()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
-	Disconnect
+	Disconnect WiFi
+      </button>
+      <button onclick="window.close()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	Done
       </button>
     </center>
   </div>
@@ -218,6 +260,10 @@
     <center>
     <table style="width:350px;font-size:24px">
       <tr>
+	<td>Hostname</td><td>&nbsp;</td><td><div id="local_hostname">➖</div></td>
+      </tr>
+      <tr><td>&nbsp;</td>
+      <tr>
 	<td>Local IP address</td><td>&nbsp;</td><td><div id="local_ip_address">➖</div></td>
       </tr>
       <tr><td>&nbsp;</td>
@@ -233,10 +279,25 @@
   </div>
 
 
-  <div id="nomatchpanel">
-    <div id="dismiss">
-      <span style="font-size:48px">✖</span>
-    </div>
+  <div id="noserverpanel">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1>Looking for Jibo Station...</h1>
+    <br>
+    <br>
+    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
+	<br>
+	Please contact us at<br>
+	jibo-wellness@media.mit.edu<br>
+	or<br>
+	617-921-6515</font></h1>
   </div>
 
 
