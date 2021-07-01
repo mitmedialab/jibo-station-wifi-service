@@ -50,6 +50,11 @@ class WiFi {
             res.end(json);
         });
 
+	router.post('/debug', async (req, res) => {
+            log.log('client debug', req.body);
+	    res.end();
+	});
+
         router.get('/status', async (req, res) => {
             let json = '{}';
             try {

@@ -56,14 +56,14 @@ async function init() {
 	console.log(`server started on port ${PORT}`);
     });
 
-    let key = fs.readFileSync('certs/server.key');
-    let cert = fs.readFileSync('certs/server.crt');
+    // let key = fs.readFileSync('certs/server.key');
+    // let cert = fs.readFileSync('certs/server.crt');
 
-    let serverS = https.createServer({ key, cert }, app);
+    // let serverS = https.createServer({ key, cert }, app);
 
-    serverS.listen(PORTS, BIND, () => {
-	console.log(`server started on port ${PORTS}`);
-    });
+    // serverS.listen(PORTS, BIND, () => {
+    // 	console.log(`server started on port ${PORTS}`);
+    // });
 
     //let io = new socketio(server);
 }

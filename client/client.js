@@ -2,6 +2,8 @@
 
 window.client = window.client || {};
 
+import { MobileDetect } from 'mobile-detect';
+
 const status_request = new Request('/status');
 const scan_request = new Request('/scan');
 //const signal_request = new Request('/signal');
@@ -167,6 +169,25 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	div.querySelector('#line2').textContent = wifi_error;
     }
 	connectiondiv.replaceChildren(div);
+}
+
+
+function loadContactMessages(wellness) {
+    let contactusdiv = document.querySelector('#contactus');
+    let contactus2div = document.querySelector('#contactus2');
+    let template;
+    let template2;
+    if (wellness) {
+	template = document.querySelector('#contactus_wellness');
+	template2 = document.querySelector('#contactus2_wellness');
+    } else {
+	template = document.querySelector('#contactus_generic');
+	template2 = document.querySelector('#contactus2_generic');
+    }
+    let center = template.content.firstElementChild.cloneNode(true);
+    let center2 = template.content.firstElementChild.cloneNode(true);
+    contactusdiv.replaceChildren(center);
+    contactus2div.replaceChildren(center2);
 }
 
 
@@ -471,6 +492,11 @@ async function init() {
 
     //reset_scroll('#wifi_section');
     //reset_scroll('#sectionholder');
+
+    let md = new MobileDetect(window.navigator.userAgent);
+    fetch(new Request('/debug',{method:'POST',body:JSON.stringify(md)}));
+
+    loadContactMessages();
 
     let wifi_form = document.querySelector('#connect_wifi_form');
     wifi_form.addEventListener('submit', connect_wifi);
