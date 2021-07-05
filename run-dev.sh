@@ -8,9 +8,20 @@ export PATH=$VIRTUALENV_ROOT/bin:$VIRTUALENV_ROOT/node/bin:$PATH
 export N_PREFIX=$VIRTUALENV_ROOT/node
 
 interface=$1
+
+#if [ -z ${interface} ]; then
+#    interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
+#fi
+
 if [ -z ${interface} ]; then
-    interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
+    if [ "`uname -p`" = "x86_64" ]; then
+	# NUC
+	interface="wlan1"
+    else
+	# Raspberry Pi
+	interface="wlan0"
+    fi
 fi
 
 echo "starting jibo-station-wifi-service on interface $interface"
-node_modules/.bin/nodemon --watch server server/index.js $interface
+node_modules/.bin/nodemon --watch server /usr/local/jibo-station-wifi-service/server/index.js $interface

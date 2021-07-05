@@ -6,7 +6,11 @@ const { Wireless, Monitor } = require('wirelesser');
 const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
 
-const INTERFACE = process.argv[2] || 'wlan1';  // node index.js <INTERFACE>
+const INTERFACE = process.argv[2];  // node index.js <INTERFACE>
+if (!INTERFACE) {
+    console.error(process.argv[1], 'Error: must specify interface as first argument');
+    process.exit();
+}
 const ROVER_INTERFACE = 'tun0';
 //const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
 const USE_NM = false;  // dear god, i hope we are rid of NetworkManager -jon
