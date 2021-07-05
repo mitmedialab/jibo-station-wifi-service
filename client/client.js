@@ -456,7 +456,7 @@ function ssid_changed() {
 function password_focused(event) {
     let connect_wifi_form = document.querySelector('#connect_wifi_form');
     //connect_wifi_form.scrollIntoView(false);
-    setTimeout( () => { connect_wifi_form.scrollIntoView(false); }, 500);
+    //setTimeout( () => { connect_wifi_form.scrollIntoView(false); }, 500);
 }
 
 

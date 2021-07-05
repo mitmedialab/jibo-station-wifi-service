@@ -16,10 +16,10 @@ interface=$1
 if [ -z ${interface} ]; then
     if [ "`uname -p`" = "x86_64" ]; then
 	# NUC
-	interface="wlan1"
+	interface="wlan0"
     else
 	# Raspberry Pi
-	interface="wlan0"
+	interface="wlan1"
     fi
 fi
 
