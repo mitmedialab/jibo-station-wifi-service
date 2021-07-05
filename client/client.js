@@ -2,15 +2,16 @@
 
 window.client = window.client || {};
 
-import { MobileDetect } from 'mobile-detect';
+const MobileDetect = require('mobile-detect');
 
 const status_request = new Request('/status');
+const status_request_first = new Request('/status?first=true');
 const scan_request = new Request('/scan');
 //const signal_request = new Request('/signal');
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
-const STATUS_INTERVAL = 1 * 1000;  // 1 second
+const STATUS_INTERVAL = 2 * 1000;  // 2 seconds
 const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
 //const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
 
@@ -41,7 +42,8 @@ async function monitorServer() {
 
 async function monitorStatus() {
     try {
-        let response = await fetch(status_request);
+        let response = await fetch(first ? status_request_first : status_request);
+	first = false;
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
 	    showStatus(data);
@@ -53,6 +55,7 @@ async function monitorStatus() {
 }
 
 
+let first = true;
 let last_status;  // for the popup info panel
 function showStatus(status) {
     let state = status.wpa_state;
@@ -63,7 +66,7 @@ function showStatus(status) {
 	wifi_ssid = wifi_ssid.replace(/\n$/, '');  // remove newline at end of string
     }
     if (wifi_connected) {
-	connection_error = undefined;
+	connection_error = false;
     }
     
     last_status = status;  // for the popup info panel
@@ -73,7 +76,6 @@ function showStatus(status) {
     if (wifi_connected && document.body.classList.contains('connecting')) {
 	document.body.classList.remove('connecting');
 	document.body.classList.add('checking');
-	console.log('1');
 	// let ssid_input = document.querySelector('#ssid');
 	// let password_input = document.querySelector('#password');
 	// ssid_input.value = '';
@@ -81,10 +83,9 @@ function showStatus(status) {
     }
 
     if (wifi_connected) {
-	if (!(document.body.classList.contains('wifi-connected'))) {
+	if (!(document.body.classList.contains('wifi-connected')) && !(document.body.classList.contains('disconnecting'))) {
 	    document.body.classList.add('wifi-connected');
-	    document.body.classList.add('checking');
-	    console.log('2');
+	    //document.body.classList.add('checking');
 
 	    if (connection_timeout) {
 		clearTimeout(connection_timeout);
@@ -92,7 +93,6 @@ function showStatus(status) {
 	    connection_timeout = setTimeout( () => {
 		connection_timeout = undefined;
 		document.body.classList.remove('checking');
-		console.log('3');
 		if (wifi_connected && !(document.body.classList.contains('server-connected'))) {
 		    document.body.classList.add('contactus');
 		    document.body.classList.add('contactus2');
@@ -101,13 +101,13 @@ function showStatus(status) {
 		    document.body.classList.remove('contactus2');
 		    connect_attempts = 0;
 		}
-	    }, 15 * 1000);
+	    }, 25 * 1000);
 	}
     } else {
 	document.body.classList.remove('wifi-connected');
 	document.body.classList.remove('contactus');
 	document.body.classList.remove('checking');
-	console.log('4');
+	first = true;
     }
 
     document.body.classList.remove('jibo-connected');
@@ -117,7 +117,7 @@ function showStatus(status) {
 	    document.body.classList.add('jibo-connected');
 	} else {
 	    document.body.classList.remove('checking');
-	    console.log('5');
+	    document.body.classList.add('contactus');
 	    document.body.classList.add('jibo-not-connected');
 	}
     }
@@ -129,8 +129,8 @@ function showStatus(status) {
 	if (status.internet_connected) {
 	    document.body.classList.add('internet-connected');
 	} else {
-	    //document.body.classList.remove('checking');
-	    console.log('6');
+	    document.body.classList.remove('checking');
+	    document.body.classList.add('contactus');
 	    document.body.classList.add('internet-not-connected');
 	}
     }
@@ -139,9 +139,10 @@ function showStatus(status) {
     document.body.classList.remove('server-not-connected');
     if (('server_connected' in status) && status.server_connected !== undefined) {
 	document.body.classList.remove('checking');
-	console.log('7');
 	if (status.server_connected) {
 	    document.body.classList.add('server-connected');
+	    document.body.classList.remove('contactus');
+	    document.body.classList.remove('contactus2');
 	} else {
 	    document.body.classList.add('server-not-connected');
 	}
@@ -155,7 +156,12 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
     let connectiondiv = document.querySelector('#connection');
     let template = document.querySelector('#wifi_connection_none');
     let div = template.content.firstElementChild.cloneNode(true);
-    if (wifi_connected) {
+    let connecting = document.body.classList.contains('connecting');
+    let disconnecting = document.body.classList.contains('disconnecting');
+    if (connecting || disconnecting) {
+	template = document.querySelector('#wifi_connection_blank');
+	div = template.content.firstElementChild.cloneNode(true);
+    } else if (wifi_connected) {
 	current_ssid = wifi_ssid;
 	template = document.querySelector('#wifi_connection_good');
 	div = template.content.firstElementChild.cloneNode(true);
@@ -168,13 +174,19 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	if (wifi_ssid) div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	div.querySelector('#line2').textContent = wifi_error;
     }
-	connectiondiv.replaceChildren(div);
+    connectiondiv.replaceChildren(div);
 }
 
 
-function loadContactMessages(wellness) {
+function loadContactMessages(project) {
+    let wellness = false;
+    if (project === 'wellness') {
+	wellness = true;
+    }
+    
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
+    let contactus0div = document.querySelector('#contactus0');
     let template;
     let template2;
     if (wellness) {
@@ -185,19 +197,21 @@ function loadContactMessages(wellness) {
 	template2 = document.querySelector('#contactus2_generic');
     }
     let center = template.content.firstElementChild.cloneNode(true);
-    let center2 = template.content.firstElementChild.cloneNode(true);
+    let center2 = template2.content.firstElementChild.cloneNode(true);
+    let center0 = template.content.firstElementChild.cloneNode(true);
     contactusdiv.replaceChildren(center);
     contactus2div.replaceChildren(center2);
+    contactus0div.replaceChildren(center0);
 }
 
 
 async function monitorScan() {
     try {
         let response = await fetch(scan_request);
-        let json = await response.json();
-	console.log(json);
-	if (json && !json.retry && Object.keys(json).length !== 0) {
-	    showScan(json);
+        let data = await response.json();
+	//console.log(data);
+	if (data && !data.retry && Object.keys(data).length !== 0) {
+	    showScan(data);
 	}
     } catch(err) {
         console.error(err);
@@ -206,15 +220,15 @@ async function monitorScan() {
 }
 
 
-function showScan(json) {
+function showScan(data) {
     let network_list = document.querySelector('#network_list');
     let template = document.querySelector('#network_list_entry');
     let seen = [];
     let entries = document.createDocumentFragment();
     current_rssi = undefined;
     try {
-	for (let n=0; n<json.length; n++) {
-	    let network = json[n];
+	for (let n=0; n<data.length; n++) {
+	    let network = data[n];
 	    let ssid = network.ssid;
 	    if (!ssid || ssid.includes('\x00') || ssid.includes('\\x00')) {
 		continue;
@@ -228,7 +242,8 @@ function showScan(json) {
 	    seen.push(ssid);
 
 	    let li = template.content.firstElementChild.cloneNode(true);
-	    li.querySelector('#wifi_security').textContent = (network.security ? '🔒' : '');
+	    let open = (!network.security) || network.security === "open";
+	    li.querySelector('#wifi_security').textContent = (open ? '' : '🔒' );
 	    li.querySelector('#wifi_bars').classList.add('bars-'+rssiToBars(network.signal));
 	    li.querySelector('#wifi_ssid').textContent = ssid;
 	    li.addEventListener('click', click_network);
@@ -310,6 +325,7 @@ async function connect_wifi(event) {
     let feedbackdiv = document.querySelector('#feedback');
 
     document.body.classList.add('connecting');
+    showConnection();
     connect_attempts++;
     if (connect_attempts > 1) {
 	document.body.classList.add('contactus2');
@@ -330,7 +346,7 @@ async function connect_wifi(event) {
 	}
 
 	feedback.textContent = "Connecting to " + ssid + "...";
-	connection_error = undefined;
+	connection_error = false;
 
 	//await fetch(new Request('/connect',{method:'POST',body:formdata}))
 
@@ -353,11 +369,16 @@ async function connect_wifi(event) {
 	connection_timeout = undefined;
 	if (document.body.classList.contains('connecting')) {
 	    document.body.classList.remove('connecting');
-	    connection_error = `password might be incorrect`;
+	    let matched = ssid_changed();
+	    if (matched) {
+		connection_error = 'Password might be incorrect';
+	    } else {
+		connection_error = 'Network name or password might be incorrect';
+	    }
 	    showConnection(ssid, false, connection_error);
 	    current_ssid = ssid;
 	}
-    }, 10 * 1000);
+    }, 15 * 1000);
 }
 
 
@@ -367,12 +388,16 @@ function cancel_connecting() {
 	connection_timeout = undefined;
 	document.body.classList.remove('connecting');
     }
+    disconnect_wifi();
 }
 
 
 async function disconnect_wifi() {
     document.body.classList.add('disconnecting');
+    document.body.classList.remove('wifi-connected');
+    document.body.classList.remove('connecting');
     document.body.classList.remove('contactus');
+    showConnection();
     try {
 	//reset_scroll('#wifi_section');
 	let request = new Request('/disconnect',{ method:'POST' });
@@ -401,7 +426,7 @@ function toggle_password_visibility(event) {
 }
 
 
-function ssid_changed(event) {
+function ssid_changed() {
     console.log('ssid changed');
     let ssid_input = document.querySelector('#ssid');
     let trim_space = document.querySelector('#trim_spaces');
@@ -410,6 +435,7 @@ function ssid_changed(event) {
 	ssid_value = ssid_value.trim();
     }
     let li_entries = document.querySelectorAll('li');
+    let matched = false;
     for (let li_entry of li_entries) {
 	let wifi_ssid = li_entry.querySelector('#wifi_ssid');
 	if (!wifi_ssid) {
@@ -418,10 +444,12 @@ function ssid_changed(event) {
 	if (wifi_ssid.textContent === ssid_value) {
 	    console.log('matched!');
 	    li_entry.classList.add('matched');
+	    matched = true;
 	} else {
 	    li_entry.classList.remove('matched');
 	}
     }
+    return matched;
 }
 
 
@@ -475,6 +503,33 @@ function show_info_panel() {
 function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
     document.body.classList.remove('shownomatchpanel');
+    document.body.classList.remove('showdonepanel');
+    ssid_changed();
+}
+
+
+let hashParams = {};
+function parseHash() {
+    let hash = window.location.hash.substr(1);
+    hashParams = hash.split('&').reduce(function (result, item) {
+	let parts = item.split('=');
+	if (typeof parts[1] === 'undefined') {
+	    parts[1] = true;
+	}
+	result[parts[0]] = parts[1];
+	return result;
+    }, {});
+}
+
+
+function finished() {
+    try {
+	window.close();  // actually works on some tables when web page is launched from an icon on the home page
+    } catch(err) {
+	console.log('error from window.close()', err);
+    }
+    console.log('finished?');
+    document.body.classList.add('showdonepanel');
 }
 
 
@@ -494,9 +549,37 @@ async function init() {
     //reset_scroll('#sectionholder');
 
     let md = new MobileDetect(window.navigator.userAgent);
-    fetch(new Request('/debug',{method:'POST',body:JSON.stringify(md)}));
+    console.log('md', md);
+    //window.md = md;
+    let debugstr = JSON.stringify(md);
+    for (let f of ['mobile', 'phone', 'tablet', 'userAgent', 'os']) {
+	let v = '';
+	try {
+	    v = JSON.stringify(md[f]());
+	} catch {
+	    console.error('error stringifying or calling md.' + f);
+	}
+	console.log(f, v);
+	debugstr += `\n${f}:${v}`;
+    }
+    debugstr += `\n${md.version('Android')}`;
+    debugstr += `\nscreen.width x height: ${window.screen.width} x ${window.screen.height}`;
+    fetch(new Request('/debug',{method:'POST',body:debugstr}));
 
-    loadContactMessages();
+    parseHash();
+    
+    let project = 'generic';
+    if (hashParams.project) {
+	project = hashParams.project;
+    } else {
+	if (md.tablet()) {
+	    if (window.screen.width === 1138 && window.screen.width === 712) {
+		project = 'literacy';
+	    }
+	}
+    }
+
+    loadContactMessages(project);
 
     let wifi_form = document.querySelector('#connect_wifi_form');
     wifi_form.addEventListener('submit', connect_wifi);
@@ -525,3 +608,4 @@ window.client.cancel_connecting = cancel_connecting;
 window.client.disconnect_wifi = disconnect_wifi;
 window.client.click_network = click_network;
 window.client.toggle_password_visibility = toggle_password_visibility;
+window.client.finished = finished;

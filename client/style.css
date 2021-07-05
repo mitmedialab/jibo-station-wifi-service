@@ -43,11 +43,6 @@ body {
 #infopanel {
     display: none;
 }
-
-#nomatchpanel {
-    display: none;
-}
-
 .showinfopanel #infopanel {
     position: absolute;
     display: block;
@@ -58,6 +53,21 @@ body {
     height: 100vh;
     background-color: #33546D;
 }
+
+#donepanel {
+    display: none;
+}
+.showdonepanel #donepanel {
+    position: absolute;
+    display: block;
+    top: 0vh;
+    right: 0vw;
+    width: 100vw;
+    min-width: 100vw;
+    height: 100vh;
+    background-color: #33546D;
+}
+
 
 #checking,
 #contactus2
@@ -88,7 +98,7 @@ body {
 
 #dismiss {
     position: absolute;
-    padding: 21px 12px 9px 12px;
+    padding: 14px 12px 8px 12px;
     top: 50px;
     right: 100px;
     border: solid 5px;
@@ -96,7 +106,7 @@ body {
 
 
 #notconnected {
-    display: block;
+    display: flex;
 }
 .wifi-connected #notconnected {
     display: none;
@@ -226,6 +236,22 @@ body {
 
 .contactus #contactus {
     display: block;
+}
+
+#setupagain {
+    display: none !important;
+}
+
+.contactus #setupagain {
+    display: inline-block !important;
+}
+
+#done {
+    display: none !important;
+}
+
+.server-connected #done {
+    display: inline-block !important;
 }
 
 li.matched {

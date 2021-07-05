@@ -29,6 +29,12 @@
 	<div id="line2">&nbsp;</div>
       </div>
     </template>
+    <template id="wifi_connection_blank">
+      <div>
+	<div id="line1">&nbsp;</div>
+	<div id="line2">&nbsp;</div>
+      </div>
+    </template>
     <template id="wifi_connection_good">
       <div>
 	<div id="line1" style="position:relative">
@@ -41,13 +47,13 @@
     <template id="wifi_connection_error">
       <div>
 	<div id="line1" style="color:red">Could not connect to <span id="wifi_ssid">unknown</span></div>
-	<div id="line2" style="color:red">Password might be incorrect</div>
+	<div id="line2" style="color:red"></div>
       </div>
     </template>
   </center>
 
   <!-- <div id="notconnected" style="display:inline-grid;place-items:start"> -->
-  <div id="notconnected" style="display:flex;flex-wrap:wrap;justify-content:center">
+  <div id="notconnected" style="flex-wrap:wrap;justify-content:center">
     <div style="position:relative;top:-12px;flex:0 1 500px">
 	<div style="text-align:left;margin-bottom:12px">
 	  <font color="lightgray">Visible networks &nbsp;<font color="gray">tap to select</font></font>
@@ -60,7 +66,7 @@
 	    <template id="network_list_entry">
 	      <li class="network_list_entry" style="background-color:#2B4C56">
 		<div style="position:relative;pointer-events:none">
-		  <span id="wifi_security" style="position:relative;top:-2px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
+		  <span id="wifi_security" style="position:relative;display:inline-block;top:-2px;width:18px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
 		  <div style="display:inline-block;position:relative;height:20px;width:24px;top:1px;pointer-events:none"><div id="wifi_bars" style="pointer-events:none"></div></div>
 		  <span id="wifi_ssid" style="pointer-events:none"></span>
 		</div>
@@ -84,7 +90,7 @@
 	      </div>
 	    </td>
 	    <td style="width:25px"></td>
-	    <td rowspan="4" style="padding-top:100px">
+	    <td rowspan="4" style="padding-top:112px">
 	      <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
 		<button id="connect" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
 		Connect WiFi
@@ -123,7 +129,7 @@
 	    </center>
 	  </div>
 	</div>
-	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:40px">
 	  <div id="stage-1-pending">
 	    <font size="72px">➖ </font>
 	    <br>
@@ -187,30 +193,28 @@
 	<br>
 	<div id="contactus">
 	</div>
-	<template id="contanctus_generic">
+	<template id="contactus_generic">
 	  <center>
 	    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
-		<br>
 		Please contact us</font></h1>
+		<br>
 	  </center>
 	</template>
 	<template id="contactus_wellness">
 	  <center>
 	    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
-		<br>
 		Please contact us at<br>
-		jibo-wellness@media.mit.edu<br>
-		or<br>
-		617-921-6515</font></h1>
+		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
+		<br>
 	  </center>
 	</template>
-	<template id="contanctus2_generic">
+	<template id="contactus2_generic">
 	  <center>
 	    <h1><font color="#AAAAAA"><br>If you are having trouble connecting<br>
 		please contact us</font></h1>
 	  </center>
 	</template>
-	<template id="contanctus2_generic">
+	<template id="contactus2_wellness">
 	  <center>
 	    <h1><font color="#AAAAAA"><br>If you are having trouble connecting<br>
 		please contact us at<br>
@@ -220,13 +224,17 @@
 	  </center>
 	</template>
       </div>
-      </div>
 
-      <br>
-      <button onclick="window.client.disconnect_wifi()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
-	Disconnect WiFi
+      <button onclick="window.client.disconnect_wifi()" style="position:absolute;right:62px;top:130px;color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 4px solid; border-bottom: 4px solid; border-right: 16px solid; border-left: 16px solid; background-color: darkred; border-color: darkred; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	Disconnect<br>WiFi
       </button>
-      <button onclick="window.close()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+      <button id="setupagain" onclick="window.client.disconnect_wifi()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
+	Try Setup Again
+      </button>
+      <br>
+      <br>
+      <br>
+      <button id="done" onclick="window.client.finished()" style="color: white; font-weight: normal; text-decoration: none; word-break: break-word; font-size: 20px; line-height: 26px; border-top: 14px solid; border-bottom: 14px solid; border-right: 32px solid; border-left: 32px solid; background-color: #2ab27b; border-color: #2ab27b; display: inline-block; letter-spacing: 1px; min-width: 80px; text-align: center; border-radius: 4px; text-shadow: 0 1px 1px rgba(0,0,0,0.25);">
 	Done
       </button>
     </center>
@@ -268,7 +276,8 @@
 
   <div id="infopanel">
     <div id="dismiss">
-      <span style="font-size:48px">✖</span>
+      <!-- <span style="font-size:48px">✖</span> -->
+      <img src="cross.png" height="35" width="35">
     </div>
 
     <br>
@@ -303,6 +312,24 @@
   </div>
 
 
+  <div id="donepanel">
+    <div id="dismiss">
+      <!-- <span style="font-size:48px">✖</span> -->
+      <img src="cross.png" height="35" width="35">
+    </div>
+    <center>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <h1>You are all setup!</h1><br>
+      <br>
+      <h1><font color="lightgray">Press the Global Home button<br> in the upper left corner<br>to continue</font></h1>
+    </center>
+  </div>
+
+  
   <div id="noserverpanel">
     <br>
     <br>
@@ -316,12 +343,8 @@
     <h1>Looking for Jibo Station...</h1>
     <br>
     <br>
-    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
-	<br>
-	Please contact us at<br>
-	jibo-wellness@media.mit.edu<br>
-	or<br>
-	617-921-6515</font></h1>
+    <div id="contactus0">
+    </div>
   </div>
 
 

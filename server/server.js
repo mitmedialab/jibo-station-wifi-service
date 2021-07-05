@@ -29,8 +29,10 @@ async function init() {
 	next();
     });
 
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+    //app.use(bodyParser.json({ type: 'application/*+json' }))
+    app.use(bodyParser.json({ type: 'application/json' }))
+    app.use(bodyParser.urlencoded({ type: 'application/x-www-form-urlencoded', extended: true }));
+    app.use(bodyParser.text({ type: 'text/plain' }))
     app.use(serveStatic(STATIC_DIR));
 
     let wifi = new WiFi();

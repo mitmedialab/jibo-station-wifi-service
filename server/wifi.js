@@ -58,7 +58,12 @@ class WiFi {
         router.get('/status', async (req, res) => {
             let json = '{}';
             try {
-                let data = await this.getStatus()
+		let reset_phase = false;
+		if (req.query.first) {
+		    console.log('resetting phase');
+		    reset_phase = true;
+		}
+                let data = await this.getStatus(reset_phase);
                 json = JSON.stringify(data);
             } catch(err) {
                 log.error(err);
@@ -108,8 +113,8 @@ class WiFi {
         router.post('/disconnect', async (req, res) => {
             let json = '{}';
             try {
-                log.log('disconnect', req.body);
-                let data = await this.disconnectWiFi(req.body.ssid, req.body.password);
+                log.log('disconnect');
+                let data = await this.disconnectWiFi();
                 json = JSON.stringify(data);
                 log.log('result', data);
             } catch(err) {
@@ -121,7 +126,7 @@ class WiFi {
     }
 
 
-    async getStatus() {
+    async getStatus(reset_phase) {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
 	data.hostname = os.hostname();
@@ -130,18 +135,29 @@ class WiFi {
 		this.last_state = state;
 		this.phase = 0;
 	    }
+	    if (reset_phase) {
+		this.phase = 0;
+	    }
 
 	    if (this.phase < 1) {
 		this.phase++;
 	    } else {
 		data.ip_address = await this.determineIPAddress();
 		data.rover_ip_address = await this.determineRoverIPAddress();
+		if (this.phase === 1) {
+		    await timeoutP(1000);
+		}
 		data.jibo_connected = await this.isJiboConnected();
 		if (data.jibo_connected) {
 		    if (this.phase < 2) {
 			this.phase++;
 		    } else {
-			data.internet_connected = await this.isInternetConnected();
+			let giveittime = false;
+			if (this.phase ===2) {
+			    await timeoutP(1000);
+			    giveittime = true;
+			}
+			data.internet_connected = await this.isInternetConnected(giveittime);
 			if (this.phase < 3) {
 			    this.phase++;
 			} else {
@@ -185,14 +201,27 @@ class WiFi {
 
 
     async isJiboConnected() {
-	await timeoutP(1000);
 	return true;  // FIXME
     }
 
 
-    async isInternetConnected() {
-	await timeoutP(1000);
-	return await isOnline({timeout:2000});
+    async isInternetConnected(giveittime) {
+	let interval = 4 + 1000;
+	if (giveittime) {
+	    interval = 12 * 1000;
+	}
+	let done = false;
+	let timeout = setTimeout( () => { done = true; }, interval );
+	while (!done) {
+	    if (await isOnline({timeout:2000})) {
+		done = true;
+		clearTimeout(timeout);
+		return true
+	    }
+	    await timeoutP(500);
+	}
+	clearTimeout(timeout);
+	return false;
     }
 
 
@@ -201,7 +230,7 @@ class WiFi {
 	{
 	    host: SERVER_TEST_ADDRESS,
 	    port: SERVER_TEST_PORT,
-	    timeout: 3000 // optional, default is 1000ms
+	    timeout: 5000 // optional, default is 1000ms
 	};
 	try {
 	    await isTcpOn(options);
@@ -217,17 +246,39 @@ class WiFi {
 	    let result = await nmcli.connect(ssid, password);
 	    log.log('result', result);
 	} else {
-	    this.wireless.connect(ssid, password);  // TODO this isn't right
+	    await this.disableAll();
+	    await this.wireless.connect(ssid, password);
+	    await this.wireless.saveConfiguration();
 	}
     }
 
 
-    async disconnectWiFi(ssid, password) {
+    async disconnectWiFi() {
 	if (USE_NM) {
 	    let result = await nmcli.disconnect();
 	    log.log('result', result);
 	} else {
-	    this.wireless.disconnect();  // TODO this isn't right
+	    await this.disableAll();
+	    await this.wireless.disconnect();
+	    await this.wireless.saveConfiguration();
+	}
+    }
+
+
+    async disableAll() {
+	if (USE_NM) {
+	    // FIXME only if we ever go back to using NM again
+	} else {
+	    let networks = await this.wireless.listNetworks();
+	    for (let network of networks) {
+		if (!network.ssid) {
+		    console.log(`removing network without ssid ${network.id}`);
+		    await this.wireless.removeNetwork(network.id);
+		} else {
+		    console.log(`disabling network ${network.id}`);
+		    await this.wireless.disableNetwork(network.id);
+		}
+	    }
 	}
     }
 }
