@@ -1,9 +1,12 @@
 #!/bin/bash
-SERVICE="jibo-station-wifi-service"
+
+SERVICE="jibo-station-wifi-service/start.sh"
 result=`ps aux | grep -i $SERVICE | grep -v "grep" | wc -l`
+echo $result
+
 if [ $result -ge 1 ]
 then
-        echo "$SERVICE is running"
+    echo "$SERVICE is running"
 else
     echo "$SERVICE is not running. Reattempting..."
     interface=`ip address | egrep "^[0-9]+: " | cut -d: -f2 | egrep "wlx............"`
