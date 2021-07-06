@@ -9,7 +9,7 @@
       "last 1 Chrome version"
    ],
    "scripts": {
-      "build": "parcel build --out-dir=static client/index.html"
+      "build": "rm -f static/*.????????.*; parcel build --no-cache --detailed-report --out-dir=static client/index.html"
    },
    "dependencies": {
       "body-parser": "^1.19.0",

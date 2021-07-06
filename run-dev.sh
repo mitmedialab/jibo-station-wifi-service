@@ -24,4 +24,4 @@ if [ -z ${interface} ]; then
 fi
 
 echo "starting jibo-station-wifi-service on interface $interface"
-node_modules/.bin/nodemon --watch server /usr/local/jibo-station-wifi-service/server/index.js $interface
+node_modules/.bin/nodemon --spawn --watch server /usr/local/jibo-station-wifi-service/server/index.js $interface
