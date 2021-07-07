@@ -291,7 +291,7 @@
     <br>
 
     <center>
-    <table style="width:500px;font-size:24px">
+    <table style="width:750px;font-size:24px">
       <tr>
 	<td style="width:225px;text-align:right">Hostname</td><td style="width:50px">&nbsp;</td><td style="width:225px"><div id="local_hostname">➖</div></td>
       </tr>
@@ -307,7 +307,18 @@
       <tr>
 	<td style="text-align:right">Trim spaces</td><td>&nbsp;</td><td><input id="trim_spaces" type="checkbox" checked style="width:30px;height:30px"></input></td>
       </tr>
+      <tr><td>&nbsp;</td>
+      <tr>
+	<td style="text-align:right">DHCP Leases</td><td>&nbsp;</td><td><div id="dhcp_leases">➖</div></td>
+      </tr>
     </table>
+    <template id="dhcp_leases_template">
+      <table class="dhcp_leases">
+	<tr>
+	  <td id="lease_time"></td><td id="mac_address"></td><td id="ip_address"></td><td id="dhcp_name"></td>
+	</tr>
+      </table>
+    </template>
     </center>
   </div>
 

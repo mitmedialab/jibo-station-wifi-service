@@ -98,10 +98,11 @@ body {
 
 #dismiss {
     position: absolute;
+    color: gray;
     padding: 14px 12px 8px 12px;
     top: 50px;
     right: 100px;
-    border: solid 5px;
+    border: solid 5px gray;
 }
 
 
@@ -229,6 +230,15 @@ body {
 .server-not-connected #stage-3-bad {
     display: block;
 }
+.jibo-not-connected #stage-3-pending {
+    display: none;
+}
+.jibo-not-connected #stage-3-good {
+    display: none;
+}
+.jibo-not-connected #stage-3-bad {
+    display: block;
+}
 
 #contactus {
     display: none;
@@ -250,7 +260,7 @@ body {
     display: none !important;
 }
 
-.server-connected #done {
+.server-connected.jibo-connected #done {
     display: inline-block !important;
 }
 
@@ -415,6 +425,21 @@ table {
 td {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
+
+#dhcp_leases table {
+  border-collapse: collapse;
+}
+#dhcp_leases tr.matched {
+    background-color: gray !important;
+}
+#dhcp_leases td {
+    font-size: 14px;
+    padding-left: 8px;
+    line-height: 17px;
+}
+
+
+
 
 /* Mobile */
 @media only screen and (max-device-width: 480px) {

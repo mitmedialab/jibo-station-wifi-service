@@ -19,6 +19,7 @@ let current_ssid;
 let current_rssi;
 let connection_error;
 let connection_timeout;
+let attempt_browser_close;
 
 
 // setTimeout but then wait for the first full frame after that
@@ -116,7 +117,6 @@ function showStatus(status) {
 	if (status.jibo_connected) {
 	    document.body.classList.add('jibo-connected');
 	} else {
-	    document.body.classList.remove('checking');
 	    document.body.classList.add('contactus');
 	    document.body.classList.add('jibo-not-connected');
 	}
@@ -141,9 +141,8 @@ function showStatus(status) {
 	document.body.classList.remove('checking');
 	if (status.server_connected) {
 	    document.body.classList.add('server-connected');
-	    document.body.classList.remove('contactus');
-	    document.body.classList.remove('contactus2');
 	} else {
+	    document.body.classList.add('contactus');
 	    document.body.classList.add('server-not-connected');
 	}
     }
@@ -497,6 +496,36 @@ function show_info_panel() {
     } else {
 	rover_ip_address.textContent = '➖';
     }
+    let dhcp_leases = document.querySelector('#dhcp_leases');
+    if (last_status && last_status.dhcp_leases) {
+	//dhcp_leases.textContent = last_status.dhcp_leases;
+	let template = document.querySelector('#dhcp_leases_template');
+	let dhcp_leases_table = template.content.cloneNode(true);
+	let entries = document.createDocumentFragment();
+	try {
+	    for (let lease of last_status.dhcp_leases) {
+		// 1625731234 52:01:13:1f:df:8e 10.99.0.13 JiboStation24 01:52:01:13:1f:df:8e
+		let [lease_time, mac_address, ip_address, dhcp_name, dunnowhatthisis] = lease;
+		if (!ip_address) continue;
+		let tr = template.content.querySelector('tr').cloneNode(true);
+		tr.querySelector('#lease_time').textContent = lease_time;
+		tr.querySelector('#mac_address').textContent = mac_address;
+		tr.querySelector('#ip_address').textContent = ip_address;
+		if (ip_address === last_status.jibo_ip_address) {
+		    console.info('matched!', ip_address);
+		    tr.classList.add('matched');
+		}
+		tr.querySelector('#dhcp_name').textContent = dhcp_name;
+		entries.appendChild(tr);
+	    }
+	} catch(err) {
+	    console.error(err);
+	}
+	dhcp_leases_table.firstElementChild.replaceChildren(entries);
+	dhcp_leases.replaceChildren(dhcp_leases_table);
+    } else {
+	dhcp_leases.textContent = '➖';
+    }
 }
 
 
@@ -523,12 +552,13 @@ function parseHash() {
 
 
 function finished() {
-    try {
-	window.close();  // actually works on some tables when web page is launched from an icon on the home page
-    } catch(err) {
-	console.log('error from window.close()', err);
+    if (attempt_browser_close) {
+	try {
+	    window.close();  // actually works on some tables when web page is launched from an icon on the home page
+	} catch(err) {
+	    console.log('error from window.close()', err);
+	}
     }
-    console.log('finished?');
     document.body.classList.add('showdonepanel');
 }
 
@@ -573,9 +603,19 @@ async function init() {
 	project = hashParams.project;
     } else {
 	if (md.tablet()) {
-	    if (window.screen.width === 1138 && window.screen.width === 712) {
+	    if (window.screen.width === 1280 && window.screen.height === 800) {
+		project = 'wellness';
+	    } else if (window.screen.width === 1138 && window.screen.height === 712) {
 		project = 'literacy';
 	    }
+	}
+	let android_version = md.version('Android');
+	if (android_version) {
+	    android_version = Number(android_version);
+	}
+	if (android_version && android_version >= 9) {
+	    attempt_browser_close = true;
+	    fetch(new Request('/debug',{method:'POST',body:'going to attempt browser close on done'}));
 	}
     }
 
