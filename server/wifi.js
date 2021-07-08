@@ -19,6 +19,7 @@ const SERVER_TEST_ADDRESS = 'prg-webhost.media.mit.edu';
 const SERVER_TEST_PORT = 80;
 const DHCP_LEASES_FILE = '/var/lib/misc/dnsmasq.leases';
 const SSH_TCP_PORT = 22;
+const STATIC_DIR = __dirname + '/../static';
 
 const timeoutP = function(ms) {
     return new Promise( (resolve) => setTimeout(resolve, ms) );
@@ -54,6 +55,13 @@ class WiFi {
             let json = JSON.stringify({ ping: true });
             res.setHeader('Content-Type', 'application/json');
             res.end(json);
+        });
+
+	router.get('/b', async (req, res) => {
+	    console.log('making bookmark');
+            let text = await this.getBookmarkDataURL();
+            res.setHeader('Content-Type', 'text/plain');
+            res.end(text);
         });
 
 	router.post('/debug', async (req, res) => {
@@ -129,6 +137,14 @@ class WiFi {
             res.setHeader('Content-Type', 'application/json');
             res.end(json);
         });
+    }
+
+    async getBookmarkDataURL() {
+	let html = await fsP.readFile(STATIC_DIR + '/ping.html', 'utf8');
+	let buffer = Buffer.from(html, 'utf8');
+	let base64 = buffer.toString('base64');
+	//console.log('base64', base64);
+	return `data:text/html;base64,${base64}`;
     }
 
 

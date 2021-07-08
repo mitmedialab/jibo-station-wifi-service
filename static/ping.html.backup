@@ -1,0 +1,34 @@
+<!doctype html>
+<head>
+  <title>JiboStationSetup</title>
+</head>
+<body>
+  <style>
+  body{color:gray;background-color:#1B3C45}
+  div{
+  font-size:36px;
+  font-family:sans-serif;
+  padding-top:200px;
+  text-align:center
+  }
+  #problem {display:none}
+  .problem #problem {display:block;color:red}
+  .problem #connecting {display:none}
+</style>
+<div id="connecting">Connecting...</div>
+<div id="problem">There seems to be a problem with your Jibo Station<br><br>Please contact us</div>
+<script>
+  setTimeout(()=>document.body.classList.add('problem'), 5000);
+  function ping() {
+    fetch('http://10.99.0.1/ping')
+  .then( (r) => {
+  if (!r.ok) throw new Error('bad response');
+  document.location='http://10.99.0.1';
+  })
+  .catch( () => {
+  document.body.classList.add('problem')});
+  setTimeout(ping, 4900);
+  }
+  ping();
+</script>
+</body>
