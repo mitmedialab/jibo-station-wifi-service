@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="icon" href="favicon.ico" />
 </head>
-<body class="noserver wifi-connected checking">
+<body class="noserver">
 
 <div id="sectionholder">
 <section id="wifi_section">
@@ -201,14 +201,14 @@
 
 	<TEMPLATE id="contactus_generic">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
+	    <h1><font color="lightgray"><br>There might be an issue with your station<br>
 		Please contact us</font></h1>
 		<br>
 	  </center>
 	</TEMPLATE>
 	<TEMPLATE id="contactus_wellness">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>There might be an issue with your station<br>
+	    <h1><font color="lightgray"><br>There might be an issue with your station<br>
 		Please contact us at<br>
 		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
 		<br>
@@ -216,27 +216,27 @@
 	</TEMPLATE>
 	<TEMPLATE id="contactus2_generic">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>If you are having trouble connecting<br>
+	    <h1><font color="lightgray"><br>If you are having trouble connecting<br>
 		please contact us</font></h1>
 	  </center>
 	</TEMPLATE>
 	<TEMPLATE id="contactus2_wellness">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>If you are having trouble connecting<br>
+	    <h1><font color="lightgray"><br>If you are having trouble connecting<br>
 		please contact us at<br>
-		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
+		jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515</font></h1>
 	  </center>
 	</TEMPLATE>
 	<TEMPLATE id="contactus0_generic">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
+	    <h1><font color="lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
 		Please contact us</font></h1>
 		<br>
 	  </center>
 	</TEMPLATE>
 	<TEMPLATE id="contactus0_wellness">
 	  <center>
-	    <h1><font color="#AAAAAA"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
+	    <h1><font color="lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
 		Please contact us at<br>
 		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
 		<br>
@@ -266,7 +266,9 @@
 	<br>
 	<br>
 	<br>
-	<h2><span id="feedback"></span></h2>
+	<h1><span id="feedback"></span></h1>
+	<br>
+	<br>
 	<br>
 	<br>
 	<button class="normal" onclick="window.client.cancel_connecting()">
@@ -282,7 +284,7 @@
 	<br>
 	<br>
 	<br>
-	<h2>Disconnecting...</h2>
+	<h1>Disconnecting...</h1>
       </center>
     </div>
   </div>
@@ -312,6 +314,11 @@
 
     <center>
     <table style="width:700px;font-size:24px">
+      <tr>
+	<td style="width:200px;text-align:right">Uptime</td><td style="width:50px">&nbsp;</td><td style="width:400px"><div id="local_uptime">➖</div></td>
+      </tr>
+      <tr style="height:15px"><td></td></tr>
+
       <tr>
 	<td style="width:200px;text-align:right">Hostname</td><td style="width:50px">&nbsp;</td><td style="width:400px"><div id="local_hostname">➖</div></td>
       </tr>
@@ -413,8 +420,10 @@
     <h1>Rebooting Jibo Station...</h1>
     <br>
     <br>
-<!--    <div id="contactus0"> -->
+<!--
+    <div id="contactus0">
     </div>
+-->
   </div>
   
 

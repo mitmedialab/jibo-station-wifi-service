@@ -372,6 +372,10 @@ h1, h2, h3, h4 {
     margin-bottom: 12px;
     line-height: 26px;
 }
+h1 {
+    font-size: 30px;
+    line-height: 30px;
+}
 h1.pagenum {
    position: absolute;
    top: 50%;

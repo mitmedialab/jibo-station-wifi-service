@@ -11,6 +11,7 @@ const scan_request = new Request('/scan');
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
+const PING_TIMEOUT = 5 * 1000;  // 5 seconds
 const STATUS_INTERVAL = 2 * 1000;  // 2 seconds
 const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
 //const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
@@ -30,7 +31,13 @@ function setTimeoutAnimationFrame(callback, interval) {
 
 
 async function monitorServer() {
+    let timeout;
     try {
+	timeout = setTimeout( () => {
+	    console.error('ping timed out');
+	    document.body.classList.add('noserver');
+	    document.body.classList.remove('rebooting');
+	}, PING_TIMEOUT);
         let response = await fetch('/ping');
 	document.body.classList.remove('noserver');
     } catch(err) {
@@ -38,6 +45,7 @@ async function monitorServer() {
 	document.body.classList.add('noserver');
 	document.body.classList.remove('rebooting');
     }
+    clearTimeout(timeout);
     setTimeoutAnimationFrame(monitorServer, PING_INTERVAL);
 }
 
@@ -142,6 +150,10 @@ function showStatus(status) {
 	}
     }
 
+    if (document.body.classList.contains('jibo-connected') && document.body.classList.contains('server-connected')) {
+	document.body.classList.remove('contactus');
+    }
+
     showConnection(wifi_ssid || current_ssid, wifi_connected, connection_error);
     update_info_panel(status, wifi_ssid, current_rssi);
 }
@@ -168,7 +180,7 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	if (wifi_ssid) div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	div.querySelector('#line2').textContent = wifi_error;
     }
-    connectiondiv.replaceChildren(div);
+    replaceChildren(connectiondiv, div);
 }
 
 
@@ -177,6 +189,7 @@ function loadContactMessages(project) {
     if (project === 'wellness') {
 	wellness = true;
     }
+    console.log('wellness', wellness);
     
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
@@ -196,9 +209,9 @@ function loadContactMessages(project) {
     let center = template.content.firstElementChild.cloneNode(true);
     let center2 = template2.content.firstElementChild.cloneNode(true);
     let center0 = template0.content.firstElementChild.cloneNode(true);
-    contactusdiv.replaceChildren(center);
-    contactus2div.replaceChildren(center2);
-    contactus0div.replaceChildren(center0);
+    replaceChildren(contactusdiv, center);
+    replaceChildren(contactus2div, center2);
+    replaceChildren(contactus0div, center0);
 }
 
 
@@ -254,7 +267,7 @@ function showScan(data) {
     } catch(err) {
 	console.error(err);
     }
-    network_list.replaceChildren(entries);
+    replaceChildren(network_list, entries);
     ssid_changed();
 }
 
@@ -463,17 +476,18 @@ function click_network(event) {
 }
 
 
-function show_nomatch_panel() {
-    document.body.classList.add('shownomatchpanel');
-}
-
-
 function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     let local_hostname = document.querySelector('#local_hostname');
     if (last_status && last_status.hostname) {
 	local_hostname.textContent = last_status.hostname;
     } else {
 	local_hostname.textContent = '➖';
+    }
+    let local_uptime = document.querySelector('#local_uptime');
+    if (last_status && last_status.uptime) {
+	local_uptime.textContent = Math.floor(Number(last_status.uptime)/60) + ' mins';
+    } else {
+	local_uptime.textContent = '➖';
     }
     let local_ip_address = document.querySelector('#local_ip_address');
     if (last_status && last_status.ip_address) {
@@ -522,8 +536,10 @@ function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
 	} catch(err) {
 	    console.error(err);
 	}
-	dhcp_leases_table.firstElementChild.replaceChildren(entries);
-	dhcp_leases.replaceChildren(dhcp_leases_table);
+
+	let tbody = dhcp_leases_table.querySelector('tbody');
+	replaceChildren(tbody, entries);
+	replaceChildren(dhcp_leases, dhcp_leases_table);
     } else {
 	dhcp_leases.textContent = '➖';
     }
@@ -536,10 +552,18 @@ function show_info_panel() {
 
 function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
-    document.body.classList.remove('shownomatchpanel');
     document.body.classList.remove('showdonepanel');
     ssid_changed();
 }
+
+
+// Element.replaceChildren() is too new to use
+function replaceChildren(parent, newChildren) {
+    while (parent.firstChild) {
+	parent.firstChild.remove();
+    }
+    parent.append(newChildren);
+}    
 
 
 let hashParams = {};
@@ -559,6 +583,7 @@ function parseHash() {
 function reboot() {
     fetch(new Request('/reboot',{method:'POST'}));
     document.body.classList.add('rebooting');
+    document.body.classList.remove('showinfopanel');
 }
 
 

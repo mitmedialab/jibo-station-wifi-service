@@ -157,6 +157,7 @@ class WiFi {
     async getStatus(reset_phase) {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
+	data.uptime = os.uptime();
 	data.hostname = os.hostname();
 	if (state === 'COMPLETED') {
 	    if (this.last_state !== state) {
