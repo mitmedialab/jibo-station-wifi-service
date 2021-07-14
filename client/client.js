@@ -36,6 +36,7 @@ async function monitorServer() {
     } catch(err) {
         console.error(err);
 	document.body.classList.add('noserver');
+	document.body.classList.remove('rebooting');
     }
     setTimeoutAnimationFrame(monitorServer, PING_INTERVAL);
 }
@@ -57,7 +58,6 @@ async function monitorStatus() {
 
 
 let first = true;
-let last_status;  // for the popup info panel
 function showStatus(status) {
     let state = status.wpa_state;
     let wifi_connected = (state === 'COMPLETED');
@@ -70,13 +70,10 @@ function showStatus(status) {
 	connection_error = false;
     }
     
-    last_status = status;  // for the popup info panel
-
-    console.log('wifi_ssid', wifi_ssid, 'wifi_connected', wifi_connected);
-
     if (wifi_connected && document.body.classList.contains('connecting')) {
 	document.body.classList.remove('connecting');
 	document.body.classList.add('checking');
+	first = true;
 	// let ssid_input = document.querySelector('#ssid');
 	// let password_input = document.querySelector('#password');
 	// ssid_input.value = '';
@@ -108,7 +105,6 @@ function showStatus(status) {
 	document.body.classList.remove('wifi-connected');
 	document.body.classList.remove('contactus');
 	document.body.classList.remove('checking');
-	first = true;
     }
 
     document.body.classList.remove('jibo-connected');
@@ -124,7 +120,6 @@ function showStatus(status) {
 
     document.body.classList.remove('internet-connected');
     document.body.classList.remove('internet-not-connected');
-    console.log(status.internet_connected);
     if (('internet_connected' in status) && status.internet_connected !== undefined) {
 	if (status.internet_connected) {
 	    document.body.classList.add('internet-connected');
@@ -148,6 +143,7 @@ function showStatus(status) {
     }
 
     showConnection(wifi_ssid || current_ssid, wifi_connected, connection_error);
+    update_info_panel(status, wifi_ssid, current_rssi);
 }
 
 
@@ -164,7 +160,6 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	current_ssid = wifi_ssid;
 	template = document.querySelector('#wifi_connection_good');
 	div = template.content.firstElementChild.cloneNode(true);
-	console.log(wifi_ssid, div, div.querySelector('#wifi_ssid'));
 	if (wifi_ssid)    div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	if (current_rssi) div.querySelector('#wifi_bars').classList.add('bars-'+ rssiToBars(current_rssi, true), 'bars-bigger');
     } else if (wifi_error) {
@@ -188,16 +183,19 @@ function loadContactMessages(project) {
     let contactus0div = document.querySelector('#contactus0');
     let template;
     let template2;
+    let template0;
     if (wellness) {
 	template = document.querySelector('#contactus_wellness');
 	template2 = document.querySelector('#contactus2_wellness');
+	template0 = document.querySelector('#contactus0_wellness');
     } else {
 	template = document.querySelector('#contactus_generic');
 	template2 = document.querySelector('#contactus2_generic');
+	template0 = document.querySelector('#contactus0_generic');
     }
     let center = template.content.firstElementChild.cloneNode(true);
     let center2 = template2.content.firstElementChild.cloneNode(true);
-    let center0 = template.content.firstElementChild.cloneNode(true);
+    let center0 = template0.content.firstElementChild.cloneNode(true);
     contactusdiv.replaceChildren(center);
     contactus2div.replaceChildren(center2);
     contactus0div.replaceChildren(center0);
@@ -332,11 +330,6 @@ async function connect_wifi(event) {
 
     try {
 	//reset_scroll('#wifi_section');
-
-	console.log(formdata);
-	console.log(formdata.get('ssid'));
-	console.log(formdata.get('password'));
-
 	let trim_space = document.querySelector('#trim_spaces');
 	if (!trim_space || trim_space.checked) {
 	    console.log('trimming spaces');
@@ -426,7 +419,6 @@ function toggle_password_visibility(event) {
 
 
 function ssid_changed() {
-    console.log('ssid changed');
     let ssid_input = document.querySelector('#ssid');
     let trim_space = document.querySelector('#trim_spaces');
     let ssid_value = ssid_input.value;
@@ -476,8 +468,7 @@ function show_nomatch_panel() {
 }
 
 
-function show_info_panel() {
-    document.body.classList.add('showinfopanel');
+function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     let local_hostname = document.querySelector('#local_hostname');
     if (last_status && last_status.hostname) {
 	local_hostname.textContent = last_status.hostname;
@@ -496,10 +487,21 @@ function show_info_panel() {
     } else {
 	rover_ip_address.textContent = '➖';
     }
+    let info_wifi_ssid = document.querySelector('#info_wifi_ssid');
+    if (wifi_ssid) {
+	info_wifi_ssid.textContent = wifi_ssid;
+    } else {
+	info_wifi_ssid.textContent = '➖';
+    }
+    let info_wifi_rssi = document.querySelector('#info_wifi_rssi');
+    if (wifi_rssi) {
+	info_wifi_rssi.textContent = wifi_rssi;
+    } else {
+	info_wifi_rssi.textContent = '➖';
+    }
     let dhcp_leases = document.querySelector('#dhcp_leases');
     if (last_status && last_status.dhcp_leases) {
-	//dhcp_leases.textContent = last_status.dhcp_leases;
-	let template = document.querySelector('#dhcp_leases_template');
+	let template = document.querySelector('template[name="dhcp_leases"]');
 	let dhcp_leases_table = template.content.cloneNode(true);
 	let entries = document.createDocumentFragment();
 	try {
@@ -512,7 +514,6 @@ function show_info_panel() {
 		tr.querySelector('#mac_address').textContent = mac_address;
 		tr.querySelector('#ip_address').textContent = ip_address;
 		if (ip_address === last_status.jibo_ip_address) {
-		    console.info('matched!', ip_address);
 		    tr.classList.add('matched');
 		}
 		tr.querySelector('#dhcp_name').textContent = dhcp_name;
@@ -526,6 +527,10 @@ function show_info_panel() {
     } else {
 	dhcp_leases.textContent = '➖';
     }
+}
+
+function show_info_panel() {
+    document.body.classList.add('showinfopanel');
 }
 
 
@@ -548,6 +553,12 @@ function parseHash() {
 	result[parts[0]] = parts[1];
 	return result;
     }, {});
+}
+
+
+function reboot() {
+    fetch(new Request('/reboot',{method:'POST'}));
+    document.body.classList.add('rebooting');
 }
 
 
@@ -648,4 +659,5 @@ window.client.cancel_connecting = cancel_connecting;
 window.client.disconnect_wifi = disconnect_wifi;
 window.client.click_network = click_network;
 window.client.toggle_password_visibility = toggle_password_visibility;
+window.client.reboot = reboot;
 window.client.finished = finished;

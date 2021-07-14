@@ -69,6 +69,12 @@ class WiFi {
 	    res.end();
 	});
 
+	router.post('/reboot', async (req, res) => {
+            log.log('rebooting!');
+	    child_process.exec('reboot');
+	    res.end();
+	});
+
         router.get('/status', async (req, res) => {
             let json = '{}';
             try {
