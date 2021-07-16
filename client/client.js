@@ -11,7 +11,7 @@ const scan_request = new Request('/scan');
 const PING_INTERVAL = 1 * 1000;  // 1 second
 const PING_TIMEOUT = 5 * 1000;  // 5 seconds
 const STATUS_INTERVAL = 2 * 1000;  // 2 seconds
-const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
+const SCAN_INTERVAL = 10 * 1000;  // 10 seconds
 // how long to wait before deciding the wifi connection attempt failed
 const CONNECTION_TIMEOUT = 20 * 1000;  // 20 seconds
 // how long to wait for all the status checks to pass
