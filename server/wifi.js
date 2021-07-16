@@ -15,11 +15,13 @@ if (!INTERFACE) {
 const ROVER_INTERFACE = 'tun0';
 //const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
 const USE_NM = false;  // dear god, i hope we are rid of NetworkManager -jon
+const HAS_ROS = (os.arch() === 'x64');
 const SERVER_TEST_ADDRESS = 'prg-webhost.media.mit.edu';
 const SERVER_TEST_PORT = 80;
 const DHCP_LEASES_FILE = '/var/lib/misc/dnsmasq.leases';
 const SSH_TCP_PORT = 22;
 const STATIC_DIR = __dirname + '/../static';
+const SCAN_COOLING_OFF_PERIOD = 1 * 1000;  // scan fails sometimes, maybe this will help (nope on pi! nuc?)
 
 const timeoutP = function(ms) {
     return new Promise( (resolve) => setTimeout(resolve, ms) );
@@ -78,12 +80,7 @@ class WiFi {
         router.get('/status', async (req, res) => {
             let json = '{}';
             try {
-		let reset_phase = false;
-		if (req.query.first) {
-		    console.log('resetting phase');
-		    reset_phase = true;
-		}
-                let data = await this.getStatus(reset_phase);
+                let data = await this.getStatus();
                 json = JSON.stringify(data);
             } catch(err) {
                 log.error(err);
@@ -95,7 +92,7 @@ class WiFi {
         router.get('/scan', async (req, res) => {
             let json = '{}';
             try {
-                let data = await this.wireless.scan()
+		let data = await this.getScan();
                 json = JSON.stringify(data);
             } catch(err) {
                 log.error(err);
@@ -154,56 +151,96 @@ class WiFi {
     }
 
 
-    async getStatus(reset_phase) {
+    getScan() {
+	return new Promise((resolve, reject) => {
+	    if (this.scan_pending && this.scan_pending.length) {
+		this.scan_pending.push({resolve,reject});
+		//console.log('queueing scan request', this.scan_pending.length);
+	    } else {
+		this.scan_pending = [{resolve,reject}];
+		console.log('scan cooling off period');
+		setTimeout( () => {
+		    console.log('initiating scan');
+		    this.wireless.scan()
+			.then(scan => {
+			    console.log('scan finished');
+			    let actions;
+			    while (actions = this.scan_pending.shift()) {
+				//console.log('resolving scan request');
+				actions.resolve(scan);
+			    }
+			})
+			.catch((error) => {
+			    console.error('scan threw an error', error);
+			    let actions;
+			    while (actions = this.scan_pending.shift()) {
+				//console.log('rejecting scan request');
+				actions.reject(error);
+			    }
+			});
+		}, SCAN_COOLING_OFF_PERIOD);
+	    }
+	});
+    }
+
+
+    getStatus() {
+	return new Promise((resolve, reject) => {
+	    if (this.status_pending && this.status_pending.length) {
+		this.status_pending.push({resolve,reject});
+		//console.log('queueing status request', this.status_pending.length);
+	    } else {
+		//console.log('resolve2', resolve);
+		this.status_pending = [{resolve,reject}];
+		console.log('initiating status checks');
+		this.doStatusChecks()
+		    .then(status => {
+			console.log('status checks finished');
+			let promise;
+			while (promise = this.status_pending.shift()) {
+			    //console.log('resolving status request');
+			    promise.resolve(status);
+			}
+		    })
+		    .catch((error) => {
+			console.error('status checks threw an error', error);
+			let promise;
+			while (promise = this.status_pending.shift()) {
+			    //console.log('rejecting status request');
+			    promise.reject(error);
+			}
+		    });
+	    }
+	});
+    }
+
+
+    async doStatusChecks() {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
+	if (HAS_ROS) {
+	} else {
+	    data.no_ros = true;
+	}
 	data.uptime = os.uptime();
 	data.hostname = os.hostname();
 	if (state === 'COMPLETED') {
-	    if (this.last_state !== state) {
-		this.last_state = state;
-		this.phase = 0;
-	    }
-	    if (reset_phase) {
-		this.phase = 0;
-	    }
-
-	    if (this.phase < 1) {
-		this.phase++;
+	    data.ip_address = await this.determineIPAddress();
+	    data.rover_ip_address = await this.determineRoverIPAddress();
+	    data.dhcp_leases = await this.readDHCPLeases();
+	    let jibo_ip = await this.isJiboConnected(data.dhcp_leases);
+	    if (jibo_ip) {
+		data.jibo_connected = true;
+		data.jibo_ip_address = jibo_ip;
 	    } else {
-		data.ip_address = await this.determineIPAddress();
-		data.rover_ip_address = await this.determineRoverIPAddress();
-		if (this.phase === 1) {
-		    await timeoutP(1000);
-		}
-		data.dhcp_leases = await this.readDHCPLeases();
-		let jibo_ip = await this.isJiboConnected(data.dhcp_leases);
-		if (jibo_ip) {
-		    data.jibo_connected = true;
-		    data.jibo_ip_address = jibo_ip;
-		} else {
-		    data.jibo_connected = false;
-		}
-		//if (data.jibo_connected) {
-		    if (this.phase < 2) {
-			this.phase++;
-		    } else {
-			let giveittime = false;
-			if (this.phase ===2) {
-			    await timeoutP(1000);
-			    giveittime = true;
-			}
-			data.internet_connected = await this.isInternetConnected(giveittime);
-			if (this.phase < 3) {
-			    this.phase++;
-			} else {
-			    if (data.internet_connected) {
-				data.server_connected = await this.isServerConnected();
-			    }
-			}
-		    }
-		//}
+		data.jibo_connected = false;
 	    }
+	    //if (data.jibo_connected) {
+	    data.internet_connected = await this.isInternetConnected();
+	    if (data.internet_connected) {
+		data.server_connected = await this.isServerConnected();
+	    }
+	    //}
 	}
 
 	return data;
@@ -270,10 +307,8 @@ class WiFi {
 		    };
 		try {
 		    await isTcpOn(options);
-		    console.log(ip, 'yes');
 		    return ip;
 		} catch {
-		    console.log(ip, 'no');
 		    // not that one
 		}
 	    }

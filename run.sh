@@ -19,7 +19,7 @@ if [ -z ${interface} ]; then
 	interface="wlan1"
     else
 	# Raspberry Pi
-	interface="wlan0"
+	interface="wlan1"
     fi
 fi
 

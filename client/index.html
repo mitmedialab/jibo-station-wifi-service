@@ -134,20 +134,41 @@
 	    </center>
 	  </div>
 	</div>
-	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px">
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
 	  <div id="stage-1-pending">
 	    <font size="72px">➖ </font>
 	    <br>
 	    <br>
-	    <h2>Jibo</h2>
+	    <h2>Internet</h2>
 	  </div>
 	  <div id="stage-1-good">
 	    <font size="72px">✅ </font>
 	    <br>
 	    <br>
-	    <h2>Jibo connected</h2>
+	    <h2>Internet connected</h2>
 	  </div>
 	  <div id="stage-1-bad">
+	    <font size="72px">❓ </font>
+	    <br>
+	    <br>
+	    <h2>Internet not connected</h2>
+	  </div>
+	</div>
+
+	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px">
+	  <div id="stage-2-pending">
+	    <font size="72px">➖ </font>
+	    <br>
+	    <br>
+	    <h2>Jibo</h2>
+	  </div>
+	  <div id="stage-2-good">
+	    <font size="72px">✅ </font>
+	    <br>
+	    <br>
+	    <h2>Jibo connected</h2>
+	  </div>
+	  <div id="stage-2-bad" onclick="window.client.jibopower()">
 	    <font size="72px">❓ </font>
 	    <br>
 	    <br>
@@ -155,26 +176,6 @@
 	  </div>
 	</div>
 
-	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
-	  <div id="stage-2-pending">
-	    <font size="72px">➖ </font>
-	    <br>
-	    <br>
-	    <h2>Internet</h2>
-	  </div>
-	  <div id="stage-2-good">
-	    <font size="72px">✅ </font>
-	    <br>
-	    <br>
-	    <h2>Internet connected</h2>
-	  </div>
-	  <div id="stage-2-bad">
-	    <font size="72px">❓ </font>
-	    <br>
-	    <br>
-	    <h2>Internet not connected</h2>
-	  </div>
-	</div>
 	<div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
 	  <div id="stage-3-pending">
 	    <font size="72px">➖ </font>
@@ -298,7 +299,6 @@
 
   <div id="infopanel">
     <div id="dismiss">
-      <!-- <span style="font-size:48px">✖</span> -->
       <img src="cross.png" height="35" width="35">
     </div>
     <button onclick="window.client.reboot()" class="normal discourage" style="position:absolute;right:84px;top:160px">
@@ -366,10 +366,28 @@
     </center>
   </div>
 
+  <div id="turnjiboonpanel">
+    <div id="dismiss">
+      <img src="cross.png" height="35" width="35">
+    </div>
+    <center>
+      <br>
+      <br>
+      <br>
+      <br>
+      <h1>Please turn on the Jibo Robot</h1><br>
+      <br>
+      <img src="jibopower.png" width="128" height="128">
+      <h1><font color="lightgray"><span id="powerinstructions"><br>Please press the power button on the back of Jibo's head<br></span></font></h1>
+      <br>
+      <h1><font color="lightgray"><br>If you are having trouble<br>
+	  please contact us at<br>
+	  jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515</font></h1>
+    </center>
+  </div>
 
   <div id="donepanel">
     <div id="dismiss">
-      <!-- <span style="font-size:48px">✖</span> -->
       <img src="cross.png" height="35" width="35">
     </div>
     <center>

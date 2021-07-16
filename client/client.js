@@ -5,22 +5,28 @@ window.client = window.client || {};
 const MobileDetect = require('mobile-detect');
 
 const status_request = new Request('/status');
-const status_request_first = new Request('/status?first=true');
 const scan_request = new Request('/scan');
-//const signal_request = new Request('/signal');
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
 const PING_TIMEOUT = 5 * 1000;  // 5 seconds
 const STATUS_INTERVAL = 2 * 1000;  // 2 seconds
 const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
-//const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
+// how long to wait before deciding the wifi connection attempt failed
+const CONNECTION_TIMEOUT = 20 * 1000;  // 20 seconds
+// how long to wait for all the status checks to pass
+const CONTACTUS_TIMEOUT = 25 * 1000;  // 25 seconds
+const DISCONNECTING_PANEL_TIMEOUT = 5 * 1000;  // 5 seconds
 
+let hashParams = {};
 let current_ssid;
 let current_rssi;
-let connection_error;
+let connection_error_message;
 let connection_timeout;
 let attempt_browser_close;
+let status_phase;
+let status_cycles;
+let status_errors;
 
 
 // setTimeout but then wait for the first full frame after that
@@ -30,7 +36,7 @@ function setTimeoutAnimationFrame(callback, interval) {
 }
 
 
-async function monitorServer() {
+async function monitorServerLoop() {
     let timeout;
     try {
 	timeout = setTimeout( () => {
@@ -46,14 +52,13 @@ async function monitorServer() {
 	document.body.classList.remove('rebooting');
     }
     clearTimeout(timeout);
-    setTimeoutAnimationFrame(monitorServer, PING_INTERVAL);
+    setTimeoutAnimationFrame(monitorServerLoop, PING_INTERVAL);
 }
 
 
-async function monitorStatus() {
+async function monitorStatusLoop() {
     try {
-        let response = await fetch(first ? status_request_first : status_request);
-	first = false;
+        let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
 	    showStatus(data);
@@ -61,105 +66,146 @@ async function monitorStatus() {
     } catch(err) {
         console.error(err);
     }
-    setTimeoutAnimationFrame(monitorStatus, STATUS_INTERVAL);
+    setTimeoutAnimationFrame(monitorStatusLoop, STATUS_INTERVAL);
 }
 
 
-let first = true;
 function showStatus(status) {
     let state = status.wpa_state;
     let wifi_connected = (state === 'COMPLETED');
     let wifi_ssid;
     if (state && status.ssid) {
-	wifi_ssid = status.ssid;
-	wifi_ssid = wifi_ssid.replace(/\n$/, '');  // remove newline at end of string
-    }
-    if (wifi_connected) {
-	connection_error = false;
-    }
-    
-    if (wifi_connected && document.body.classList.contains('connecting')) {
-	document.body.classList.remove('connecting');
-	document.body.classList.add('checking');
-	first = true;
-	// let ssid_input = document.querySelector('#ssid');
-	// let password_input = document.querySelector('#password');
-	// ssid_input.value = '';
-	// password_input.value = '';
+	wifi_ssid = status.ssid.replace(/\n$/, '');  // remove newline at end of string
     }
 
-    if (wifi_connected) {
-	if (!(document.body.classList.contains('wifi-connected')) && !(document.body.classList.contains('disconnecting'))) {
-	    document.body.classList.add('wifi-connected');
-	    //document.body.classList.add('checking');
+    try {
+	showConnection(wifi_ssid || current_ssid, wifi_connected);
+    } catch { }
 
-	    if (connection_timeout) {
-		clearTimeout(connection_timeout);
-	    }
-	    connection_timeout = setTimeout( () => {
-		connection_timeout = undefined;
-		document.body.classList.remove('checking');
-		if (wifi_connected && !(document.body.classList.contains('server-connected'))) {
-		    document.body.classList.add('contactus');
-		    document.body.classList.add('contactus2');
-		} else {
-		    document.body.classList.remove('contactus');
-		    document.body.classList.remove('contactus2');
-		    connect_attempts = 0;
-		}
-	    }, 25 * 1000);
+    try {
+	update_info_panel(status, wifi_ssid, current_rssi);
+    } catch { }
+
+    if (wifi_connected) {
+	if (!status_phase) {
+	    status_phase = 2;
+	    status_cycles = 0;
 	}
     } else {
-	document.body.classList.remove('wifi-connected');
-	document.body.classList.remove('contactus');
-	document.body.classList.remove('checking');
-    }
-
-    document.body.classList.remove('jibo-connected');
-    document.body.classList.remove('jibo-not-connected');
-    if (('jibo_connected' in status) && status.jibo_connected !== undefined) {
-	if (status.jibo_connected) {
-	    document.body.classList.add('jibo-connected');
-	} else {
-	    document.body.classList.add('contactus');
-	    document.body.classList.add('jibo-not-connected');
+	if (status_phase) {
+	    status_phase = 0;
+	    status_cycles = 0;
 	}
     }
 
-    document.body.classList.remove('internet-connected');
-    document.body.classList.remove('internet-not-connected');
-    if (('internet_connected' in status) && status.internet_connected !== undefined) {
-	if (status.internet_connected) {
-	    document.body.classList.add('internet-connected');
-	} else {
-	    document.body.classList.remove('checking');
-	    document.body.classList.add('contactus');
-	    document.body.classList.add('internet-not-connected');
+    let last_status_phase = status_phase;
+    status_cycles++;
+    
+    let internet_connected = status.internet_connected && status.server_connected;
+    let jibo_connected = status.jibo_connected;
+    let ros_connected = status.no_ros || status.ros_connected;
+
+    switch (status_phase) {
+    case 2:
+	if ((internet_connected) || (status_cycles > 6)) {
+	    status_phase++;
 	}
-    }
-
-    document.body.classList.remove('server-connected');
-    document.body.classList.remove('server-not-connected');
-    if (('server_connected' in status) && status.server_connected !== undefined) {
-	document.body.classList.remove('checking');
-	if (status.server_connected) {
-	    document.body.classList.add('server-connected');
-	} else {
-	    document.body.classList.add('contactus');
-	    document.body.classList.add('server-not-connected');
+	break;
+	
+    case 3:
+	if (jibo_connected || status_cycles > 1) {
+	    status_phase++;
 	}
+	break;
+
+    case 4:
+	if (status.ros_connected || status_cycles > 1) {
+	    status_phase++;
+	}
+	break;
     }
 
-    if (document.body.classList.contains('jibo-connected') && document.body.classList.contains('server-connected')) {
-	document.body.classList.remove('contactus');
-    }
+    if (status_phase !== last_status_phase) {
+	status_cycles = 0;
+    }	
 
-    showConnection(wifi_ssid || current_ssid, wifi_connected, connection_error);
-    update_info_panel(status, wifi_ssid, current_rssi);
+    showStatusBoard(status, status_phase, wifi_connected, internet_connected, jibo_connected, ros_connected);
 }
 
 
-function showConnection(wifi_ssid, wifi_connected, wifi_error) {
+async function showStatusBoard(status, status_phase, wifi_connected, internet_connected, jibo_connected, ros_connected) {
+
+    document.body.classList.remove('internet-connected');
+    document.body.classList.remove('internet-not-connected');
+    document.body.classList.remove('jibo-connected');
+    document.body.classList.remove('jibo-not-connected');
+    document.body.classList.remove('systems-connected');
+    document.body.classList.remove('systems-not-connected');
+
+    if (jibo_connected || !wifi_connected) {
+	document.body.classList.remove('turnjiboonpanel');
+    }
+
+    if (wifi_connected) {
+	document.body.classList.remove('connecting');
+
+	if (!(document.body.classList.contains('disconnecting'))) {
+	    document.body.classList.add('wifi-connected');
+	}
+
+	if (status_phase < 5) {
+	    document.body.classList.add('checking');
+	    document.body.classList.remove('contactus');
+	    document.body.classList.remove('contactus2');
+	} else {
+	    document.body.classList.remove('checking');
+	}
+
+	if (status_phase > 2) {
+	    if (internet_connected) {
+		document.body.classList.add('internet-connected');
+	    } else {
+		document.body.classList.add('internet-not-connected');
+	    }
+	}
+
+	if (status_phase > 3) {
+	    if (jibo_connected) {
+		document.body.classList.add('jibo-connected');
+	    } else {
+		document.body.classList.add('jibo-not-connected');
+	    }
+	}
+
+	if (status_phase === 4 && status_cycles === 0) {
+	    if (!jibo_connected && internet_connected) {
+		document.body.classList.add('turnjiboonpanel');
+	    }
+	}
+
+	if (status_phase > 4) {
+	    let all_systems_go = internet_connected && jibo_connected && ros_connected;
+	    if (all_systems_go) {
+		connect_attempts = 0;
+		document.body.classList.add('systems-connected');
+		document.body.classList.remove('contactus');
+		document.body.classList.remove('contactus2');
+	    } else {
+		document.body.classList.add('systems-not-connected');
+		document.body.classList.add('contactus');
+		document.body.classList.add('contactus2');
+	    }
+	}
+    }
+}
+
+
+function jibopower() {
+    document.body.classList.add('turnjiboonpanel');
+}
+
+
+function showConnection(wifi_ssid, wifi_connected) {
     let connectiondiv = document.querySelector('#connection');
     let template = document.querySelector('#wifi_connection_none');
     let div = template.content.firstElementChild.cloneNode(true);
@@ -169,16 +215,17 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	template = document.querySelector('#wifi_connection_blank');
 	div = template.content.firstElementChild.cloneNode(true);
     } else if (wifi_connected) {
+	connection_error_message = false;
 	current_ssid = wifi_ssid;
 	template = document.querySelector('#wifi_connection_good');
 	div = template.content.firstElementChild.cloneNode(true);
 	if (wifi_ssid)    div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	if (current_rssi) div.querySelector('#wifi_bars').classList.add('bars-'+ rssiToBars(current_rssi, true), 'bars-bigger');
-    } else if (wifi_error) {
+    } else if (connection_error_message) {
 	template = document.querySelector('#wifi_connection_error');
 	div = template.content.firstElementChild.cloneNode(true);
 	if (wifi_ssid) div.querySelector('#wifi_ssid').textContent = wifi_ssid;
-	div.querySelector('#line2').textContent = wifi_error;
+	div.querySelector('#line2').textContent = connection_error_message;
     }
     replaceChildren(connectiondiv, div);
 }
@@ -215,7 +262,7 @@ function loadContactMessages(project) {
 }
 
 
-async function monitorScan() {
+async function monitorScanLoop() {
     try {
         let response = await fetch(scan_request);
         let data = await response.json();
@@ -226,7 +273,7 @@ async function monitorScan() {
     } catch(err) {
         console.error(err);
     }
-    setTimeoutAnimationFrame(monitorScan, SCAN_INTERVAL);
+    setTimeoutAnimationFrame(monitorScanLoop, SCAN_INTERVAL);
 }
 
 
@@ -285,25 +332,6 @@ function rssiToBars(rssi) {
 }
 
 
-// async function monitorSignal() {
-//     try {
-//         let response = await fetch(signal_request);
-//         let data = await response.json();
-// 	if (data && !data.retry && Object.keys(data).length !== 0) {
-// 	    showSignal(data);
-// 	}
-//     } catch(err) {
-//         console.error(err);
-//     }
-//     setTimeoutAnimationFrame(monitorSignal, SIGNAL_INTERVAL);
-// }
-
-
-// function showSignal(data) {
-//     console.log('signal', data);
-// }
-
-
 function toggle_body_class(classname) {
     if (document.body.classList.contains(classname)) {
 	document.body.classList.remove(classname);
@@ -351,7 +379,7 @@ async function connect_wifi(event) {
 	}
 
 	feedback.textContent = "Connecting to " + ssid + "...";
-	connection_error = false;
+	connection_error_message = false;
 
 	//await fetch(new Request('/connect',{method:'POST',body:formdata}))
 
@@ -367,6 +395,11 @@ async function connect_wifi(event) {
 		'Content-Type': 'application/json'
 	    }
 	});
+
+	// let ssid_input = document.querySelector('#ssid');
+	// let password_input = document.querySelector('#password');
+	// ssid_input.value = '';
+	// password_input.value = '';
     } catch(err) {
 	console.error('error during connect', err);
     }
@@ -376,14 +409,14 @@ async function connect_wifi(event) {
 	    document.body.classList.remove('connecting');
 	    let matched = ssid_changed();
 	    if (matched) {
-		connection_error = 'Password might be incorrect';
+		connection_error_message = 'Password might be incorrect';
 	    } else {
-		connection_error = 'Network name or password might be incorrect';
+		connection_error_message = 'Network name or password might be incorrect';
 	    }
-	    showConnection(ssid, false, connection_error);
+	    showConnection(ssid, false);
 	    current_ssid = ssid;
 	}
-    }, 15 * 1000);
+    }, CONNECTION_TIMEOUT);
 }
 
 
@@ -413,7 +446,7 @@ async function disconnect_wifi() {
     }
     setTimeout( () => {
 	document.body.classList.remove('disconnecting');
-    }, 5 * 1000);
+    }, DISCONNECTING_PANEL_TIMEOUT);
 }
 
 
@@ -553,6 +586,7 @@ function show_info_panel() {
 function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
     document.body.classList.remove('showdonepanel');
+    document.body.classList.remove('turnjiboonpanel');
     ssid_changed();
 }
 
@@ -566,7 +600,6 @@ function replaceChildren(parent, newChildren) {
 }    
 
 
-let hashParams = {};
 function parseHash() {
     let hash = window.location.hash.substr(1);
     hashParams = hash.split('&').reduce(function (result, item) {
@@ -672,10 +705,9 @@ async function init() {
 	dismiss_button.addEventListener('click', dismiss_all_panels);
     }
 
-    monitorServer();
-    monitorStatus();
-    monitorScan();
-    //monitorSignal();
+    monitorServerLoop();
+    monitorStatusLoop();
+    monitorScanLoop();
 }
 
 
@@ -684,5 +716,6 @@ window.client.cancel_connecting = cancel_connecting;
 window.client.disconnect_wifi = disconnect_wifi;
 window.client.click_network = click_network;
 window.client.toggle_password_visibility = toggle_password_visibility;
+window.client.jibopower = jibopower;
 window.client.reboot = reboot;
 window.client.finished = finished;

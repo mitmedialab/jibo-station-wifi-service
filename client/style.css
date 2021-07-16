@@ -81,13 +81,28 @@ button.eyes {
     background-color: #33546D;
 }
 
+#turnjiboonpanel {
+    display: none;
+}
+
+.turnjiboonpanel #turnjiboonpanel {
+    display: block;
+    position: absolute;
+    top: 0vh;
+    right: 0vw;
+    width: 100vw;
+    min-width: 100vw;
+    height: 100vh;
+    background-color: #33546D;
+}
+
 #rebootingpanel {
     display: none;
 }
 
 .rebooting #rebootingpanel{
-    position: absolute;
     display: block;
+    position: absolute;
     top: 0vh;
     right: 0vw;
     width: 100vw;
@@ -212,22 +227,22 @@ button.eyes {
 #stage-1-bad {
     display: none;
 }
-.jibo-connected #stage-1-pending {
+.internet-connected #stage-1-pending {
     display: none;
 }
-.jibo-connected #stage-1-good {
+.internet-connected #stage-1-good {
     display: block;
 }
-.jibo-connected #stage-1-bad {
+.internet-connected #stage-1-bad {
     display: none;
 }
-.jibo-not-connected #stage-1-pending {
+.internet-not-connected #stage-1-pending {
     display: none;
 }
-.jibo-not-connected #stage-1-good {
+.internet-not-connected #stage-1-good {
     display: none;
 }
-.jibo-not-connected #stage-1-bad {
+.internet-not-connected #stage-1-bad {
     display: block;
 }
 
@@ -240,22 +255,22 @@ button.eyes {
 #stage-2-bad {
     display: none;
 }
-.internet-connected #stage-2-pending {
+.jibo-connected #stage-2-pending {
     display: none;
 }
-.internet-connected #stage-2-good {
+.jibo-connected #stage-2-good {
     display: block;
 }
-.internet-connected #stage-2-bad {
+.jibo-connected #stage-2-bad {
     display: none;
 }
-.internet-not-connected #stage-2-pending {
+.jibo-not-connected #stage-2-pending {
     display: none;
 }
-.internet-not-connected #stage-2-good {
+.jibo-not-connected #stage-2-good {
     display: none;
 }
-.internet-not-connected #stage-2-bad {
+.jibo-not-connected #stage-2-bad {
     display: block;
 }
 
@@ -268,22 +283,22 @@ button.eyes {
 #stage-3-bad {
     display: none;
 }
-.server-connected #stage-3-pending {
+.systems-connected #stage-3-pending {
     display: none;
 }
-.server-connected #stage-3-good {
+.systems-connected #stage-3-good {
     display: block;
 }
-.server-connected #stage-3-bad {
+.systems-connected #stage-3-bad {
     display: none;
 }
-.server-not-connected #stage-3-pending {
+.systems-not-connected #stage-3-pending {
     display: none;
 }
-.server-not-connected #stage-3-good {
+.systems-not-connected #stage-3-good {
     display: none;
 }
-.server-not-connected #stage-3-bad {
+.systems-not-connected #stage-3-bad {
     display: block;
 }
 .jibo-not-connected #stage-3-pending {
@@ -316,7 +331,7 @@ button.eyes {
     display: none !important;
 }
 
-.server-connected.jibo-connected #done {
+.systems-connected #done {
     display: inline-block !important;
 }
 
