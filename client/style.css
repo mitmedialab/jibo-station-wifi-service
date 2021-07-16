@@ -70,7 +70,8 @@ button.eyes {
     display: none;
 }
 
-.noserver #noserverpanel{
+.noserver #noserverpanel,
+.nostatus #noserverpanel {
     position: absolute;
     display: block;
     top: 0vh;

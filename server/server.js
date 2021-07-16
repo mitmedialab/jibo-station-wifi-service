@@ -25,9 +25,9 @@ const CLIENT_DIR = __dirname + '/../client';
 async function init() {
     let app = express();
     app.use((req, res, next) => {
-	if (req.url !== '/ping') {
+	//if (req.url !== '/ping') {
 	    console.log(req.method, req.url);
-	}
+	//}
 	next();
     });
 

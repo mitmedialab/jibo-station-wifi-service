@@ -38,19 +38,30 @@ function setTimeoutAnimationFrame(callback, interval) {
 
 async function monitorServerLoop() {
     let timeout;
+    console.log('ping start');
+    console.time('ping');
     try {
 	timeout = setTimeout( () => {
 	    console.error('ping timed out');
+	    console.time('ping');
 	    document.body.classList.add('noserver');
 	    document.body.classList.remove('rebooting');
 	}, PING_TIMEOUT);
+	console.log('ping fetch');
+	console.timeLog('ping');
         let response = await fetch('/ping');
+	console.log('ping fetch done');
+	console.timeLog('ping');
 	document.body.classList.remove('noserver');
     } catch(err) {
+	console.log('ping error');
+	console.timeLog('ping');
         console.error(err);
 	document.body.classList.add('noserver');
 	document.body.classList.remove('rebooting');
     }
+    console.log('ping end');
+    console.timeEnd('ping');
     clearTimeout(timeout);
     setTimeoutAnimationFrame(monitorServerLoop, PING_INTERVAL);
 }
@@ -61,6 +72,7 @@ async function monitorStatusLoop() {
         let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
+	    document.body.classList.remove('nostatus');
 	    showStatus(data);
 	}
     } catch(err) {
