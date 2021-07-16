@@ -25,11 +25,67 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
+button.normal {
+    color: white;
+    font-weight: normal;
+    text-decoration: none;
+    word-break: break-word;
+    font-size: 20px;
+    line-height: 26px;
+    border-top: 14px solid;
+    border-bottom: 14px solid;
+    border-right: 32px solid;
+    border-left: 32px solid;
+    background-color: #2ab27b;
+    border-color: #2ab27b;
+    display: inline-block;
+    letter-spacing: 1px;
+    min-width: 80px;
+    text-align: center;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+button.discourage {
+    border-top: 4px solid;
+    border-bottom: 4px solid;
+    border-right: 16px solid;
+    border-left: 16px solid;
+    background-color: darkred;
+    border-color: darkred;
+}
+
+button.eyes {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    margin-left: 6px;
+    margin-top: 5px;
+    border-radius: 2px;
+    border-width: 1px;
+    background-color: #BBEBFF
+}
+
 #noserverpanel {
     display: none;
 }
 
 .noserver #noserverpanel{
+    position: absolute;
+    display: block;
+    top: 0vh;
+    right: 0vw;
+    width: 100vw;
+    min-width: 100vw;
+    height: 100vh;
+    background-color: #33546D;
+}
+
+#rebootingpanel {
+    display: none;
+}
+
+.rebooting #rebootingpanel{
     position: absolute;
     display: block;
     top: 0vh;
@@ -98,10 +154,11 @@ body {
 
 #dismiss {
     position: absolute;
+    color: gray;
     padding: 14px 12px 8px 12px;
     top: 50px;
     right: 100px;
-    border: solid 5px;
+    border: solid 5px gray;
 }
 
 
@@ -229,6 +286,15 @@ body {
 .server-not-connected #stage-3-bad {
     display: block;
 }
+.jibo-not-connected #stage-3-pending {
+    display: none;
+}
+.jibo-not-connected #stage-3-good {
+    display: none;
+}
+.jibo-not-connected #stage-3-bad {
+    display: block;
+}
 
 #contactus {
     display: none;
@@ -250,7 +316,7 @@ body {
     display: none !important;
 }
 
-.server-connected #done {
+.server-connected.jibo-connected #done {
     display: inline-block !important;
 }
 
@@ -305,6 +371,10 @@ h1, h2, h3, h4 {
     color: #FFFFFF;
     margin-bottom: 12px;
     line-height: 26px;
+}
+h1 {
+    font-size: 30px;
+    line-height: 30px;
 }
 h1.pagenum {
    position: absolute;
@@ -415,6 +485,21 @@ table {
 td {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
+
+#dhcp_leases table {
+  border-collapse: collapse;
+}
+#dhcp_leases tr.matched {
+    background-color: gray !important;
+}
+#dhcp_leases td {
+    font-size: 14px;
+    padding-left: 8px;
+    line-height: 17px;
+}
+
+
+
 
 /* Mobile */
 @media only screen and (max-device-width: 480px) {

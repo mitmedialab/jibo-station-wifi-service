@@ -11,6 +11,7 @@ const scan_request = new Request('/scan');
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
+const PING_TIMEOUT = 5 * 1000;  // 5 seconds
 const STATUS_INTERVAL = 2 * 1000;  // 2 seconds
 const SCAN_INTERVAL = 5 * 1000;  // 5 seconds
 //const SIGNAL_INTERVAL = 1 * 1000;  // 1 second
@@ -19,6 +20,7 @@ let current_ssid;
 let current_rssi;
 let connection_error;
 let connection_timeout;
+let attempt_browser_close;
 
 
 // setTimeout but then wait for the first full frame after that
@@ -29,13 +31,21 @@ function setTimeoutAnimationFrame(callback, interval) {
 
 
 async function monitorServer() {
+    let timeout;
     try {
+	timeout = setTimeout( () => {
+	    console.error('ping timed out');
+	    document.body.classList.add('noserver');
+	    document.body.classList.remove('rebooting');
+	}, PING_TIMEOUT);
         let response = await fetch('/ping');
 	document.body.classList.remove('noserver');
     } catch(err) {
         console.error(err);
 	document.body.classList.add('noserver');
+	document.body.classList.remove('rebooting');
     }
+    clearTimeout(timeout);
     setTimeoutAnimationFrame(monitorServer, PING_INTERVAL);
 }
 
@@ -56,7 +66,6 @@ async function monitorStatus() {
 
 
 let first = true;
-let last_status;  // for the popup info panel
 function showStatus(status) {
     let state = status.wpa_state;
     let wifi_connected = (state === 'COMPLETED');
@@ -69,13 +78,10 @@ function showStatus(status) {
 	connection_error = false;
     }
     
-    last_status = status;  // for the popup info panel
-
-    console.log('wifi_ssid', wifi_ssid, 'wifi_connected', wifi_connected);
-
     if (wifi_connected && document.body.classList.contains('connecting')) {
 	document.body.classList.remove('connecting');
 	document.body.classList.add('checking');
+	first = true;
 	// let ssid_input = document.querySelector('#ssid');
 	// let password_input = document.querySelector('#password');
 	// ssid_input.value = '';
@@ -107,7 +113,6 @@ function showStatus(status) {
 	document.body.classList.remove('wifi-connected');
 	document.body.classList.remove('contactus');
 	document.body.classList.remove('checking');
-	first = true;
     }
 
     document.body.classList.remove('jibo-connected');
@@ -116,7 +121,6 @@ function showStatus(status) {
 	if (status.jibo_connected) {
 	    document.body.classList.add('jibo-connected');
 	} else {
-	    document.body.classList.remove('checking');
 	    document.body.classList.add('contactus');
 	    document.body.classList.add('jibo-not-connected');
 	}
@@ -124,7 +128,6 @@ function showStatus(status) {
 
     document.body.classList.remove('internet-connected');
     document.body.classList.remove('internet-not-connected');
-    console.log(status.internet_connected);
     if (('internet_connected' in status) && status.internet_connected !== undefined) {
 	if (status.internet_connected) {
 	    document.body.classList.add('internet-connected');
@@ -141,14 +144,18 @@ function showStatus(status) {
 	document.body.classList.remove('checking');
 	if (status.server_connected) {
 	    document.body.classList.add('server-connected');
-	    document.body.classList.remove('contactus');
-	    document.body.classList.remove('contactus2');
 	} else {
+	    document.body.classList.add('contactus');
 	    document.body.classList.add('server-not-connected');
 	}
     }
 
+    if (document.body.classList.contains('jibo-connected') && document.body.classList.contains('server-connected')) {
+	document.body.classList.remove('contactus');
+    }
+
     showConnection(wifi_ssid || current_ssid, wifi_connected, connection_error);
+    update_info_panel(status, wifi_ssid, current_rssi);
 }
 
 
@@ -165,7 +172,6 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	current_ssid = wifi_ssid;
 	template = document.querySelector('#wifi_connection_good');
 	div = template.content.firstElementChild.cloneNode(true);
-	console.log(wifi_ssid, div, div.querySelector('#wifi_ssid'));
 	if (wifi_ssid)    div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	if (current_rssi) div.querySelector('#wifi_bars').classList.add('bars-'+ rssiToBars(current_rssi, true), 'bars-bigger');
     } else if (wifi_error) {
@@ -174,7 +180,7 @@ function showConnection(wifi_ssid, wifi_connected, wifi_error) {
 	if (wifi_ssid) div.querySelector('#wifi_ssid').textContent = wifi_ssid;
 	div.querySelector('#line2').textContent = wifi_error;
     }
-    connectiondiv.replaceChildren(div);
+    replaceChildren(connectiondiv, div);
 }
 
 
@@ -183,25 +189,29 @@ function loadContactMessages(project) {
     if (project === 'wellness') {
 	wellness = true;
     }
+    console.log('wellness', wellness);
     
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
     let contactus0div = document.querySelector('#contactus0');
     let template;
     let template2;
+    let template0;
     if (wellness) {
 	template = document.querySelector('#contactus_wellness');
 	template2 = document.querySelector('#contactus2_wellness');
+	template0 = document.querySelector('#contactus0_wellness');
     } else {
 	template = document.querySelector('#contactus_generic');
 	template2 = document.querySelector('#contactus2_generic');
+	template0 = document.querySelector('#contactus0_generic');
     }
     let center = template.content.firstElementChild.cloneNode(true);
     let center2 = template2.content.firstElementChild.cloneNode(true);
-    let center0 = template.content.firstElementChild.cloneNode(true);
-    contactusdiv.replaceChildren(center);
-    contactus2div.replaceChildren(center2);
-    contactus0div.replaceChildren(center0);
+    let center0 = template0.content.firstElementChild.cloneNode(true);
+    replaceChildren(contactusdiv, center);
+    replaceChildren(contactus2div, center2);
+    replaceChildren(contactus0div, center0);
 }
 
 
@@ -257,7 +267,7 @@ function showScan(data) {
     } catch(err) {
 	console.error(err);
     }
-    network_list.replaceChildren(entries);
+    replaceChildren(network_list, entries);
     ssid_changed();
 }
 
@@ -333,11 +343,6 @@ async function connect_wifi(event) {
 
     try {
 	//reset_scroll('#wifi_section');
-
-	console.log(formdata);
-	console.log(formdata.get('ssid'));
-	console.log(formdata.get('password'));
-
 	let trim_space = document.querySelector('#trim_spaces');
 	if (!trim_space || trim_space.checked) {
 	    console.log('trimming spaces');
@@ -427,7 +432,6 @@ function toggle_password_visibility(event) {
 
 
 function ssid_changed() {
-    console.log('ssid changed');
     let ssid_input = document.querySelector('#ssid');
     let trim_space = document.querySelector('#trim_spaces');
     let ssid_value = ssid_input.value;
@@ -472,18 +476,18 @@ function click_network(event) {
 }
 
 
-function show_nomatch_panel() {
-    document.body.classList.add('shownomatchpanel');
-}
-
-
-function show_info_panel() {
-    document.body.classList.add('showinfopanel');
+function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     let local_hostname = document.querySelector('#local_hostname');
     if (last_status && last_status.hostname) {
 	local_hostname.textContent = last_status.hostname;
     } else {
 	local_hostname.textContent = '➖';
+    }
+    let local_uptime = document.querySelector('#local_uptime');
+    if (last_status && last_status.uptime) {
+	local_uptime.textContent = Math.floor(Number(last_status.uptime)/60) + ' mins';
+    } else {
+	local_uptime.textContent = '➖';
     }
     let local_ip_address = document.querySelector('#local_ip_address');
     if (last_status && last_status.ip_address) {
@@ -497,15 +501,69 @@ function show_info_panel() {
     } else {
 	rover_ip_address.textContent = '➖';
     }
+    let info_wifi_ssid = document.querySelector('#info_wifi_ssid');
+    if (wifi_ssid) {
+	info_wifi_ssid.textContent = wifi_ssid;
+    } else {
+	info_wifi_ssid.textContent = '➖';
+    }
+    let info_wifi_rssi = document.querySelector('#info_wifi_rssi');
+    if (wifi_rssi) {
+	info_wifi_rssi.textContent = wifi_rssi;
+    } else {
+	info_wifi_rssi.textContent = '➖';
+    }
+    let dhcp_leases = document.querySelector('#dhcp_leases');
+    if (last_status && last_status.dhcp_leases) {
+	let template = document.querySelector('template[name="dhcp_leases"]');
+	let dhcp_leases_table = template.content.cloneNode(true);
+	let entries = document.createDocumentFragment();
+	try {
+	    for (let lease of last_status.dhcp_leases) {
+		// 1625731234 52:01:13:1f:df:8e 10.99.0.13 JiboStation24 01:52:01:13:1f:df:8e
+		let [lease_time, mac_address, ip_address, dhcp_name, dunnowhatthisis] = lease;
+		if (!ip_address) continue;
+		let tr = template.content.querySelector('tr').cloneNode(true);
+		tr.querySelector('#lease_time').textContent = lease_time;
+		tr.querySelector('#mac_address').textContent = mac_address;
+		tr.querySelector('#ip_address').textContent = ip_address;
+		if (ip_address === last_status.jibo_ip_address) {
+		    tr.classList.add('matched');
+		}
+		tr.querySelector('#dhcp_name').textContent = dhcp_name;
+		entries.appendChild(tr);
+	    }
+	} catch(err) {
+	    console.error(err);
+	}
+
+	let tbody = dhcp_leases_table.querySelector('tbody');
+	replaceChildren(tbody, entries);
+	replaceChildren(dhcp_leases, dhcp_leases_table);
+    } else {
+	dhcp_leases.textContent = '➖';
+    }
+}
+
+function show_info_panel() {
+    document.body.classList.add('showinfopanel');
 }
 
 
 function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
-    document.body.classList.remove('shownomatchpanel');
     document.body.classList.remove('showdonepanel');
     ssid_changed();
 }
+
+
+// Element.replaceChildren() is too new to use
+function replaceChildren(parent, newChildren) {
+    while (parent.firstChild) {
+	parent.firstChild.remove();
+    }
+    parent.append(newChildren);
+}    
 
 
 let hashParams = {};
@@ -522,13 +580,21 @@ function parseHash() {
 }
 
 
+function reboot() {
+    fetch(new Request('/reboot',{method:'POST'}));
+    document.body.classList.add('rebooting');
+    document.body.classList.remove('showinfopanel');
+}
+
+
 function finished() {
-    try {
-	window.close();  // actually works on some tables when web page is launched from an icon on the home page
-    } catch(err) {
-	console.log('error from window.close()', err);
+    if (attempt_browser_close) {
+	try {
+	    window.close();  // actually works on some tables when web page is launched from an icon on the home page
+	} catch(err) {
+	    console.log('error from window.close()', err);
+	}
     }
-    console.log('finished?');
     document.body.classList.add('showdonepanel');
 }
 
@@ -573,9 +639,19 @@ async function init() {
 	project = hashParams.project;
     } else {
 	if (md.tablet()) {
-	    if (window.screen.width === 1138 && window.screen.width === 712) {
+	    if (window.screen.width === 1280 && window.screen.height === 800) {
+		project = 'wellness';
+	    } else if (window.screen.width === 1138 && window.screen.height === 712) {
 		project = 'literacy';
 	    }
+	}
+	let android_version = md.version('Android');
+	if (android_version) {
+	    android_version = Number(android_version);
+	}
+	if (android_version && android_version >= 9) {
+	    attempt_browser_close = true;
+	    fetch(new Request('/debug',{method:'POST',body:'going to attempt browser close on done'}));
 	}
     }
 
@@ -608,4 +684,5 @@ window.client.cancel_connecting = cancel_connecting;
 window.client.disconnect_wifi = disconnect_wifi;
 window.client.click_network = click_network;
 window.client.toggle_password_visibility = toggle_password_visibility;
+window.client.reboot = reboot;
 window.client.finished = finished;

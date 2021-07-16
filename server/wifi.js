@@ -1,6 +1,7 @@
 'use strict';
 
 const os = require('os');
+const fsP = require('fs').promises;
 const child_process = require('child_process');
 const { Wireless, Monitor } = require('wirelesser');
 const isOnline = require('is-online');
@@ -14,9 +15,11 @@ if (!INTERFACE) {
 const ROVER_INTERFACE = 'tun0';
 //const USE_NM = (os.arch() === 'x64');  // assuming x86 = Ubuntu, otherwise Rasbian
 const USE_NM = false;  // dear god, i hope we are rid of NetworkManager -jon
-
 const SERVER_TEST_ADDRESS = 'prg-webhost.media.mit.edu';
 const SERVER_TEST_PORT = 80;
+const DHCP_LEASES_FILE = '/var/lib/misc/dnsmasq.leases';
+const SSH_TCP_PORT = 22;
+const STATIC_DIR = __dirname + '/../static';
 
 const timeoutP = function(ms) {
     return new Promise( (resolve) => setTimeout(resolve, ms) );
@@ -54,8 +57,21 @@ class WiFi {
             res.end(json);
         });
 
+	router.get('/b', async (req, res) => {
+	    console.log('making bookmark');
+            let text = await this.getBookmarkDataURL();
+            res.setHeader('Content-Type', 'text/plain');
+            res.end(text);
+        });
+
 	router.post('/debug', async (req, res) => {
             log.log('client debug', req.body);
+	    res.end();
+	});
+
+	router.post('/reboot', async (req, res) => {
+            log.log('rebooting!');
+	    child_process.exec('reboot');
 	    res.end();
 	});
 
@@ -129,10 +145,19 @@ class WiFi {
         });
     }
 
+    async getBookmarkDataURL() {
+	let html = await fsP.readFile(STATIC_DIR + '/ping.html', 'utf8');
+	let buffer = Buffer.from(html, 'utf8');
+	let base64 = buffer.toString('base64');
+	//console.log('base64', base64);
+	return `data:text/html;base64,${base64}`;
+    }
+
 
     async getStatus(reset_phase) {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
+	data.uptime = os.uptime();
 	data.hostname = os.hostname();
 	if (state === 'COMPLETED') {
 	    if (this.last_state !== state) {
@@ -151,8 +176,15 @@ class WiFi {
 		if (this.phase === 1) {
 		    await timeoutP(1000);
 		}
-		data.jibo_connected = await this.isJiboConnected();
-		if (data.jibo_connected) {
+		data.dhcp_leases = await this.readDHCPLeases();
+		let jibo_ip = await this.isJiboConnected(data.dhcp_leases);
+		if (jibo_ip) {
+		    data.jibo_connected = true;
+		    data.jibo_ip_address = jibo_ip;
+		} else {
+		    data.jibo_connected = false;
+		}
+		//if (data.jibo_connected) {
 		    if (this.phase < 2) {
 			this.phase++;
 		    } else {
@@ -170,7 +202,7 @@ class WiFi {
 			    }
 			}
 		    }
-		}
+		//}
 	    }
 	}
 
@@ -204,8 +236,49 @@ class WiFi {
     }
 
 
-    async isJiboConnected() {
-	return true;  // FIXME
+    async readDHCPLeases() {
+	let file = await fsP.readFile(DHCP_LEASES_FILE, 'utf8');
+	let lines = file.split('\n');
+	let leases = [];
+	// 1625727703 dc:f7:56:e1:c4:3e 10.99.0.8 Galaxy-Tab-A-2016 01:dc:f7:56:e1:c4:3e
+	// 1625735625 f8:ff:c2:38:76:3c 10.99.0.4 Jons-MBP 01:f8:ff:c2:38:76:3c
+	// 1625738341 f0:c7:7f:95:72:79 10.99.0.5 * 01:f0:c7:7f:95:72:79
+	// 1625731234 52:01:13:1f:df:8e 10.99.0.13 JiboStation24 01:52:01:13:1f:df:8e
+	for (let line of lines) {
+	    let lease = line.split(' ');
+	    //if (!lease) continue;
+	    //if (!lease[0]) continue;
+	    //lease[0] = new Date(Number(lease[0]) * 1000).toISOString().split('.')[0];
+	    leases.push(lease);
+	}
+	return leases;
+    }
+
+
+    async isJiboConnected(leases) {
+	//await timeoutP(500);  // don't do it *too* quickly
+	// just look for anything that has the ssh port open
+	for (let lease of leases) {
+	    // 1625738341 f0:c7:7f:95:72:79 10.99.0.5 * 01:f0:c7:7f:95:72:79
+	    let ip = lease[2];
+	    if (ip) {
+		let options = 
+		    {
+			host: ip,
+			port: SSH_TCP_PORT,
+			timeout: 1000
+		    };
+		try {
+		    await isTcpOn(options);
+		    console.log(ip, 'yes');
+		    return ip;
+		} catch {
+		    console.log(ip, 'no');
+		    // not that one
+		}
+	    }
+	}
+	return false;
     }
 
 
