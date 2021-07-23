@@ -38,31 +38,36 @@ function setTimeoutAnimationFrame(callback, interval) {
 
 async function monitorServerLoop() {
     let timeout;
-    console.log('ping start');
-    console.time('ping');
+    //console.log('ping start');
+    //console.time('ping');
     try {
 	timeout = setTimeout( () => {
+	    timeout = null;
 	    console.error('ping timed out');
-	    console.time('ping');
+	    //console.time('ping');
 	    document.body.classList.add('noserver');
 	    document.body.classList.remove('rebooting');
 	}, PING_TIMEOUT);
-	console.log('ping fetch');
-	console.timeLog('ping');
+	//console.log('ping fetch');
+	//console.timeLog('ping');
         let response = await fetch('/ping');
-	console.log('ping fetch done');
-	console.timeLog('ping');
+	//console.log('ping fetch done');
+	//console.timeLog('ping');
 	document.body.classList.remove('noserver');
     } catch(err) {
 	console.log('ping error');
-	console.timeLog('ping');
+	if (timeout) {
+	    //console.timeLog('ping');
+	}
         console.error(err);
 	document.body.classList.add('noserver');
 	document.body.classList.remove('rebooting');
     }
-    console.log('ping end');
-    console.timeEnd('ping');
-    clearTimeout(timeout);
+    //console.log('ping end');
+    if (timeout) {
+	//console.timeEnd('ping');
+	clearTimeout(timeout);
+    }
     setTimeoutAnimationFrame(monitorServerLoop, PING_INTERVAL);
 }
 
@@ -156,6 +161,12 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 
     if (jibo_connected || !wifi_connected) {
 	document.body.classList.remove('turnjiboonpanel');
+	document.body.classList.remove('jiboproblem');
+    }
+
+    if (ros_connected || !jibo_connected || !wifi_connected) {
+	document.body.classList.remove('restartstationpanel');
+	document.body.classList.remove('rosproblem');
     }
 
     if (wifi_connected) {
@@ -187,11 +198,14 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 	    } else {
 		document.body.classList.add('jibo-not-connected');
 	    }
-	}
 
-	if (status_phase === 4 && status_cycles === 0) {
 	    if (!jibo_connected && internet_connected) {
-		document.body.classList.add('turnjiboonpanel');
+		if (!document.body.classList.contains('jiboproblem')) {
+		    if (!expert_mode()) {
+			document.body.classList.add('turnjiboonpanel');
+		    }
+		    document.body.classList.add('jiboproblem');
+		}
 	    }
 	}
 
@@ -202,18 +216,34 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 		document.body.classList.add('systems-connected');
 		document.body.classList.remove('contactus');
 		document.body.classList.remove('contactus2');
+		document.body.classList.remove('jiboproblem');
+		document.body.classList.remove('rosproblem');
 	    } else {
 		document.body.classList.add('systems-not-connected');
 		document.body.classList.add('contactus');
 		document.body.classList.add('contactus2');
+
+		if (!ros_connected && jibo_connected && internet_connected) {
+		    if (!document.body.classList.contains('rosproblem')) {
+			if (!expert_mode()) {
+			    document.body.classList.add('restartstationpanel');
+			}
+			document.body.classList.add('rosproblem');
+		    }
+		}
 	    }
 	}
     }
 }
 
 
-function jibopower() {
-    document.body.classList.add('turnjiboonpanel');
+function popup_problem_panel() {
+    if (document.body.classList.contains('jiboproblem')) {
+	document.body.classList.add('turnjiboonpanel');
+    } else if (document.body.classList.contains('rosproblem')) {
+	document.body.classList.add('restartstationpanel');
+    } else {
+    }
 }
 
 
@@ -256,6 +286,7 @@ function loadContactMessages(project) {
     let template;
     let template2;
     let template0;
+    //FIXME two more places to tweak the message (turnonjibo and restartstation panels)
     if (wellness) {
 	template = document.querySelector('#contactus_wellness');
 	template2 = document.querySelector('#contactus2_wellness');
@@ -476,6 +507,17 @@ function toggle_password_visibility(event) {
 }
 
 
+function expert_mode() {
+    let expert_mode = document.querySelector('#expert_mode');
+    if (expert_mode && expert_mode.checked) {
+	document.body.classList.add('expertmode');
+	return true;
+    }
+    document.body.classList.remove('expertmode');
+    return false;
+}
+
+
 function ssid_changed() {
     let ssid_input = document.querySelector('#ssid');
     let trim_space = document.querySelector('#trim_spaces');
@@ -599,6 +641,7 @@ function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
     document.body.classList.remove('showdonepanel');
     document.body.classList.remove('turnjiboonpanel');
+    document.body.classList.remove('restartstationpanel');
     ssid_changed();
 }
 
@@ -628,7 +671,7 @@ function parseHash() {
 function reboot() {
     fetch(new Request('/reboot',{method:'POST'}));
     document.body.classList.add('rebooting');
-    document.body.classList.remove('showinfopanel');
+    dismiss_all_panels();
 }
 
 
@@ -728,6 +771,6 @@ window.client.cancel_connecting = cancel_connecting;
 window.client.disconnect_wifi = disconnect_wifi;
 window.client.click_network = click_network;
 window.client.toggle_password_visibility = toggle_password_visibility;
-window.client.jibopower = jibopower;
+window.client.popup_problem_panel = popup_problem_panel;
 window.client.reboot = reboot;
 window.client.finished = finished;

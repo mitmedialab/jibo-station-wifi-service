@@ -117,8 +117,9 @@
 	  </tr>
 	</table>
       </form>
+      <h1><font color="lightgray"><br>If you are having trouble connecting<br>
+	  <span class="contactinfo_2line">please contact us</span></font></h1>
       </center>
-      <div id="contactus2">
       </div>
     </div>
   </div>
@@ -168,7 +169,7 @@
 	    <br>
 	    <h2>Jibo connected</h2>
 	  </div>
-	  <div id="stage-2-bad" onclick="window.client.jibopower()">
+	  <div id="stage-2-bad" onclick="window.client.popup_problem_panel()">
 	    <font size="72px">❓ </font>
 	    <br>
 	    <br>
@@ -189,7 +190,7 @@
 	    <br>
 	    <h2>All Systems Go!</h2>
 	  </div>
-	  <div id="stage-3-bad">
+	  <div id="stage-3-bad" onclick="window.client.popup_problem_panel()">
 	    <font size="72px">❓ </font>
 	    <br>
 	    <br>
@@ -198,50 +199,20 @@
 	</div>
 	<br>
 	<div id="contactus">
+	  <center>
+	    <h1><font color="lightgray"><br>There might be an issue with your station<br>
+		<span class="contactinfo">Please contact us</span></font></h1>
+		<br>
+	  </center>
 	</div>
 
-	<TEMPLATE id="contactus_generic">
-	  <center>
-	    <h1><font color="lightgray"><br>There might be an issue with your station<br>
-		Please contact us</font></h1>
-		<br>
-	  </center>
-	</TEMPLATE>
-	<TEMPLATE id="contactus_wellness">
-	  <center>
-	    <h1><font color="lightgray"><br>There might be an issue with your station<br>
+	<TEMPLATE id="contactinfo_wellness">
 		Please contact us at<br>
-		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
-		<br>
-	  </center>
+		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515
 	</TEMPLATE>
-	<TEMPLATE id="contactus2_generic">
-	  <center>
-	    <h1><font color="lightgray"><br>If you are having trouble connecting<br>
-		please contact us</font></h1>
-	  </center>
-	</TEMPLATE>
-	<TEMPLATE id="contactus2_wellness">
-	  <center>
-	    <h1><font color="lightgray"><br>If you are having trouble connecting<br>
+	<TEMPLATE id="contactinfo_2line_wellness">
 		please contact us at<br>
-		jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515</font></h1>
-	  </center>
-	</TEMPLATE>
-	<TEMPLATE id="contactus0_generic">
-	  <center>
-	    <h1><font color="lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
-		Please contact us</font></h1>
-		<br>
-	  </center>
-	</TEMPLATE>
-	<TEMPLATE id="contactus0_wellness">
-	  <center>
-	    <h1><font color="lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
-		Please contact us at<br>
-		jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515</font></h1>
-		<br>
-	  </center>
+		jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515
 	</TEMPLATE>
 
       </div>
@@ -351,6 +322,11 @@
       <tr style="height:15px"><td></td></tr>
 
       <tr>
+	<td style="text-align:right">Tolorate Ambiguity</td><td>&nbsp;</td><td><input id="expert_mode" type="checkbox" style="width:27px;height:27px"></input></td>
+      </tr>
+      <tr style="height:15px"><td></td></tr>
+
+      <tr>
 	<td style="text-align:right">DHCP Leases</td><td>&nbsp;</td><td><div id="dhcp_leases">➖</div></td>
       </tr>
     </table>
@@ -381,8 +357,31 @@
       <h1><font color="lightgray"><span id="powerinstructions"><br>Please press the power button on the back of Jibo's head<br></span></font></h1>
       <br>
       <h1><font color="lightgray"><br>If you are having trouble<br>
-	  please contact us at<br>
-	  jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515</font></h1>
+	  <span class="contactinfo">please contact us</span></font></h1>
+    </center>
+  </div>
+
+  <div id="restartstationpanel">
+    <div id="dismiss">
+      <img src="cross.png" height="35" width="35">
+    </div>
+    <center>
+      <br>
+      <br>
+      <br>
+      <br>
+      <h1>Please restart your Jibo Station</h1><br>
+      <br>
+      <button onclick="window.client.reboot()" class="normal">
+	Restart Station
+      </button>
+      <br>
+      <br>
+      <h1><font color="lightgray"><span id="powerinstructions"><br>You Jibo station has a problem and needs to be restarted<br>
+      Please press the <font color="white">Restart Station</font> button above<br></span></font></h1>
+      <br>
+      <h1><font color="lightgray"><br>If you are having trouble<br>
+	  <span class="contactinfo">please contact us</span></font></h1>
     </center>
   </div>
 
@@ -420,7 +419,11 @@
     <h1>Looking for Jibo Station...</h1>
     <br>
     <br>
-    <div id="contactus0">
+    <center>
+      <h1><font color="lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
+	  <span class="contactinfo">Please contact us</span></font></h1>
+      <br>
+    </center>
     </div>
   </div>
 

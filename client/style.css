@@ -82,11 +82,13 @@ button.eyes {
     background-color: #33546D;
 }
 
-#turnjiboonpanel {
+#turnjiboonpanel,
+#restartstationpanel {
     display: none;
 }
 
-.turnjiboonpanel #turnjiboonpanel {
+.turnjiboonpanel #turnjiboonpanel,
+.restartstationpanel #restartstationpanel {
     display: block;
     position: absolute;
     top: 0vh;
@@ -324,7 +326,7 @@ button.eyes {
     display: none !important;
 }
 
-.contactus #setupagain {
+:not(.expert-mode).contactus #setupagain {
     display: inline-block !important;
 }
 
@@ -333,6 +335,9 @@ button.eyes {
 }
 
 .systems-connected #done {
+    display: inline-block !important;
+}
+.expert-mode #done {
     display: inline-block !important;
 }
 

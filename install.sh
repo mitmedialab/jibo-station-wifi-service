@@ -27,9 +27,9 @@ yarn install
 sudo cp -p jibo-station-wifi-service.service /etc/systemd/system
 sudo systemctl enable jibo-station-wifi-service.service
 
-if egrep "^/usr/local/jibo-station-wifi/" /etc/rc.local; then
+if egrep "^/usr/local/jibo-station-wifi-service/" /etc/rc.local; then
     echo "disabling launching from /etc/rc.local"
-    sudo sed -ie "s%^/usr/local/jibo-station-wifi/%#/usr/local/jibo-station-wifi/" /etc/rc.local
+    sudo sed -ie "s%^/usr/local/jibo-station-wifi-service/%#/usr/local/jibo-station-wifi-service/%" /etc/rc.local
 fi
 
 if [ ! -e /var/run/wpa_supplicant ]; then
