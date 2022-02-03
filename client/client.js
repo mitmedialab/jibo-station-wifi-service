@@ -274,6 +274,7 @@ function showConnection(wifi_ssid, wifi_connected) {
 
 
 function loadContactMessages(project) {
+    return;
     let wellness = false;
     if (project === 'wellness') {
 	wellness = true;
@@ -283,18 +284,16 @@ function loadContactMessages(project) {
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
     let contactus0div = document.querySelector('#contactus0');
-    let template;
-    let template2;
-    let template0;
+
     //FIXME two more places to tweak the message (turnonjibo and restartstation panels)
+    let template = document.querySelector('#contactus_generic');
+    let template2 = document.querySelector('#contactus2_generic');
+    let template0 = document.querySelector('#contactus0_generic');
+
     if (wellness) {
-	template = document.querySelector('#contactus_wellness');
+	//template = document.querySelector('#contactus_wellness');
 	template2 = document.querySelector('#contactus2_wellness');
 	template0 = document.querySelector('#contactus0_wellness');
-    } else {
-	template = document.querySelector('#contactus_generic');
-	template2 = document.querySelector('#contactus2_generic');
-	template0 = document.querySelector('#contactus0_generic');
     }
     let center = template.content.firstElementChild.cloneNode(true);
     let center2 = template2.content.firstElementChild.cloneNode(true);
