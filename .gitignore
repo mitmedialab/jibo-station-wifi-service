@@ -9,7 +9,12 @@
 /bin
 /node
 /python
-/node_modules
-/node_modules.old
-/node_modules.hide
-/build
+node_modules
+node_modules.old
+node_modules.hide
+#/client/build
+/client/.svelte-kit
+/client/package
+.env
+.env.*
+!.env.example

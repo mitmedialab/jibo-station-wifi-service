@@ -23,5 +23,8 @@ if [ -z ${interface} ]; then
     fi
 fi
 
+echo "starting sveltkit server in backgound"
+yarn dev &&
+
 echo "starting jibo-station-wifi-service on interface $interface"
-node_modules/.bin/nodemon --spawn --watch server /usr/local/jibo-station-wifi-service/server/index.js $interface
+node_modules/.bin/nodemon --spawn --watch server /usr/local/jibo-station-wifi-service/server/src/main.js $interface

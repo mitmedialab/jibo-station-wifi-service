@@ -24,4 +24,4 @@ if [ -z ${interface} ]; then
 fi
 
 echo "starting jibo-station-wifi-service on interface $interface"
-NODE_ENV=production node /usr/local/jibo-station-wifi-service/server/index.js $interface
+NODE_ENV=production node /usr/local/jibo-station-wifi-service/server/src/main.js $interface

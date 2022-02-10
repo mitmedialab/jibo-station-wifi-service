@@ -1,11 +1,4 @@
-'use strict';
-
-window.client = window.client || {};
-
-const MobileDetect = require('mobile-detect');
-
-const status_request = new Request('/status');
-const scan_request = new Request('/scan');
+import * as MobileDetect from 'mobile-detect';
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
@@ -72,8 +65,12 @@ async function monitorServerLoop() {
 }
 
 
+let status_request;
 async function monitorStatusLoop() {
     try {
+	if (!status_request) {
+	    status_request = new Request('/status');
+	}
         let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
@@ -237,7 +234,7 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 }
 
 
-function popup_problem_panel() {
+export function popup_problem_panel() {
     if (document.body.classList.contains('jiboproblem')) {
 	document.body.classList.add('turnjiboonpanel');
     } else if (document.body.classList.contains('rosproblem')) {
@@ -304,8 +301,12 @@ function loadContactMessages(project) {
 }
 
 
+let scan_request;
 async function monitorScanLoop() {
     try {
+	if (!scan_request) {
+	    scan_request = new Request('/scan');
+	}
         let response = await fetch(scan_request);
         let data = await response.json();
 	//console.log(data);
@@ -462,7 +463,7 @@ async function connect_wifi(event) {
 }
 
 
-function cancel_connecting() {
+export function cancel_connecting() {
     if (connection_timeout) {
 	clearTimeout(connection_timeout);
 	connection_timeout = undefined;
@@ -472,7 +473,7 @@ function cancel_connecting() {
 }
 
 
-async function disconnect_wifi() {
+export async function disconnect_wifi() {
     document.body.classList.add('disconnecting');
     document.body.classList.remove('wifi-connected');
     document.body.classList.remove('connecting');
@@ -492,7 +493,7 @@ async function disconnect_wifi() {
 }
 
 
-function toggle_password_visibility(event) {
+export function toggle_password_visibility(event) {
     let password = document.querySelector('#password');
     let toggle = document.querySelector('#visibility');
     if (password.type !== 'password') {
@@ -550,7 +551,7 @@ function password_focused(event) {
 }
 
 
-function click_network(event) {
+export function click_network(event) {
     console.log(event.target);
     let wifi_ssid = event.target.querySelector('#wifi_ssid');
     let ssid_input = document.querySelector('#ssid');
@@ -667,14 +668,14 @@ function parseHash() {
 }
 
 
-function reboot() {
+export function reboot() {
     fetch(new Request('/reboot',{method:'POST'}));
     document.body.classList.add('rebooting');
     dismiss_all_panels();
 }
 
 
-function finished() {
+export function finished() {
     if (attempt_browser_close) {
 	try {
 	    window.close();  // actually works on some tables when web page is launched from an icon on the home page
@@ -686,7 +687,7 @@ function finished() {
 }
 
 
-async function init() {
+export async function init() {
     //if ('serviceWorker' in navigator) {
     //	console.log('CLIENT: service worker registration in progress.');
     //	navigator.serviceWorker.register('/service-worker.js').then(function() {
@@ -763,13 +764,3 @@ async function init() {
     monitorStatusLoop();
     monitorScanLoop();
 }
-
-
-window.client.init = init;
-window.client.cancel_connecting = cancel_connecting;
-window.client.disconnect_wifi = disconnect_wifi;
-window.client.click_network = click_network;
-window.client.toggle_password_visibility = toggle_password_visibility;
-window.client.popup_problem_panel = popup_problem_panel;
-window.client.reboot = reboot;
-window.client.finished = finished;
