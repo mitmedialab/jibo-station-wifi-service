@@ -13,13 +13,15 @@ function install_tool_node() {
     fi
 
     VERSION=16.13.2
-    if [[ $1 ]]; then
-        VERSION="$1"
+    if [[ $2 ]]; then
+        VERSION="$2"
     fi
     $(
         cd $VIRTUALIZE_ROOT
         git subtree add --prefix node git@github.com:mitmedialab/local-node-install.git main --squash || exit
-        ./node/install.sh $VIRTUALIZE_ROOT/node/node $VERSION
+        #./node/install.sh $VIRTUALIZE_ROOT/node/node $VERSION
+        cd $VIRTUALIZE_ROOT/node
+        ./install.sh
     )
 }
 
