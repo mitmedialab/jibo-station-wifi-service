@@ -38,8 +38,6 @@ class WiFi {
     }
 
     init(app, callback) {
-        //this.app = connect();
-        this.app = app;
 
         this.wireless = new Wireless(INTERFACE);
         //this.monitor = new Monitor(INTERFACE);
@@ -50,8 +48,7 @@ class WiFi {
         //    log.log('control', control, args);
         //});
 
-        this.router = app;
-        this.routes(this.router);
+        this.routes();
     }
 
 
