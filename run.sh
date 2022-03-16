@@ -2,10 +2,7 @@
 
 cd /usr/local/jibo-station-wifi-service || (echo "error!"; exit 1)
 
-VIRTUALENV_ROOT=`pwd`
-export VIRTUAL_ENV="`basename $VIRTUALENV_ROOT`"
-export PATH=$VIRTUALENV_ROOT/bin:$VIRTUALENV_ROOT/node/bin:$PATH
-export N_PREFIX=$VIRTUALENV_ROOT/node
+source ./activate
 
 interface=$1
 
@@ -24,4 +21,4 @@ if [ -z ${interface} ]; then
 fi
 
 echo "starting jibo-station-wifi-service on interface $interface"
-NODE_ENV=production node /usr/local/jibo-station-wifi-service/server/src/main.js $interface
+NODE_ENV=production node $VIRTUALIZE_ROOT/server/src/main.js $interface
