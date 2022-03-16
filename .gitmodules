@@ -1,0 +1,3 @@
+[submodule "virtualize"]
+	path = virtualize
+	url = git@github.com:mitmedialab/virtualize
