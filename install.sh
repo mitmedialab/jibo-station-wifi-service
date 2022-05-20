@@ -40,7 +40,7 @@ fi
 echo ""
 echo "done!"
 
-read -p "reboot [y]? " yn
+read -p "Reboot? Choose no if you're in the middle of setting up a new NUC [y/n] " yn
 case $yn in
     ""|[yY]|yes|Yes|YES )
 	sudo reboot
