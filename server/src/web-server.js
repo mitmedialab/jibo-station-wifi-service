@@ -46,7 +46,7 @@ class WebServer {
             }
 	});
 
-	if (process.env.NODE_ENV !== 'production') {
+	if (process.env.NODE_ENV == 'production') {
 	    app.use(serveStatic(CLIENT_DIR));
 	} else {
 	    const { createProxyMiddleware } = require('http-proxy-middleware');
