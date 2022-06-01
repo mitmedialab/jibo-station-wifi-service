@@ -82,11 +82,13 @@ button.eyes {
     background-color: #33546D;
 }
 
-#turnjiboonpanel {
+#turnjiboonpanel,
+#restartstationpanel {
     display: none;
 }
 
-.turnjiboonpanel #turnjiboonpanel {
+.turnjiboonpanel #turnjiboonpanel,
+.restartstationpanel #restartstationpanel {
     display: block;
     position: absolute;
     top: 0vh;
@@ -324,7 +326,7 @@ button.eyes {
     display: none !important;
 }
 
-.contactus #setupagain {
+:not(.expert-mode).contactus #setupagain {
     display: inline-block !important;
 }
 
@@ -333,6 +335,9 @@ button.eyes {
 }
 
 .systems-connected #done {
+    display: inline-block !important;
+}
+.expert-mode #done {
     display: inline-block !important;
 }
 
@@ -458,7 +463,7 @@ a:active, a:hover {
 .bars-0, .bars-1, .bars-2, .bars-3 {
     width: 117px;
     height: 117px;
-    background-image: url('wifi-signal.png');
+    background-image: url('/wifi-signal.18bf7f99.png');
     background-repeat: no-repeat;
     transform: scale(0.2, 0.2);
     transform-origin: top left;
@@ -610,3 +615,6 @@ td {
     }
 }
 /* end Android targeting */
+
+
+/*# sourceMappingURL=/style.e308ff8e.css.map */

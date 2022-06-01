@@ -2,10 +2,7 @@
 
 cd /usr/local/jibo-station-wifi-service || (echo "error!"; exit 1)
 
-VIRTUALENV_ROOT=`pwd`
-export VIRTUAL_ENV="`basename $VIRTUALENV_ROOT`"
-export PATH=$VIRTUALENV_ROOT/bin:$VIRTUALENV_ROOT/node/bin:$PATH
-export N_PREFIX=$VIRTUALENV_ROOT/node
+VIRTUALIZE_ACTIVATE_VIA_SCRIPT=1 source ./activate
 
 interface=$1
 
@@ -23,5 +20,20 @@ if [ -z ${interface} ]; then
     fi
 fi
 
+cleanup() {
+    kill 0
+    exit
+}
+
+trap cleanup INT
+
+echo "starting simple server in dev mode"
+
+echo "starting sveltkit server in backgound"
+(cd client && yarn dev) &
+
 echo "starting jibo-station-wifi-service on interface $interface"
-node_modules/.bin/nodemon --spawn --watch server /usr/local/jibo-station-wifi-service/server/index.js $interface
+server/node_modules/.bin/nodemon --spawn --watch server /usr/local/jibo-station-wifi-service/server/src/main.js $interface
+
+wait
+

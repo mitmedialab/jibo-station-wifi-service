@@ -1,11 +1,4 @@
-'use strict';
-
-window.client = window.client || {};
-
-const MobileDetect = require('mobile-detect');
-
-const status_request = new Request('/status');
-const scan_request = new Request('/scan');
+import * as MobileDetect from 'mobile-detect';
 
 
 const PING_INTERVAL = 1 * 1000;  // 1 second
@@ -38,37 +31,46 @@ function setTimeoutAnimationFrame(callback, interval) {
 
 async function monitorServerLoop() {
     let timeout;
-    console.log('ping start');
-    console.time('ping');
+    //console.log('ping start');
+    //console.time('ping');
     try {
 	timeout = setTimeout( () => {
+	    timeout = null;
 	    console.error('ping timed out');
-	    console.time('ping');
+	    //console.time('ping');
 	    document.body.classList.add('noserver');
 	    document.body.classList.remove('rebooting');
 	}, PING_TIMEOUT);
-	console.log('ping fetch');
-	console.timeLog('ping');
+	//console.log('ping fetch');
+	//console.timeLog('ping');
         let response = await fetch('/ping');
-	console.log('ping fetch done');
-	console.timeLog('ping');
+	//console.log('ping fetch done');
+	//console.timeLog('ping');
 	document.body.classList.remove('noserver');
     } catch(err) {
 	console.log('ping error');
-	console.timeLog('ping');
+	if (timeout) {
+	    //console.timeLog('ping');
+	}
         console.error(err);
 	document.body.classList.add('noserver');
 	document.body.classList.remove('rebooting');
     }
-    console.log('ping end');
-    console.timeEnd('ping');
-    clearTimeout(timeout);
+    //console.log('ping end');
+    if (timeout) {
+	//console.timeEnd('ping');
+	clearTimeout(timeout);
+    }
     setTimeoutAnimationFrame(monitorServerLoop, PING_INTERVAL);
 }
 
 
+let status_request;
 async function monitorStatusLoop() {
     try {
+	if (!status_request) {
+	    status_request = new Request('/status');
+	}
         let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
@@ -156,6 +158,12 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 
     if (jibo_connected || !wifi_connected) {
 	document.body.classList.remove('turnjiboonpanel');
+	document.body.classList.remove('jiboproblem');
+    }
+
+    if (ros_connected || !jibo_connected || !wifi_connected) {
+	document.body.classList.remove('restartstationpanel');
+	document.body.classList.remove('rosproblem');
     }
 
     if (wifi_connected) {
@@ -187,11 +195,14 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 	    } else {
 		document.body.classList.add('jibo-not-connected');
 	    }
-	}
 
-	if (status_phase === 4 && status_cycles === 0) {
 	    if (!jibo_connected && internet_connected) {
-		document.body.classList.add('turnjiboonpanel');
+		if (!document.body.classList.contains('jiboproblem')) {
+		    if (!expert_mode()) {
+			document.body.classList.add('turnjiboonpanel');
+		    }
+		    document.body.classList.add('jiboproblem');
+		}
 	    }
 	}
 
@@ -202,18 +213,34 @@ async function showStatusBoard(status, status_phase, wifi_connected, internet_co
 		document.body.classList.add('systems-connected');
 		document.body.classList.remove('contactus');
 		document.body.classList.remove('contactus2');
+		document.body.classList.remove('jiboproblem');
+		document.body.classList.remove('rosproblem');
 	    } else {
 		document.body.classList.add('systems-not-connected');
 		document.body.classList.add('contactus');
 		document.body.classList.add('contactus2');
+
+		if (!ros_connected && jibo_connected && internet_connected) {
+		    if (!document.body.classList.contains('rosproblem')) {
+			if (!expert_mode()) {
+			    document.body.classList.add('restartstationpanel');
+			}
+			document.body.classList.add('rosproblem');
+		    }
+		}
 	    }
 	}
     }
 }
 
 
-function jibopower() {
-    document.body.classList.add('turnjiboonpanel');
+export function popup_problem_panel() {
+    if (document.body.classList.contains('jiboproblem')) {
+	document.body.classList.add('turnjiboonpanel');
+    } else if (document.body.classList.contains('rosproblem')) {
+	document.body.classList.add('restartstationpanel');
+    } else {
+    }
 }
 
 
@@ -244,6 +271,7 @@ function showConnection(wifi_ssid, wifi_connected) {
 
 
 function loadContactMessages(project) {
+    return;
     let wellness = false;
     if (project === 'wellness') {
 	wellness = true;
@@ -253,17 +281,16 @@ function loadContactMessages(project) {
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
     let contactus0div = document.querySelector('#contactus0');
-    let template;
-    let template2;
-    let template0;
+
+    //FIXME two more places to tweak the message (turnonjibo and restartstation panels)
+    let template = document.querySelector('#contactus_generic');
+    let template2 = document.querySelector('#contactus2_generic');
+    let template0 = document.querySelector('#contactus0_generic');
+
     if (wellness) {
-	template = document.querySelector('#contactus_wellness');
+	//template = document.querySelector('#contactus_wellness');
 	template2 = document.querySelector('#contactus2_wellness');
 	template0 = document.querySelector('#contactus0_wellness');
-    } else {
-	template = document.querySelector('#contactus_generic');
-	template2 = document.querySelector('#contactus2_generic');
-	template0 = document.querySelector('#contactus0_generic');
     }
     let center = template.content.firstElementChild.cloneNode(true);
     let center2 = template2.content.firstElementChild.cloneNode(true);
@@ -274,8 +301,12 @@ function loadContactMessages(project) {
 }
 
 
+let scan_request;
 async function monitorScanLoop() {
     try {
+	if (!scan_request) {
+	    scan_request = new Request('/scan');
+	}
         let response = await fetch(scan_request);
         let data = await response.json();
 	//console.log(data);
@@ -432,7 +463,7 @@ async function connect_wifi(event) {
 }
 
 
-function cancel_connecting() {
+export function cancel_connecting() {
     if (connection_timeout) {
 	clearTimeout(connection_timeout);
 	connection_timeout = undefined;
@@ -442,7 +473,7 @@ function cancel_connecting() {
 }
 
 
-async function disconnect_wifi() {
+export async function disconnect_wifi() {
     document.body.classList.add('disconnecting');
     document.body.classList.remove('wifi-connected');
     document.body.classList.remove('connecting');
@@ -462,7 +493,7 @@ async function disconnect_wifi() {
 }
 
 
-function toggle_password_visibility(event) {
+export function toggle_password_visibility(event) {
     let password = document.querySelector('#password');
     let toggle = document.querySelector('#visibility');
     if (password.type !== 'password') {
@@ -473,6 +504,17 @@ function toggle_password_visibility(event) {
 	visibility.textContent = '👁️';
     }	
     event.preventDefault();  // keep from stealing keyboard focus
+}
+
+
+function expert_mode() {
+    let expert_mode = document.querySelector('#expert_mode');
+    if (expert_mode && expert_mode.checked) {
+	document.body.classList.add('expertmode');
+	return true;
+    }
+    document.body.classList.remove('expertmode');
+    return false;
 }
 
 
@@ -509,7 +551,7 @@ function password_focused(event) {
 }
 
 
-function click_network(event) {
+export function click_network(event) {
     console.log(event.target);
     let wifi_ssid = event.target.querySelector('#wifi_ssid');
     let ssid_input = document.querySelector('#ssid');
@@ -599,6 +641,7 @@ function dismiss_all_panels() {
     document.body.classList.remove('showinfopanel');
     document.body.classList.remove('showdonepanel');
     document.body.classList.remove('turnjiboonpanel');
+    document.body.classList.remove('restartstationpanel');
     ssid_changed();
 }
 
@@ -625,14 +668,14 @@ function parseHash() {
 }
 
 
-function reboot() {
+export function reboot() {
     fetch(new Request('/reboot',{method:'POST'}));
     document.body.classList.add('rebooting');
-    document.body.classList.remove('showinfopanel');
+    dismiss_all_panels();
 }
 
 
-function finished() {
+export function finished() {
     if (attempt_browser_close) {
 	try {
 	    window.close();  // actually works on some tables when web page is launched from an icon on the home page
@@ -644,7 +687,7 @@ function finished() {
 }
 
 
-async function init() {
+export async function init() {
     //if ('serviceWorker' in navigator) {
     //	console.log('CLIENT: service worker registration in progress.');
     //	navigator.serviceWorker.register('/service-worker.js').then(function() {
@@ -721,13 +764,3 @@ async function init() {
     monitorStatusLoop();
     monitorScanLoop();
 }
-
-
-window.client.init = init;
-window.client.cancel_connecting = cancel_connecting;
-window.client.disconnect_wifi = disconnect_wifi;
-window.client.click_network = click_network;
-window.client.toggle_password_visibility = toggle_password_visibility;
-window.client.jibopower = jibopower;
-window.client.reboot = reboot;
-window.client.finished = finished;
