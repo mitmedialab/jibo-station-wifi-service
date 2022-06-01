@@ -1,24 +1,14 @@
 #!/bin/bash
 
-VIRTUALENV_ROOT=`pwd`
-export VIRTUAL_ENV="`basename $VIRTUALENV_ROOT`"
-export PATH=$VIRTUALENV_ROOT/bin:$VIRTUALENV_ROOT/node/bin:$PATH
-export N_PREFIX=$VIRTUALENV_ROOT/node
+export VIRTUALIZE_NODE_VERSION=16.13.2
+#export VIRTUALIZE_PYTHON_VERSION=3
 
-NODE_VERSION=16.13.1
+# install git submodules
+git submodule init
+git submodule update
+virtualize/install.sh
 
-if [ "$VIRTUALENV_ROOT" != "/usr/local/jibo-station-wifi-service" ]; then
-    echo "error: this needs to be installed into and run from /usr/local/jibo-station-wifi-service"
-    exit 1
-fi
-
-if [ ! -d node ]; then
-    mkdir node
-    git clone https://github.com/tj/n node/n
-    (export PREFIX=`pwd`/node; cd node/n; make; make install)
-    N_PREFIX=`pwd`/node node/bin/n $NODE_VERSION
-    npm install -g yarn
-fi
+VIRTUALIZE_ACTIVATE_VIA_SCRIPT=1 source ./activate
 
 if [ -e node_modules ]; then
     echo "removing and reinstalling node modules"
@@ -42,7 +32,7 @@ fi
 echo ""
 echo "done!"
 
-read -p "reboot [y]? " yn
+read -p "Reboot? Choose no if you're in the middle of setting up a new NUC [y/n] " yn
 case $yn in
     ""|[yY]|yes|Yes|YES )
 	sudo reboot

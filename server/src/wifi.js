@@ -48,36 +48,36 @@ class WiFi {
         //    log.log('control', control, args);
         //});
 
-        this.routes();
+        this.routes(app);
     }
 
 
-    routes(router) {
-        router.get('/ping', async (req, res) => {
+    routes(app) {
+        app.get('/ping', async (req, res) => {
             let json = JSON.stringify({ ping: true });
             res.setHeader('Content-Type', 'application/json');
             res.end(json);
         });
 
-	router.get('/b', async (req, res) => {
+	app.get('/b', async (req, res) => {
 	    console.log('making bookmark');
             let text = await this.getBookmarkDataURL();
             res.setHeader('Content-Type', 'text/plain');
             res.end(text);
         });
 
-	router.post('/debug', async (req, res) => {
+	app.post('/debug', async (req, res) => {
             log.log('client debug', req.body);
 	    res.end();
 	});
 
-	router.post('/reboot', async (req, res) => {
+	app.post('/reboot', async (req, res) => {
             log.log('rebooting!');
 	    child_process.exec('reboot');
 	    res.end();
 	});
 
-        router.get('/status', async (req, res) => {
+        app.get('/status', async (req, res) => {
             let json = '{}';
             try {
                 let data = await this.getStatus();
@@ -89,7 +89,7 @@ class WiFi {
             res.end(json);
         });
 
-        router.get('/scan', async (req, res) => {
+        app.get('/scan', async (req, res) => {
             let json = '{}';
             try {
 		let data = await this.getScan();
@@ -101,7 +101,7 @@ class WiFi {
             res.end(json);
         });
 
-        router.get('/signal', async (req, res) => {
+        app.get('/signal', async (req, res) => {
             let json = '{}';
             try {
                 let data = await this.wireless.exec('signal_poll');
@@ -113,7 +113,7 @@ class WiFi {
             res.end(json);
         });
 
-        router.post('/connect', async (req, res) => {
+        app.post('/connect', async (req, res) => {
             let json = '{}';
             try {
                 log.log('connect', req.body);
@@ -127,7 +127,7 @@ class WiFi {
             res.end(json);
         });
 
-        router.post('/disconnect', async (req, res) => {
+        app.post('/disconnect', async (req, res) => {
             let json = '{}';
             try {
                 log.log('disconnect');
