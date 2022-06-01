@@ -7,8 +7,6 @@
 /logs
 /.Python
 /bin
-/node
-/python
 node_modules
 node_modules.old
 node_modules.hide

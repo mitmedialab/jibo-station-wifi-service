@@ -1,13 +1,14 @@
 #!/bin/sh
 
 export VIRTUALIZE_NODE_VERSION=16.13.2
+#export VIRTUALIZE_PYTHON_VERSION=3
 
 # install git submodules
 git submodule init
 git submodule update
 virtualize/install.sh
 
-source ./activate
+VIRTUALIZE_ACTIVATE_VIA_SCRIPT=1 source ./activate
 
 if [ -e node_modules ]; then
     echo "removing and reinstalling node modules"

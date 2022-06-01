@@ -2,7 +2,7 @@
 
 cd /usr/local/jibo-station-wifi-service || (echo "error!"; exit 1)
 
-source ./activate
+VIRTUALIZE_ACTIVATE_VIA_SCRIPT=1 source ./activate
 
 interface=$1
 
