@@ -1,6 +1,0 @@
-[submodule "virtualize"]
-	path = virtualize
-	url = git@github.com:mitmedialab/virtualize
-[submodule "virtualize-node"]
-	path = virtualize-node
-	url = git@github.com:mitmedialab/local-node-install.git

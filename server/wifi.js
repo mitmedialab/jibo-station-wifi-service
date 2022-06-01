@@ -6,7 +6,6 @@ const child_process = require('child_process');
 const { Wireless, Monitor } = require('wirelesser');
 const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
-const roslib = require('roslib');
 
 const INTERFACE = process.argv[2];  // node index.js <INTERFACE>
 if (!INTERFACE) {
@@ -23,8 +22,6 @@ const DHCP_LEASES_FILE = '/var/lib/misc/dnsmasq.leases';
 const SSH_TCP_PORT = 22;
 const STATIC_DIR = __dirname + '/../static';
 const SCAN_COOLING_OFF_PERIOD = 1 * 1000;  // scan fails sometimes, maybe this will help (nope on pi! nuc?)
-const ROS_URL = 'ws://localhost:9090';
-const ROS_CONNECT_TIMEOUT = 5 * 1000;
 
 const timeoutP = function(ms) {
     return new Promise( (resolve) => setTimeout(resolve, ms) );
@@ -38,6 +35,8 @@ class WiFi {
     }
 
     init(app, callback) {
+        //this.app = connect();
+        this.app = app;
 
         this.wireless = new Wireless(INTERFACE);
         //this.monitor = new Monitor(INTERFACE);
@@ -48,36 +47,37 @@ class WiFi {
         //    log.log('control', control, args);
         //});
 
-        this.routes(app);
+        this.router = app;
+        this.routes(this.router);
     }
 
 
-    routes(app) {
-        app.get('/ping', async (req, res) => {
+    routes(router) {
+        router.get('/ping', async (req, res) => {
             let json = JSON.stringify({ ping: true });
             res.setHeader('Content-Type', 'application/json');
             res.end(json);
         });
 
-	app.get('/b', async (req, res) => {
+	router.get('/b', async (req, res) => {
 	    console.log('making bookmark');
             let text = await this.getBookmarkDataURL();
             res.setHeader('Content-Type', 'text/plain');
             res.end(text);
         });
 
-	app.post('/debug', async (req, res) => {
+	router.post('/debug', async (req, res) => {
             log.log('client debug', req.body);
 	    res.end();
 	});
 
-	app.post('/reboot', async (req, res) => {
+	router.post('/reboot', async (req, res) => {
             log.log('rebooting!');
 	    child_process.exec('reboot');
 	    res.end();
 	});
 
-        app.get('/status', async (req, res) => {
+        router.get('/status', async (req, res) => {
             let json = '{}';
             try {
                 let data = await this.getStatus();
@@ -89,7 +89,7 @@ class WiFi {
             res.end(json);
         });
 
-        app.get('/scan', async (req, res) => {
+        router.get('/scan', async (req, res) => {
             let json = '{}';
             try {
 		let data = await this.getScan();
@@ -101,7 +101,7 @@ class WiFi {
             res.end(json);
         });
 
-        app.get('/signal', async (req, res) => {
+        router.get('/signal', async (req, res) => {
             let json = '{}';
             try {
                 let data = await this.wireless.exec('signal_poll');
@@ -113,7 +113,7 @@ class WiFi {
             res.end(json);
         });
 
-        app.post('/connect', async (req, res) => {
+        router.post('/connect', async (req, res) => {
             let json = '{}';
             try {
                 log.log('connect', req.body);
@@ -127,7 +127,7 @@ class WiFi {
             res.end(json);
         });
 
-        app.post('/disconnect', async (req, res) => {
+        router.post('/disconnect', async (req, res) => {
             let json = '{}';
             try {
                 log.log('disconnect');
@@ -219,7 +219,6 @@ class WiFi {
         let data = await this.wireless.status();
 	let state = data.wpa_state;
 	if (HAS_ROS) {
-	    data.ros_connected = await this.doROSCheck();
 	} else {
 	    data.no_ros = true;
 	}
@@ -245,38 +244,6 @@ class WiFi {
 	}
 
 	return data;
-    }
-
-
-    async doROSCheck() {
-	return new Promise((resolve) => {
-	    console.log('checking ROS...');
-	    let client = new roslib.Ros( { url: ROS_URL } );
-	    let timeout = setTimeout(() => {
-		console.log('ROS connection timed out');
-		timeout = null;
-		client.close();
-		resolve(false);
-	    }, ROS_CONNECT_TIMEOUT);
-		
-	    client.on('connection', () => {
-		console.log('ROS connected');
-		if (timeout) {
-		    clearTimeout(timeout);
-		    resolve(true);
-		}
-	    });
-
-	    client.on('error', (err) => {
-		let code = err && err.error && err.error.code;
-		console.error('ROS connection error', code);
-		client.close();
-		if (timeout) {
-		    clearTimeout(timeout);
-		    resolve(false);
-		}
-	    });
-	});
     }
 
 
