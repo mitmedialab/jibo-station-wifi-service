@@ -1,0 +1,2 @@
+https://www.reddit.com/r/sveltejs/comments/fkfpd8/svg_ripple_button_component/
+https://svelte.dev/repl/dbf681d6ba014f1d9cfc919f1bc59481?version=3.19.2
