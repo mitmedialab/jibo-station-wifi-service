@@ -1,48 +1,64 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-49e65bf6.js",
+    "file": "start-8a371bfc.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
-      "_vendor-cefc9dab.js"
+      "_vendor-c403d4d5.js"
     ],
     "dynamicImports": [
-      ".svelte-kit/runtime/components/layout.svelte",
+      "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
-      "src/routes/index.svelte"
+      "src/routes/index.svelte",
+      "src/routes/new.svelte"
     ]
   },
-  ".svelte-kit/runtime/components/layout.svelte": {
-    "file": "layout.svelte-4ea8efd9.js",
-    "src": ".svelte-kit/runtime/components/layout.svelte",
+  "src/routes/__layout.svelte": {
+    "file": "pages/__layout.svelte-f326e9c3.js",
+    "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-cefc9dab.js"
+      "_vendor-c403d4d5.js"
+    ],
+    "css": [
+      "assets/pages/__layout.svelte-3db504e8.css"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
-    "file": "error.svelte-a5447b3b.js",
+    "file": "error.svelte-e02a7d74.js",
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-cefc9dab.js"
+      "_vendor-c403d4d5.js"
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-53f0351d.js",
+    "file": "pages/index.svelte-29d89552.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-cefc9dab.js"
+      "_vendor-c403d4d5.js"
     ],
     "css": [
-      "assets/pages/index.svelte-aa4bcb9b.css"
+      "assets/pages/index.svelte-f9cee1d2.css"
     ]
   },
-  "_vendor-cefc9dab.js": {
-    "file": "chunks/vendor-cefc9dab.js"
+  "src/routes/new.svelte": {
+    "file": "pages/new.svelte-8187a53f.js",
+    "src": "src/routes/new.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-c403d4d5.js"
+    ],
+    "css": [
+      "assets/pages/new.svelte-845ef73e.css"
+    ]
+  },
+  "_vendor-c403d4d5.js": {
+    "file": "chunks/vendor-c403d4d5.js"
   }
 }
