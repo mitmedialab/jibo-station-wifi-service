@@ -1,21 +1,21 @@
 {
-    "name": "wifi-service",
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-	"start": "./run.sh",
-	"dev": "cd client; yarn dev",
-	"build": "yarn version; cd client; yarn build"
-    },
-    "license": "MIT",
-    "private": true,
-    "workspaces": {
-	"packages": [
-	    "client",
-	    "server"
-	],
-	"nohoist": [
-	    "**"
-	]
-    }
+			"name": "wifi-service",
+			"version": "1.0.1",
+			"description": "",
+			"scripts": {
+						"start": "./run.sh",
+						"dev": "cd client; yarn dev",
+						"build": "yarn version; cd client; yarn build"
+			},
+			"license": "MIT",
+			"private": true,
+			"workspaces": {
+						"packages": [
+									"client",
+									"server"
+						],
+						"nohoist": [
+									"**"
+						]
+			}
 }
