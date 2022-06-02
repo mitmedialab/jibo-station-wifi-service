@@ -20,7 +20,7 @@ let attempt_browser_close;
 let status_phase;
 let status_cycles;
 let status_errors;
-
+let request_prefix = '';
 
 // setTimeout but then wait for the first full frame after that
 // (so we can check isVisible without triggering any reflows)
@@ -43,7 +43,8 @@ async function monitorServerLoop() {
 	}, PING_TIMEOUT);
 	//console.log('ping fetch');
 	//console.timeLog('ping');
-        let response = await fetch('/ping');
+        let ping_request = new Request(request_prefix+'/ping');
+        let response = await fetch(ping_request);
 	//console.log('ping fetch done');
 	//console.timeLog('ping');
 	document.body.classList.remove('noserver');
@@ -65,12 +66,9 @@ async function monitorServerLoop() {
 }
 
 
-let status_request;
 async function monitorStatusLoop() {
     try {
-	if (!status_request) {
-	    status_request = new Request('/status');
-	}
+        let status_request = new Request(request_prefix+'/status');
         let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
@@ -114,7 +112,7 @@ function showStatus(status) {
 
     let last_status_phase = status_phase;
     status_cycles++;
-    
+
     let internet_connected = status.internet_connected && status.server_connected;
     let jibo_connected = status.jibo_connected;
     let ros_connected = status.no_ros || status.ros_connected;
@@ -125,7 +123,7 @@ function showStatus(status) {
 	    status_phase++;
 	}
 	break;
-	
+
     case 3:
 	if (jibo_connected || status_cycles > 1) {
 	    status_phase++;
@@ -141,7 +139,7 @@ function showStatus(status) {
 
     if (status_phase !== last_status_phase) {
 	status_cycles = 0;
-    }	
+    }
 
     showStatusBoard(status, status_phase, wifi_connected, internet_connected, jibo_connected, ros_connected);
 }
@@ -277,7 +275,7 @@ function loadContactMessages(project) {
 	wellness = true;
     }
     console.log('wellness', wellness);
-    
+
     let contactusdiv = document.querySelector('#contactus');
     let contactus2div = document.querySelector('#contactus2');
     let contactus0div = document.querySelector('#contactus0');
@@ -301,12 +299,9 @@ function loadContactMessages(project) {
 }
 
 
-let scan_request;
 async function monitorScanLoop() {
     try {
-	if (!scan_request) {
-	    scan_request = new Request('/scan');
-	}
+        let scan_request = new Request(request_prefix+'/scan');
         let response = await fetch(scan_request);
         let data = await response.json();
 	//console.log(data);
@@ -431,13 +426,15 @@ async function connect_wifi(event) {
 	    password,
 	};
 
-	await fetch('/connect', {
-	    method: 'POST',
-	    body: JSON.stringify(data),
-	    headers: {
-		'Content-Type': 'application/json'
-	    }
-	});
+        let connect_request = new Request(request_prefix+'/connect',
+                                  {
+	                              method: 'POST',
+	                              body: JSON.stringify(data),
+	                              headers: {
+		                          'Content-Type': 'application/json'
+	                              }
+                                  });
+	await fetch(connect_request);
 
 	// let ssid_input = document.querySelector('#ssid');
 	// let password_input = document.querySelector('#password');
@@ -481,8 +478,8 @@ export async function disconnect_wifi() {
     showConnection();
     try {
 	//reset_scroll('#wifi_section');
-	let request = new Request('/disconnect',{ method:'POST' });
-	fetch(request);
+        let disconnect_request = new Request(request_prefix+'/disconnect', { method:'POST' });
+	fetch(disconnect_request);
 	//reset_scroll('#wifi_section');
     } catch(err) {
 	console.error('error during disconnect', err);
@@ -502,7 +499,7 @@ export function toggle_password_visibility(event) {
     } else {
 	password.type = 'text';
 	visibility.textContent = '👁️';
-    }	
+    }
     event.preventDefault();  // keep from stealing keyboard focus
 }
 
@@ -602,6 +599,7 @@ function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     }
     let dhcp_leases = document.querySelector('#dhcp_leases');
     if (last_status && last_status.dhcp_leases) {
+        console.log('A');
 	let template = document.querySelector('template[name="dhcp_leases"]');
 	let dhcp_leases_table = template.content.cloneNode(true);
 	let entries = document.createDocumentFragment();
@@ -652,7 +650,7 @@ function replaceChildren(parent, newChildren) {
 	parent.firstChild.remove();
     }
     parent.append(newChildren);
-}    
+}
 
 
 function parseHash() {
@@ -669,7 +667,8 @@ function parseHash() {
 
 
 export function reboot() {
-    fetch(new Request('/reboot',{method:'POST'}));
+    let reboot_request = new Request(request_prefix+'/reboot', { method:'POST' });
+    fetch(reboot_request);
     document.body.classList.add('rebooting');
     dismiss_all_panels();
 }
@@ -702,6 +701,11 @@ export async function init() {
     //reset_scroll('#wifi_section');
     //reset_scroll('#sectionholder');
 
+    if (window.navigator.userAgent.indexOf('Mac OS X') != -1) {
+        console.warn('running on a mac! routing api requests to 10.99.0.1 for dev purposes!');
+        request_prefix = 'http://10.99.0.1';
+    }
+
     let md = new MobileDetect(window.navigator.userAgent);
     console.log('md', md);
     //window.md = md;
@@ -718,10 +722,11 @@ export async function init() {
     }
     debugstr += `\n${md.version('Android')}`;
     debugstr += `\nscreen.width x height: ${window.screen.width} x ${window.screen.height}`;
-    fetch(new Request('/debug',{method:'POST',body:debugstr}));
+    let debug_request = new Request(request_prefix+'/debug', { method:'POST' });
+    fetch(new Request(debug_request, { body:debugstr }));
 
     parseHash();
-    
+
     let project = 'generic';
     if (hashParams.project) {
 	project = hashParams.project;
@@ -739,7 +744,8 @@ export async function init() {
 	}
 	if (android_version && android_version >= 9) {
 	    attempt_browser_close = true;
-	    fetch(new Request('/debug',{method:'POST',body:'going to attempt browser close on done'}));
+            debug_request = new Request(request_prefix+'/debug', { method:'POST' });
+	    fetch(new Request(debug_request, { body: 'going to attempt browser close on done' }));
 	}
     }
 
