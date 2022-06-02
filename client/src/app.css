@@ -145,20 +145,6 @@ td {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
 }
 
-#dhcp_leases table {
-  border-collapse: collapse;
-}
-#dhcp_leases tr.matched {
-    background-color: gray !important;
-}
-#dhcp_leases td {
-    font-size: 14px;
-    padding-left: 8px;
-    line-height: 17px;
-}
-
-
-
 
 /* Mobile */
 @media only screen and (max-device-width: 480px) {
@@ -253,3 +239,51 @@ td {
     }
 }
 /* end Android targeting */
+
+
+
+li.matched {
+    background-color: gray !important;
+}
+
+form {
+  max-width: 800px;
+}
+
+#sectionholder {
+  font-family: sans-serif;
+  scroll-snap-type: x mandatory;	
+  display: flex;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: scroll;
+}
+
+section {
+  width: 100vw;
+  min-width: 100vw;
+  height: 100vh;
+  /*border-right: 1px solid white;*/
+  /*padding: 1rem;*/
+  padding-top: 50px;
+  scroll-snap-align: start;
+  /*scroll-snap-stop: always;*/
+  text-align: center;
+  position: relative;
+}
+
+section:nth-child(even) {
+    background-color: #13343D;
+    /* https://www.colorhexa.com/006994  // old */
+}
+section:nth-child(odd) {
+    background-color: #1B3C45;
+}
+
+.header {
+    position:sticky;
+    top:0;
+    left:0;
+    height:80px;
+    z-index:900;
+    width:100%;
+}

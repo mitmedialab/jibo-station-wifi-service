@@ -20,13 +20,6 @@ let attempt_browser_close;
 let status_phase;
 let status_cycles;
 let status_errors;
-
-let status_request;
-let scan_request;
-let ping_request;
-let disconnect_request;
-let reboot_request;
-let debug_request;
 let request_prefix = '';
 
 // setTimeout but then wait for the first full frame after that
@@ -50,9 +43,7 @@ async function monitorServerLoop() {
 	}, PING_TIMEOUT);
 	//console.log('ping fetch');
 	//console.timeLog('ping');
-        if (!ping_request) {
-            ping_request = new Request(request_prefix+'/ping');
-        }
+        let ping_request = new Request(request_prefix+'/ping');
         let response = await fetch(ping_request);
 	//console.log('ping fetch done');
 	//console.timeLog('ping');
@@ -77,9 +68,7 @@ async function monitorServerLoop() {
 
 async function monitorStatusLoop() {
     try {
-        if (!status_request) {
-            status_request = new Request(request_prefix+'/status');
-        }
+        let status_request = new Request(request_prefix+'/status');
         let response = await fetch(status_request);
         let data = await response.json();
 	if (data && !data.retry && Object.keys(data).length !== 0) {
@@ -312,9 +301,7 @@ function loadContactMessages(project) {
 
 async function monitorScanLoop() {
     try {
-        if (!scan_request) {
-            scan_request = new Request(request_prefix+'/scan');
-        }
+        let scan_request = new Request(request_prefix+'/scan');
         let response = await fetch(scan_request);
         let data = await response.json();
 	//console.log(data);
@@ -439,8 +426,7 @@ async function connect_wifi(event) {
 	    password,
 	};
 
-        if (!connect_request) {
-            connect_request = new Request(request_prefix+'/connect',
+        let connect_request = new Request(request_prefix+'/connect',
                                   {
 	                              method: 'POST',
 	                              body: JSON.stringify(data),
@@ -448,7 +434,6 @@ async function connect_wifi(event) {
 		                          'Content-Type': 'application/json'
 	                              }
                                   });
-        }
 	await fetch(connect_request);
 
 	// let ssid_input = document.querySelector('#ssid');
@@ -493,9 +478,7 @@ export async function disconnect_wifi() {
     showConnection();
     try {
 	//reset_scroll('#wifi_section');
-        if (!disconnect_request) {
-            disconnect_request = new Request(request_prefix+'/disconnect', { method:'POST' });
-        }
+        let disconnect_request = new Request(request_prefix+'/disconnect', { method:'POST' });
 	fetch(disconnect_request);
 	//reset_scroll('#wifi_section');
     } catch(err) {
@@ -616,6 +599,7 @@ function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     }
     let dhcp_leases = document.querySelector('#dhcp_leases');
     if (last_status && last_status.dhcp_leases) {
+        console.log('A');
 	let template = document.querySelector('template[name="dhcp_leases"]');
 	let dhcp_leases_table = template.content.cloneNode(true);
 	let entries = document.createDocumentFragment();
@@ -683,9 +667,7 @@ function parseHash() {
 
 
 export function reboot() {
-    if (!reboot_request) {
-        reboot_request = new Request(request_prefix+'/reboot', { method:'POST' });
-    }
+    let reboot_request = new Request(request_prefix+'/reboot', { method:'POST' });
     fetch(reboot_request);
     document.body.classList.add('rebooting');
     dismiss_all_panels();
@@ -740,9 +722,7 @@ export async function init() {
     }
     debugstr += `\n${md.version('Android')}`;
     debugstr += `\nscreen.width x height: ${window.screen.width} x ${window.screen.height}`;
-    if (!debug_request) {
-        debug_request = new Request(request_prefix+'/debug', { method:'POST' });
-    }
+    let debug_request = new Request(request_prefix+'/debug', { method:'POST' });
     fetch(new Request(debug_request, { body:debugstr }));
 
     parseHash();
@@ -764,6 +744,7 @@ export async function init() {
 	}
 	if (android_version && android_version >= 9) {
 	    attempt_browser_close = true;
+            debug_request = new Request(request_prefix+'/debug', { method:'POST' });
 	    fetch(new Request(debug_request, { body: 'going to attempt browser close on done' }));
 	}
     }
