@@ -7,12 +7,12 @@
     <link rel="icon" href="/favicon.ico" />
     <meta http-equiv="content-security-policy" content=""><title>JiboStationSetup</title>
 	<link rel="stylesheet" href="/_app/immutable/assets/pages/__layout.svelte-3db504e8.css">
-	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-1400e7c2.css">
-	<link rel="modulepreload" href="/_app/immutable/start-47f5302e.js">
+	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-f9469f0b.css">
+	<link rel="modulepreload" href="/_app/immutable/start-7431a6fd.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-1831f268.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-b9770ee2.js">
 	<link rel="modulepreload" href="/_app/immutable/pages/__layout.svelte-fdc31542.js">
-	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-19a1dc22.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-b1d60a77.js">
   </head>
 
   <body class="noserver nostatus">
@@ -39,7 +39,7 @@
 	  <div id="line2" style="color:red"></div></div></template></center>
 
     
-      <div id="notconnected" style="flex-wrap:wrap;justify-content:center" class="svelte-130ytsz"><div style="position:relative;top:-12px;flex:0 1 500px"><div style="text-align:left;margin-bottom:12px"><span style="color:lightgray">Visible networks  <span style="color:gray">tap to select</span></span></div>
+      <div id="notconnected" style="flex-wrap:wrap;justify-content:center" class="svelte-1ytn7ki"><div style="position:relative;top:-12px;flex:0 1 400px"><div style="text-align:left;margin-bottom:12px"><span style="color:lightgray">Visible networks  <span style="color:gray">tap to select</span></span></div>
 	  <div><div style="width:100%;height:50vh;text-align:left;overflow-y:scroll"><ul width="300" id="network_list" style="width:450px;list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap"><li><i>looking for networks...</i></li></ul>
 
 	      <template id="network_list_entry"><li class="network_list_entry" style="background-color:#2B4C56"><div style="position:relative;pointer-events:none"><span id="wifi_security" style="position:relative;display:inline-block;top:-2px;width:18px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
@@ -54,59 +54,59 @@
 		  <td><div style="font-size:20px;font-weight:900"><label for="ssid">Network Name</label><br>
 		      <input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required></div></td>
 		  <td style="width:25px"></td>
-		  <td rowspan="4" style="padding-top:112px"><span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;"><button id="connect" class="normal svelte-130ytsz">Connect WiFi
+		  <td rowspan="4" style="padding-top:112px"><span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;"><button id="connect" class="normal svelte-1ytn7ki">Connect WiFi
 		      </button></span></td></tr>
 
 	        <tr style="width:100%"><td style="height:30px"></td></tr>
 
-	        <tr style="width:100%"><td style="width:45px"><button id="visibility" type="button" class="eyes svelte-130ytsz" onclick="window.client.toggle_password_visibility(event)">👁️</button></td>
+	        <tr style="width:100%"><td style="width:45px"><button id="visibility" type="button" class="eyes svelte-1ytn7ki" onclick="window.client.toggle_password_visibility(event)">👁️</button></td>
 		  <td style="font-size:20px;font-weight:900"><div style="font-size:20px;font-weight:900"><label for="password">WiFi Password<div style="color:gray;font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
 		      <input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"></div></td></tr></table></form>
 	    <h1><span style="color:lightgray"><br>If you are having trouble connecting<br>
 	        <span class="contactinfo_2line">please contact us</span></span></h1></center></div></div>
 
-      <div id="connected" class="svelte-130ytsz"><center><br>
-	  <div><div style="height:18px"><div id="checking" class="svelte-130ytsz"><center><h1><span style="color:lightgray">Checking connection...</span></h1></center></div></div>
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px"><div id="stage-1-pending" class="svelte-130ytsz"><span style="font-size:72px">➖ </span>
+      <div id="connected" class="svelte-1ytn7ki"><center><br>
+	  <div><div style="height:18px"><div id="checking" class="svelte-1ytn7ki"><center><h1><span style="color:lightgray">Checking connection...</span></h1></center></div></div>
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px"><div id="stage-1-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
 	        <br>
 	        <br>
 	        <h2>Internet</h2></div>
-	      <div id="stage-1-good" class="svelte-130ytsz"><span style="font-size:72px">✅ </span>
+	      <div id="stage-1-good" class="svelte-1ytn7ki"><span style="font-size:72px">✅ </span>
 	        <br>
 	        <br>
 	        <h2>Internet connected</h2></div>
-	      <div id="stage-1-bad" class="svelte-130ytsz"><span style="font-size:72px">❓ </span>
+	      <div id="stage-1-bad" class="svelte-1ytn7ki"><span style="font-size:72px">❓ </span>
 	        <br>
 	        <br>
 	        <h2>Internet not connected</h2></div></div>
 
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px"><div id="stage-2-pending" class="svelte-130ytsz"><span style="font-size:72px">➖ </span>
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px"><div id="stage-2-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
 	        <br>
 	        <br>
 	        <h2>Jibo</h2></div>
-	      <div id="stage-2-good" class="svelte-130ytsz"><span style="font-size:72px">✅ </span>
+	      <div id="stage-2-good" class="svelte-1ytn7ki"><span style="font-size:72px">✅ </span>
 	        <br>
 	        <br>
 	        <h2>Jibo connected</h2></div>
-	      <div id="stage-2-bad" onclick="window.client.popup_problem_panel()" class="svelte-130ytsz"><span style="font-size:72px">❓ </span>
+	      <div id="stage-2-bad" onclick="window.client.popup_problem_panel()" class="svelte-1ytn7ki"><span style="font-size:72px">❓ </span>
 	        <br>
 	        <br>
 	        <h2>Jibo not connected</h2></div></div>
 
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px"><div id="stage-3-pending" class="svelte-130ytsz"><span style="font-size:72px">➖ </span>
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px"><div id="stage-3-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
 	        <br>
 	        <br>
 	        <h2>Station Status</h2></div>
-	      <div id="stage-3-good" class="svelte-130ytsz"><span style="font-size:72px">✅ </span>
+	      <div id="stage-3-good" class="svelte-1ytn7ki"><span style="font-size:72px">✅ </span>
 	        <br>
 	        <br>
 	        <h2>All Systems Go!</h2></div>
-	      <div id="stage-3-bad" onclick="window.client.popup_problem_panel()" class="svelte-130ytsz"><span style="font-size:72px">❓ </span>
+	      <div id="stage-3-bad" onclick="window.client.popup_problem_panel()" class="svelte-1ytn7ki"><span style="font-size:72px">❓ </span>
 	        <br>
 	        <br>
 	        <h2>There is a problem</h2></div></div>
 	    <br>
-	    <div id="contactus" class="svelte-130ytsz"><center><h1><span style="color:lightgray"><br>There might be an issue with your station<br>
+	    <div id="contactus" class="svelte-1ytn7ki"><center><h1><span style="color:lightgray"><br>There might be an issue with your station<br>
 		    <span class="contactinfo">Please contact us</span></span></h1>
 	        <br></center></div>
 
@@ -117,17 +117,17 @@
 	      jibo-wellness@media.mit.edu<br>or   617-921-6515
 	    </template></div>
 
-	  <button onclick="window.client.disconnect_wifi()" class="normal discourage svelte-130ytsz" style="position:absolute;right:62px;top:130px">Disconnect<br>WiFi
+	  <button onclick="window.client.disconnect_wifi()" class="normal discourage svelte-1ytn7ki" style="position:absolute;right:62px;top:130px">Disconnect<br>WiFi
 	  </button>
-	  <button id="setupagain" class="normal svelte-130ytsz" onclick="window.client.disconnect_wifi()">Try Setup Again
+	  <button id="setupagain" class="normal svelte-1ytn7ki" onclick="window.client.disconnect_wifi()">Try Setup Again
 	  </button>
 	  <br>
 	  <br>
 	  <br>
-	  <button id="done" class="normal svelte-130ytsz" onclick="window.client.finished()">Done
+	  <button id="done" class="normal svelte-1ytn7ki" onclick="window.client.finished()">Done
 	  </button></center></div>
 
-      <div id="connecting" class="svelte-130ytsz"><div style="display:inline-block;width:600px;position:relative;top:-50px"><center><br>
+      <div id="connecting" class="svelte-1ytn7ki"><div style="display:inline-block;width:600px;position:relative;top:-50px"><center><br>
 	    <br>
 	    <br>
 	    <h1><span id="feedback"></span></h1>
@@ -135,16 +135,16 @@
 	    <br>
 	    <br>
 	    <br>
-	    <button class="normal svelte-130ytsz" onclick="window.client.cancel_connecting()">Cancel
+	    <button class="normal svelte-1ytn7ki" onclick="window.client.cancel_connecting()">Cancel
 	    </button></center></div></div>
 
-      <div id="disconnecting" class="svelte-130ytsz"><div style="display:inline-block;width:600px;position:relative;top:-50px"><center><br>
+      <div id="disconnecting" class="svelte-1ytn7ki"><div style="display:inline-block;width:600px;position:relative;top:-50px"><center><br>
 	    <br>
 	    <br>
 	    <h1>Disconnecting...</h1></center></div></div>
 
 
-      <div id="infobutton" class="svelte-130ytsz"><div id="clickinfo" class="svelte-130ytsz"><span style="font-size:42px;color:darkgray">ⓘ</span></div></div>
+      <div id="infobutton" class="svelte-1ytn7ki"><div id="clickinfo" class="svelte-1ytn7ki"><span style="font-size:42px;color:darkgray">ⓘ</span></div></div>
       <div id="infopanel" class="panel svelte-17b6nzd"><div id="dismiss" class="svelte-17b6nzd"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
   <button onclick="client.reboot()" class="normal discourage svelte-wiozrd" style="position:absolute;right:84px;top:160px">Reboot<br>Station
 </button>
@@ -209,7 +209,7 @@
 	  <br>
 	  <h1>Please restart your Jibo Station</h1><br>
 	  <br>
-	  <button onclick="window.client.reboot()" class="normal svelte-130ytsz">Restart Station
+	  <button onclick="window.client.reboot()" class="normal svelte-1ytn7ki">Restart Station
 	  </button>
 	  <br>
 	  <br>
@@ -273,10 +273,10 @@
 </main>
 
 
-		<script type="module" data-sveltekit-hydrate="1gpj9kw">
-		import { start } from "/_app/immutable/start-47f5302e.js";
+		<script type="module" data-sveltekit-hydrate="1dmu3j5">
+		import { start } from "/_app/immutable/start-7431a6fd.js";
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="1gpj9kw"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="1dmu3j5"]').parentNode,
 			paths: {"base":"","assets":""},
 			session: {},
 			route: true,
