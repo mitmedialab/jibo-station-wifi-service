@@ -5,7 +5,7 @@ const fsP = require('fs').promises;
 const util = require('util');
 const child_process = require('child_process');
 const { Wireless, Monitor } = require('wirelesser');
-const iw = require('wireless-tools/iw');
+const iw = require('./iw');
 const isOnline = require('is-online');
 const isTcpOn = require('is-tcp-on');
 const roslib = require('roslib');
@@ -165,7 +165,6 @@ class WiFi {
 		    console.log('initiating scan');
                     //this.wireless.scan()
                     let scan = util.promisify((iface, callback) => iw.scan(iface, callback));
-                    //this.wireless.scan()
                     scan(INTERFACE)
                         .then(networks => {
                             console.log(`scan finished. found ${networks.length} wireless networks at ${INTERFACE}`);
