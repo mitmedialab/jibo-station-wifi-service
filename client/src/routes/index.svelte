@@ -5,7 +5,8 @@
   import InfoPanel from '$lib/InfoPanel.svelte';
   
   onMount(() => {
-    client.init();
+      client.init();
+      window.client = client;
   });
 </script>
 
@@ -60,323 +61,334 @@
     </center>
 
     <!-- <div id="notconnected" style="display:inline-grid;place-items:start"> -->
-    <div id="notconnected" style="flex-wrap:wrap;justify-content:center">
-      <div style="position:relative;top:-12px;flex:0 1 500px">
-	<div style="text-align:left;margin-bottom:12px">
-	  <span style="color:lightgray">Visible networks &nbsp;<span style="color:gray">tap to select</span></span>
-	</div>
-	<div>
-	  <div style="width:100%;height:50vh;text-align:left;overflow-y:scroll">
-	    <ul width=300 id="network_list" style="width:450px;list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
-	      <li><i>looking for networks...</i></li>
-	    </ul>
+      <div id="notconnected" style="flex-wrap:wrap;justify-content:center">
+        <div style="position:relative;top:-12px;flex:0 1 500px">
+	  <div style="text-align:left;margin-bottom:12px">
+	    <span style="color:lightgray">Visible networks &nbsp;<span style="color:gray">tap to select</span></span>
+	  </div>
+	  <div>
+	    <div style="width:100%;height:50vh;text-align:left;overflow-y:scroll">
+	      <ul width="300" id="network_list" style="width:450px;list-style:none;font-size:20px;font-weight:900;margin-left:2px;margin-top:4px;white-space:nowrap">
+	        <li><i>looking for networks...</i></li>
+	      </ul>
 
-	    <template id="network_list_entry">
-	      <li class="network_list_entry" style="background-color:#2B4C56">
-		<div style="position:relative;pointer-events:none">
-		  <span id="wifi_security" style="position:relative;display:inline-block;top:-2px;width:18px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
-		  <div style="display:inline-block;position:relative;height:20px;width:24px;top:1px;pointer-events:none"><div id="wifi_bars" style="pointer-events:none"></div></div>
-		  <span id="wifi_ssid" style="pointer-events:none"></span>
-		</div>
-	      </li>
+	      <template id="network_list_entry">
+	        <li class="network_list_entry" style="background-color:#2B4C56">
+		  <div style="position:relative;pointer-events:none">
+		    <span id="wifi_security" style="position:relative;display:inline-block;top:-2px;width:18px;font-size:18px;opacity:0.6;margin:0 4px 0 8px;pointer-events:none"></span>
+		    <div style="display:inline-block;position:relative;height:20px;width:24px;top:1px;pointer-events:none"><div id="wifi_bars" style="pointer-events:none"></div></div>
+		    <span id="wifi_ssid" style="pointer-events:none"></span>
+		  </div>
+	        </li>
+	      </template>
+
+	    </div>
+	  </div>
+        </div>
+
+        <div style="display:inline-block;width:600px;position:relative">
+	  <center>
+	    <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size:20px;line-height:26px;padding-bottom:16px">
+	      <table style="width:508px"> <!-- style="display:grid;place-items:center;background-color:#1B3C45"> -->
+
+	        <tr style="width:100%">
+                  <td style="height:50px;width:100">
+                  </td>
+                </tr>
+
+	        <tr style="width:100%">
+		  <td>
+                  </td>
+		  <td>
+		    <div style="font-size:20px;font-weight:900">
+		      <label for="ssid">Network Name</label><br>
+		      <input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required/>
+		    </div>
+		  </td>
+		  <td style="width:25px">
+                  </td>
+		  <td rowspan="4" style="padding-top:112px">
+		    <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
+		      <button id="connect" class="normal">
+		        Connect WiFi
+		      </button>
+		    </span>
+		  </td>
+	        </tr>
+
+	        <tr style="width:100%">
+                  <td style="height:30px"></td>
+                </tr>
+
+	        <tr style="width:100%">
+		  <td style="width:45px">
+		    <button id="visibility" type="button" class="eyes" onclick="window.client.toggle_password_visibility(event)">👁️</button>
+		  </td>
+		  <td style="font-size:20px;font-weight:900">
+		    <div style="font-size:20px;font-weight:900">
+		      <label for="password">WiFi Password<div style="color:gray;font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
+		      <input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"/>
+		    </div>
+		  </td>
+	        </tr>
+                
+	      </table>
+	    </form>
+	    <h1><span style="color:lightgray"><br>If you are having trouble connecting<br>
+	        <span class="contactinfo_2line">please contact us</span></span></h1>
+	  </center>
+        </div>
+      </div>
+
+      <div id="connected">
+        <center>
+	  <br>
+	  <div>
+	    <div style="height:18px">
+	      <div id="checking">
+	        <center>
+		  <h1><span style="color:lightgray">Checking connection...</span></h1>
+	        </center>
+	      </div>
+	    </div>
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
+	      <div id="stage-1-pending">
+	        <span style="font-size:72px">➖ </span>
+	        <br>
+	        <br>
+	        <h2>Internet</h2>
+	      </div>
+	      <div id="stage-1-good">
+	        <span style="font-size:72px">✅ </span>
+	        <br>
+	        <br>
+	        <h2>Internet connected</h2>
+	      </div>
+	      <div id="stage-1-bad">
+	        <span style="font-size:72px">❓ </span>
+	        <br>
+	        <br>
+	        <h2>Internet not connected</h2>
+	      </div>
+	    </div>
+
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px">
+	      <div id="stage-2-pending">
+	        <span style="font-size:72px">➖ </span>
+	        <br>
+	        <br>
+	        <h2>Jibo</h2>
+	      </div>
+	      <div id="stage-2-good">
+	        <span style="font-size:72px">✅ </span>
+	        <br>
+	        <br>
+	        <h2>Jibo connected</h2>
+	      </div>
+	      <div id="stage-2-bad" onclick="window.client.popup_problem_panel()">
+	        <span style="font-size:72px">❓ </span>
+	        <br>
+	        <br>
+	        <h2>Jibo not connected</h2>
+	      </div>
+	    </div>
+
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
+	      <div id="stage-3-pending">
+	        <span style="font-size:72px">➖ </span>
+	        <br>
+	        <br>
+	        <h2>Station Status</h2>
+	      </div>
+	      <div id="stage-3-good">
+	        <span style="font-size:72px">✅ </span>
+	        <br>
+	        <br>
+	        <h2>All Systems Go!</h2>
+	      </div>
+	      <div id="stage-3-bad" onclick="window.client.popup_problem_panel()">
+	        <span style="font-size:72px">❓ </span>
+	        <br>
+	        <br>
+	        <h2>There is a problem</h2>
+	      </div>
+	    </div>
+	    <br>
+	    <div id="contactus">
+	      <center>
+	        <h1><span style="color:lightgray"><br>There might be an issue with your station<br>
+		    <span class="contactinfo">Please contact us</span></span></h1>
+	        <br>
+	      </center>
+	    </div>
+
+	    <template id="contactinfo_wellness">
+	      Please contact us at<br>
+	      jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515
+	    </template>
+	    <template id="contactinfo_2line_wellness">
+	      please contact us at<br>
+	      jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515
 	    </template>
 
 	  </div>
-	</div>
-      </div>
 
-      <div style="display:inline-block;width:600px;position:relative">
-	<center>
-	  <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size:20px;line-height:26px;padding-bottom:16px">
-	    <table width="400" style="display:grid;place-items:center;background-color:#1B3C45">
-	      <tr><td style="height:50px"></td></tr>
-	      <tr>
-		<td></td>
-		<td>
-		  <div style="font-size:20px;font-weight:900">
-		    <label for="ssid">Network Name</label><br>
-		    <input id="ssid" autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" style="font-size:24px;margin-top:5px;" required/>
-		  </div>
-		</td>
-		<td style="width:25px"></td>
-		<td rowspan="4" style="padding-top:112px">
-		  <span style="display: inline-block; border-radius: 4px; background: #1f8b5f; border-bottom: 2px solid #1f8b5f;">
-		    <button id="connect" class="normal">
-		      Connect WiFi
-		    </button>
-		  </span>
-		</td>
-	      </tr>
-	      <tr><td style="height:30px"></td></tr>
-	      <tr>
-		<td style="width:45px">
-		  <button id="visibility" type="button" class="eyes" onclick="client.toggle_password_visibility(event)">👁️</button>
-		</td>
-		<td style="font-size:20px;font-weight:900">
-		  <div style="font-size:20px;font-weight:900">
-		    <label for="password">WiFi Password<div style="color:gray;font-size:11px;margin-top:-8px;margin-left:2px"><i>leave blank if no password</i></div></label>
-		    <input id="password" autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" style="font-size:24px"/>
-		  </div>
-		</td>
-	      </tr>
-	    </table>
-	  </form>
-	  <h1><span style="color:lightgray"><br>If you are having trouble connecting<br>
-	      <span class="contactinfo_2line">please contact us</span></span></h1>
-	</center>
-      </div>
-    </div>
-
-    <div id="connected">
-      <center>
-	<br>
-	<div>
-	  <div style="height:18px">
-	    <div id="checking">
-	      <center>
-		<h1><span style="color:lightgray">Checking connection...</span></h1>
-	      </center>
-	    </div>
-	  </div>
-	  <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
-	    <div id="stage-1-pending">
-	      <span style="font-size:72px">➖ </span>
-	      <br>
-	      <br>
-	      <h2>Internet</h2>
-	    </div>
-	    <div id="stage-1-good">
-	      <span style="font-size:72px">✅ </span>
-	      <br>
-	      <br>
-	      <h2>Internet connected</h2>
-	    </div>
-	    <div id="stage-1-bad">
-	      <span style="font-size:72px">❓ </span>
-	      <br>
-	      <br>
-	      <h2>Internet not connected</h2>
-	    </div>
-	  </div>
-
-	  <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px">
-	    <div id="stage-2-pending">
-	      <span style="font-size:72px">➖ </span>
-	      <br>
-	      <br>
-	      <h2>Jibo</h2>
-	    </div>
-	    <div id="stage-2-good">
-	      <span style="font-size:72px">✅ </span>
-	      <br>
-	      <br>
-	      <h2>Jibo connected</h2>
-	    </div>
-	    <div id="stage-2-bad" onclick="client.popup_problem_panel()">
-	      <span style="font-size:72px">❓ </span>
-	      <br>
-	      <br>
-	      <h2>Jibo not connected</h2>
-	    </div>
-	  </div>
-
-	  <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
-	    <div id="stage-3-pending">
-	      <span style="font-size:72px">➖ </span>
-	      <br>
-	      <br>
-	      <h2>Station Status</h2>
-	    </div>
-	    <div id="stage-3-good">
-	      <span style="font-size:72px">✅ </span>
-	      <br>
-	      <br>
-	      <h2>All Systems Go!</h2>
-	    </div>
-	    <div id="stage-3-bad" onclick="client.popup_problem_panel()">
-	      <span style="font-size:72px">❓ </span>
-	      <br>
-	      <br>
-	      <h2>There is a problem</h2>
-	    </div>
-	  </div>
-	  <br>
-	  <div id="contactus">
-	    <center>
-	      <h1><span style="color:lightgray"><br>There might be an issue with your station<br>
-		  <span class="contactinfo">Please contact us</span></span></h1>
-	      <br>
-	    </center>
-	  </div>
-
-	  <template id="contactinfo_wellness">
-	    Please contact us at<br>
-	    jibo-wellness@media.mit.edu &nbsp; or &nbsp; 617-921-6515
-	  </template>
-	  <template id="contactinfo_2line_wellness">
-	    please contact us at<br>
-	    jibo-wellness@media.mit.edu<br>or &nbsp; 617-921-6515
-	  </template>
-
-	</div>
-
-	<button onclick="client.disconnect_wifi()" class="normal discourage" style="position:absolute;right:62px;top:130px">
-	  Disconnect<br>WiFi
-	</button>
-	<button id="setupagain" class="normal" onclick="client.disconnect_wifi()">
-	  Try Setup Again
-	</button>
-	<br>
-	<br>
-	<br>
-	<button id="done" class="normal" onclick="client.finished()">
-	  Done
-	</button>
-      </center>
-    </div>
-
-    <div id="connecting">
-      <div style="display:inline-block;width:600px;position:relative;top:-50px">
-	<center>
-	  <br>
-	  <br>
-	  <br>
-	  <h1><span id="feedback"></span></h1>
-	  <br>
-	  <br>
-	  <br>
-	  <br>
-	  <button class="normal" onclick="client.cancel_connecting()">
-	    Cancel
+	  <button onclick="window.client.disconnect_wifi()" class="normal discourage" style="position:absolute;right:62px;top:130px">
+	    Disconnect<br>WiFi
 	  </button>
-	</center>
-      </div>
-    </div>
-
-    <div id="disconnecting">
-      <div style="display:inline-block;width:600px;position:relative;top:-50px">
-	<center>
+	  <button id="setupagain" class="normal" onclick="window.client.disconnect_wifi()">
+	    Try Setup Again
+	  </button>
 	  <br>
 	  <br>
 	  <br>
-	  <h1>Disconnecting...</h1>
-	</center>
+	  <button id="done" class="normal" onclick="window.client.finished()">
+	    Done
+	  </button>
+        </center>
       </div>
-    </div>
 
-
-    <div id="infobutton">
-      <div id="clickinfo">
-	<span style="font-size:42px;color:darkgray">ⓘ</span>
+      <div id="connecting">
+        <div style="display:inline-block;width:600px;position:relative;top:-50px">
+	  <center>
+	    <br>
+	    <br>
+	    <br>
+	    <h1><span id="feedback"></span></h1>
+	    <br>
+	    <br>
+	    <br>
+	    <br>
+	    <button class="normal" onclick="window.client.cancel_connecting()">
+	      Cancel
+	    </button>
+	  </center>
+        </div>
       </div>
-    </div>
-    <Panel id="infopanel">
-      <InfoPanel/>
-    </Panel>
+
+      <div id="disconnecting">
+        <div style="display:inline-block;width:600px;position:relative;top:-50px">
+	  <center>
+	    <br>
+	    <br>
+	    <br>
+	    <h1>Disconnecting...</h1>
+	  </center>
+        </div>
+      </div>
 
 
-    <Panel id="turnjiboonpanel">
-      <center>
-	<br>
-	<br>
-	<br>
-	<br>
-	<h1>Please turn on the Jibo Robot</h1><br>
-	<br>
-	<img src="jibopower.png" alt="jibo's power button" width="128" height="128">
-	<h1><span style="color:lightgray"><span id="powerinstructions"><br>Please press the power button on the back of Jibo's head<br></span></span></h1>
-	<br>
-	<h1><span style="color:lightgray"><br>If you are having trouble<br>
-	    <span class="contactinfo">please contact us</span></span></h1>
-      </center>
-    </Panel>
-
-    <Panel id="restartstationpanel">
-      <center>
-	<br>
-	<br>
-	<br>
-	<br>
-	<h1>Please restart your Jibo Station</h1><br>
-	<br>
-	<button onclick="client.reboot()" class="normal">
-	  Restart Station
-	</button>
-	<br>
-	<br>
-	<h1><span style="color:lightgray"><span id="powerinstructions"><br>You Jibo station has a problem and needs to be restarted<br>
-	      Please press the <span style="color:white">Restart Station</span> button above<br></span></span></h1>
-	<br>
-	<h1><span style="color:lightgray"><br>If you are having trouble<br>
-	    <span class="contactinfo">please contact us</span></span></h1>
-      </center>
-    </Panel>
-
-    <Panel id="donepanel">
-      <center>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<h1>Your Jibo Station is setup!</h1><br>
-	<br>
-	<h1><span style="color:lightgray"><span id="homeinstructions">Press the Home button on the tablet<br>to go back to the home screen</span></span></h1>
-      </center>
-    </Panel>
-
-    <Panel id="noserverpanel" noclosebutton>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <h1>Looking for Jibo Station...</h1>
-      <br>
-      <br>
-      <center>
-	<h1><span style="color:lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
-	    <span class="contactinfo">Please contact us</span></span></h1>
-	<br>
-      </center>
-    </Panel>
+      <div id="infobutton">
+        <div id="clickinfo">
+	  <span style="font-size:42px;color:darkgray">ⓘ</span>
+        </div>
+      </div>
+      <Panel id="infopanel">
+        <InfoPanel/>
+      </Panel>
 
 
-    <Panel id="rebootingpanel" noclosebutton>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <h1>Rebooting Jibo Station...</h1>
-      <br>
-      <br>
-      <!--
-	  <div id="contactus0">
-	  </div>
-	  -->
-    </Panel>
+      <Panel id="turnjiboonpanel">
+        <center>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <h1>Please turn on the Jibo Robot</h1><br>
+	  <br>
+	  <img src="jibopower.png" alt="jibo's power button" width="128" height="128">
+	  <h1><span style="color:lightgray"><span id="powerinstructions"><br>Please press the power button on the back of Jibo's head<br></span></span></h1>
+	  <br>
+	  <h1><span style="color:lightgray"><br>If you are having trouble<br>
+	      <span class="contactinfo">please contact us</span></span></h1>
+        </center>
+      </Panel>
+
+      <Panel id="restartstationpanel">
+        <center>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <h1>Please restart your Jibo Station</h1><br>
+	  <br>
+	  <button onclick="window.client.reboot()" class="normal">
+	    Restart Station
+	  </button>
+	  <br>
+	  <br>
+	  <h1><span style="color:lightgray"><span id="powerinstructions"><br>You Jibo station has a problem and needs to be restarted<br>
+	        Please press the <span style="color:white">Restart Station</span> button above<br></span></span></h1>
+	  <br>
+	  <h1><span style="color:lightgray"><br>If you are having trouble<br>
+	      <span class="contactinfo">please contact us</span></span></h1>
+        </center>
+      </Panel>
+
+      <Panel id="donepanel">
+        <center>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <br>
+	  <h1>Your Jibo Station is setup!</h1><br>
+	  <br>
+	  <h1><span style="color:lightgray"><span id="homeinstructions">Press the Home button on the tablet<br>to go back to the home screen</span></span></h1>
+        </center>
+      </Panel>
+
+      <Panel id="noserverpanel" noclosebutton>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h1>Looking for Jibo Station...</h1>
+        <br>
+        <br>
+        <center>
+	  <h1><span style="color:lightgray"><br>Your station is still powering up<br><br>If this message is still here after 5 minutes<br>there might be an issue with your station<br>
+	      <span class="contactinfo">Please contact us</span></span></h1>
+	  <br>
+        </center>
+      </Panel>
+
+
+      <Panel id="rebootingpanel" noclosebutton>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h1>Rebooting Jibo Station...</h1>
+        <br>
+        <br>
+        <!--
+	    <div id="contactus0">
+	    </div>
+	    -->
+      </Panel>
 
 
   </section>
 </div>
 
 
-
 <style>
-button.normal {
+  button.normal {
     color: white;
     font-weight: normal;
     text-decoration: none;
@@ -445,7 +457,7 @@ button.eyes {
 
 
 #notconnected {
-    display: flex;
+  display:flex;
 }
 :global(.wifi-connected) #notconnected {
     display: none;

@@ -48,7 +48,7 @@
     <tr style="height:15px"><td></td></tr>
 
     <tr>
-      <td style="text-align:right">Tolorate Ambiguity</td><td>&nbsp;</td><td><input id="expert_mode" type="checkbox" style="width:27px;height:27px"/></td>
+      <td style="text-align:right">Expert mode</td><td>&nbsp;</td><td><input id="expert_mode" type="checkbox" style="width:27px;height:27px"/></td>
     </tr>
     <tr style="height:15px"><td></td></tr>
 
@@ -99,13 +99,13 @@
     border-color: darkred;
   }
 
-  #dhcp_leases table {
+  :global(#dhcp_leases) table {
     border-collapse: collapse;
   }
-  #dhcp_leases tr.matched {
+  :global(#dhcp_leases) :global(tr.matched) {
     background-color: gray !important;
   }
-  #dhcp_leases td {
+  :global(#dhcp_leases) td {
     font-size: 14px;
     padding-left: 8px;
     line-height: 17px;
