@@ -706,47 +706,49 @@ export async function init() {
         request_prefix = 'http://10.99.0.1';
     }
 
-    let md = new MobileDetect(window.navigator.userAgent);
-    console.log('md', md);
-    //window.md = md;
-    let debugstr = JSON.stringify(md);
-    for (let f of ['mobile', 'phone', 'tablet', 'userAgent', 'os']) {
-	let v = '';
-	try {
-	    v = JSON.stringify(md[f]());
-	} catch {
-	    console.error('error stringifying or calling md.' + f);
-	}
-	console.log(f, v);
-	debugstr += `\n${f}:${v}`;
-    }
-    debugstr += `\n${md.version('Android')}`;
-    debugstr += `\nscreen.width x height: ${window.screen.width} x ${window.screen.height}`;
-    let debug_request = new Request(request_prefix+'/debug', { method:'POST' });
-    fetch(new Request(debug_request, { body:debugstr }));
+    //this was failing under svelte in production mode (TypeError: <x> is not a constructor)
+    // let md = new MobileDetect(window.navigator.userAgent);
+    // console.log('md', md);
+    // //window.md = md;
+    // let debugstr = JSON.stringify(md);
+    // for (let f of ['mobile', 'phone', 'tablet', 'userAgent', 'os']) {
+    //     let v = '';
+    //     try {
+    //         v = JSON.stringify(md[f]());
+    //     } catch {
+    //         console.error('error stringifying or calling md.' + f);
+    //     }
+    //     console.log(f, v);
+    //     debugstr += `\n${f}:${v}`;
+    // }
+    // debugstr += `\n${md.version('Android')}`;
+    // debugstr += `\nscreen.width x height: ${window.screen.width} x ${window.screen.height}`;
+    // let debug_request = new Request(request_prefix+'/debug', { method:'POST' });
+    // fetch(new Request(debug_request, { body:debugstr }));
 
     parseHash();
 
     let project = 'generic';
+    project = 'literacy';
     if (hashParams.project) {
 	project = hashParams.project;
-    } else {
-	if (md.tablet()) {
-	    if (window.screen.width === 1280 && window.screen.height === 800) {
-		project = 'wellness';
-	    } else if (window.screen.width === 1138 && window.screen.height === 712) {
-		project = 'literacy';
-	    }
-	}
-	let android_version = md.version('Android');
-	if (android_version) {
-	    android_version = Number(android_version);
-	}
-	if (android_version && android_version >= 9) {
-	    attempt_browser_close = true;
-            debug_request = new Request(request_prefix+'/debug', { method:'POST' });
-	    fetch(new Request(debug_request, { body: 'going to attempt browser close on done' }));
-	}
+    // } else {
+    //     if (md.tablet()) {
+    //         if (window.screen.width === 1280 && window.screen.height === 800) {
+    //     	project = 'wellness';
+    //         } else if (window.screen.width === 1138 && window.screen.height === 712) {
+    //     	project = 'literacy';
+    //         }
+    //     }
+    //     let android_version = md.version('Android');
+    //     if (android_version) {
+    //         android_version = Number(android_version);
+    //     }
+    //     if (android_version && android_version >= 9) {
+    //         attempt_browser_close = true;
+    //         debug_request = new Request(request_prefix+'/debug', { method:'POST' });
+    //         fetch(new Request(debug_request, { body: 'going to attempt browser close on done' }));
+    //     }
     }
 
     loadContactMessages(project);
