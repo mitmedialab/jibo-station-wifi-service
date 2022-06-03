@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const serveStatic = require('serve-static');
 const serveIndex = require('serve-index');
 const socketio = require('socket.io');
+const cors = require('cors');
 const WiFi = require ('./wifi');
 
 const PORT = 80;
@@ -32,6 +33,7 @@ class WebServer {
 	    next();
 	});
 
+	app.use(cors({origin: '*'}));
 	//app.use(bodyParser.json({ type: 'application/*+json' }))
 	app.use(bodyParser.json({ type: 'application/json' }))
 	app.use(bodyParser.urlencoded({ type: 'application/x-www-form-urlencoded', extended: true }));
