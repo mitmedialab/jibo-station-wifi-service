@@ -62,7 +62,7 @@
 
     <!-- <div id="notconnected" style="display:inline-grid;place-items:start"> -->
       <div id="notconnected" style="flex-wrap:wrap;justify-content:center">
-        <div style="position:relative;top:-12px;flex:0 1 500px">
+        <div style="position:relative;top:-12px;flex:0 1 400px">
 	  <div style="text-align:left;margin-bottom:12px">
 	    <span style="color:lightgray">Visible networks &nbsp;<span style="color:gray">tap to select</span></span>
 	  </div>
@@ -393,12 +393,12 @@
     font-weight: normal;
     text-decoration: none;
     word-break: break-word;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 26px;
     border-top: 14px solid;
     border-bottom: 14px solid;
-    border-right: 32px solid;
-    border-left: 32px solid;
+    border-right: 28px solid;
+    border-left: 28px solid;
     background-color: #2ab27b;
     border-color: #2ab27b;
     display: inline-block;
