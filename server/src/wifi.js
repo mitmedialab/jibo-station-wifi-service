@@ -172,7 +172,7 @@ class WiFi {
 			    let actions;
 			    while (actions = this.scan_pending.shift()) {
 				//console.log('resolving scan request');
-				actions.resolve(scan);
+				actions.resolve(networks);
 			    }
 			})
 			.catch((error) => {
