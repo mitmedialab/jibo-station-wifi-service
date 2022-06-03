@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta http-equiv="content-security-policy" content="">
+	<link rel="stylesheet" href="/_app/assets/pages/__layout.svelte-3db504e8.css">
+	<link rel="stylesheet" href="/_app/assets/pages/new.svelte-845ef73e.css">
+	<link rel="modulepreload" href="/_app/start-34de3e6a.js">
+	<link rel="modulepreload" href="/_app/chunks/vendor-c403d4d5.js">
+	<link rel="modulepreload" href="/_app/pages/__layout.svelte-f326e9c3.js">
+	<link rel="modulepreload" href="/_app/pages/new.svelte-8187a53f.js">
+  </head>
+
+  <body class="noserver nostatus">
+    <div id="svelte">
+
+
+<main><div id="sectionholder"><section class="svelte-kxq08q"><div class="PageHeader svelte-kxq08q">
+      <div id="logo-container" class="svelte-1fbh78f"></div>
+  
+<div class="title-container"><h2 class="svelte-1fbh78f"><!-- HTML_TAG_START -->WiFi Setup<!-- HTML_TAG_END --></h2>
+</div>
+    </div>
+
+  <div class="PageBody-container svelte-kxq08q"><div class="PageBody svelte-kxq08q"><center><div id="connection" class="svelte-mda688"><span style="color:darkgray">Not Connected</span>
+      <br>
+       </div>
+
+  <div class="connect-container svelte-mda688"><form width="70%" enctype="multipart/form-data" method="post" class="svelte-mda688"><table width="400" class="svelte-mda688"><tr><td><br>
+              <div><label for="ssid" class="svelte-mda688">Network Name</label><br>
+                <input autocorrect="off" autocapitalize="none" type="text" name="ssid" size="18" autocomplete="off" required class="svelte-mda688"></div></td></tr><tr><td height="25"></td></tr><tr><td><div><div id="visibility-container" class="svelte-mda688"><label for="password" class="svelte-mda688">WiFi Password<div class="sublabel svelte-mda688">blank if no password</div></label>
+                  <button id="visibility" type="button" class="svelte-mda688">👁️</button></div>
+                <input autocorrect="off" autocapitalize="none" autocomplete="off" type="text" name="password" size="18" class="svelte-mda688"></div></td></tr><tr><td height="40"></td></tr><tr><td><center><div class="button-feedback-container"><button style="--color: #fff;--font-size: 20px;--bg-color: 68, 204, 204;--bg-hover: 68, 204, 204;--bg-active: 68, 204, 204;--radius: .3rem;--ripple: #187D8B;--height: 54px;--width: 200px;--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);--shadow-h: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);--shadow-a: 0 1px 2px 0 rgba(0, 0, 0, 0.05)" class="svelte-10a4q3i"><span class="svelte-10a4q3i">Connect WiFi</span>	
+	<svg class="svelte-10a4q3i"></svg>
+</button>
+  
+</div>
+                <div class="connect_status"></div></center></td></tr></table></form></div>
+
+  <br>
+  <br>
+
+  <div id="networklist-container" class="svelte-mda688"><div id="networklist" class="svelte-mda688"><center><span style="color:darkgray">Visible Networks</span></center>
+      <br>
+      <ul width="300" id="networks" class="svelte-mda688"><li>                <span style="color:darkgray">• • •</span></li></ul></div></div>
+</center></div></div>
+
+</section></div>
+
+
+
+</main>
+
+
+		<script type="module" data-hydrate="1vijpjr">
+		import { start } from "/_app/start-34de3e6a.js";
+		start({
+			target: document.querySelector('[data-hydrate="1vijpjr"]').parentNode,
+			paths: {"base":"","assets":""},
+			session: {},
+			route: true,
+			spa: false,
+			trailing_slash: "never",
+			hydrate: {
+				status: 200,
+				error: null,
+				nodes: [
+					import("/_app/pages/__layout.svelte-f326e9c3.js"),
+						import("/_app/pages/new.svelte-8187a53f.js")
+				],
+				url: new URL("http://sveltekit-prerender/new"),
+				params: {}
+			}
+		});
+	</script></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="client.js"></script> -->
+    <!-- <script>window.client.init(); </script> -->
+  </body>
+</html>

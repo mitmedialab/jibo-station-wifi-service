@@ -4,12 +4,12 @@ import adapter from '@sveltejs/adapter-static';
 const config = {
     kit: {
 	adapter: adapter({
-	    fallback: '200.html',
-	    prerender: {
-	        enabled: false,
-                entries: []
-	    },
-	    ssr: false
+	    //fallback: '200.html',
+	    //prerender: {
+	    //    enabled: false,
+            //    entries: []
+	    //},
+	    //ssr: false
         })
     },
     vite: {
