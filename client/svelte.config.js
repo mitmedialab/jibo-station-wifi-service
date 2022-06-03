@@ -10,7 +10,10 @@ const config = {
             //    entries: []
 	    //},
 	    //ssr: false
-        })
+        }),
+        prerender: {
+            default: true
+        }
     },
     vite: {
       build: {

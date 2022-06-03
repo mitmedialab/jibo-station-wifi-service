@@ -34,10 +34,10 @@ class WebServer {
 	});
 
 	app.use(cors({origin: '*'}));
-	//app.use(bodyParser.json({ type: 'application/*+json' }))
-	app.use(bodyParser.json({ type: 'application/json' }))
+	//app.use(bodyParser.json({ type: 'application/*+json' }));
+	app.use(bodyParser.json({ type: 'application/json' }));
 	app.use(bodyParser.urlencoded({ type: 'application/x-www-form-urlencoded', extended: true }));
-	app.use(bodyParser.text({ type: 'text/plain' }))
+	app.use(bodyParser.text({ type: 'text/plain' }));
 
 	let wifi = new WiFi();
 	wifi.init(app, (err) => {

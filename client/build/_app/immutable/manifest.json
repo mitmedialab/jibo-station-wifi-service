@@ -1,10 +1,11 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-34de3e6a.js",
+    "file": "start-4672cae8.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
-      "_vendor-c403d4d5.js"
+      "_index-1831f268.js",
+      "_index-b9770ee2.js"
     ],
     "dynamicImports": [
       "src/routes/__layout.svelte",
@@ -14,51 +15,58 @@
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-f326e9c3.js",
+    "file": "pages/__layout.svelte-fdc31542.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-c403d4d5.js"
+      "_index-1831f268.js"
     ],
     "css": [
       "assets/pages/__layout.svelte-3db504e8.css"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
-    "file": "error.svelte-e02a7d74.js",
+    "file": "error.svelte-b80e2935.js",
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-c403d4d5.js"
+      "_index-1831f268.js"
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-29d89552.js",
+    "file": "pages/index.svelte-82eab5f5.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-c403d4d5.js"
+      "_index-1831f268.js"
     ],
     "css": [
       "assets/pages/index.svelte-f9cee1d2.css"
     ]
   },
   "src/routes/new.svelte": {
-    "file": "pages/new.svelte-8187a53f.js",
+    "file": "pages/new.svelte-feac2eac.js",
     "src": "src/routes/new.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_vendor-c403d4d5.js"
+      "_index-1831f268.js",
+      "_index-b9770ee2.js"
     ],
     "css": [
       "assets/pages/new.svelte-845ef73e.css"
     ]
   },
-  "_vendor-c403d4d5.js": {
-    "file": "chunks/vendor-c403d4d5.js"
+  "_index-1831f268.js": {
+    "file": "chunks/index-1831f268.js"
+  },
+  "_index-b9770ee2.js": {
+    "file": "chunks/index-b9770ee2.js",
+    "imports": [
+      "_index-1831f268.js"
+    ]
   }
 }
