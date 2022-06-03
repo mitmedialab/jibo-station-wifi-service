@@ -89,7 +89,7 @@
         <div style="display:inline-block;width:600px;position:relative">
 	  <center>
 	    <form width="100%" id="connect_wifi_form" enctype="multipart/form-data" method="post" style="font-size:20px;line-height:26px;padding-bottom:16px">
-	      <table style="width:508px"> <!-- style="display:grid;place-items:center;background-color:#1B3C45"> -->
+	      <table style="width:518px"> <!-- style="display:grid;place-items:center;background-color:#1B3C45"> -->
 
 	        <tr style="width:100%">
                   <td style="height:50px;width:100">
