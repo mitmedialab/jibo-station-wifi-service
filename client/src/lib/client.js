@@ -600,18 +600,11 @@ function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
     let dhcp_leases = document.querySelector('#dhcp_leases');
     console.log(last_status);
     if (last_status && last_status.dhcp_leases) {
-        console.log('1');
 	let template = document.querySelector('template[name="dhcp_leases"]');
-        console.log(template);
 	let dhcp_leases_table = template.content.cloneNode(true);
-        console.log(dhcp_leases_table);
 	let entries = document.createDocumentFragment();
-        console.log(entries);
-        console.log('2');
 	try {
-            console.log('3');
 	    for (let lease of last_status.dhcp_leases) {
-                console.log('4');
 		// 1625731234 52:01:13:1f:df:8e 10.99.0.13 JiboStation24 01:52:01:13:1f:df:8e
 		let [lease_time, mac_address, ip_address, dhcp_name, dunnowhatthisis] = lease;
 		if (!ip_address) continue;
@@ -624,30 +617,21 @@ function update_info_panel(last_status, wifi_ssid, wifi_rssi) {
 		}
 		tr.querySelector('#dhcp_name').textContent = dhcp_name;
 		entries.appendChild(tr);
-                console.log('5');
 	    }
 	} catch(err) {
-            console.log('6');
 	    console.error(err);
 	}
-        console.log('7');
 
         try {
 	    let tbody = dhcp_leases_table.querySelector('table');  // used to be 'tbody'. huh.
-            console.log('7.1');
-            console.log(tbody);
 	    replaceChildren(tbody, entries);
-            console.log('7.2');
 	    replaceChildren(dhcp_leases, dhcp_leases_table);
-            console.log('8');
         } catch(err) {
             console.error('erg!', err);
         }
     } else {
-        console.log('9');
 	dhcp_leases.textContent = '➖';
     }
-    console.log('10');
 }
 
 function show_info_panel() {
@@ -721,7 +705,7 @@ export async function init() {
     //reset_scroll('#wifi_section');
     //reset_scroll('#sectionholder');
 
-    if (window.navigator.userAgent.indexOf('Mac OS X') != -1) {
+    if (window.location.hostname === 'localhost' && window.navigator.userAgent.indexOf('Mac OS X') != -1 ) {
         console.warn('running on a mac! routing api requests to 10.99.0.1 for dev purposes!');
         request_prefix = 'http://10.99.0.1';
     }
