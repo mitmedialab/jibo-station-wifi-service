@@ -17,6 +17,7 @@ fi
 yarn install
 
 sudo cp -p jibo-station-wifi-service.service /etc/systemd/system
+sudo chown root:root /etc/systemd/system/jibo-station-wifi-service.service
 sudo systemctl enable jibo-station-wifi-service.service
 
 if egrep "^/usr/local/jibo-station-wifi-service/" /etc/rc.local; then
@@ -31,6 +32,10 @@ fi
 
 echo ""
 echo "done!"
+
+if [[ $JSWS_NO_REBOOT_PROMPT ]]; then
+    exit 0
+fi
 
 read -p "Reboot? Choose no if you're in the middle of setting up a new NUC [y/n] " yn
 case $yn in
