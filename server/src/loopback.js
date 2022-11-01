@@ -54,7 +54,7 @@ class Loopback {
 	    }
         });
 
-        app.get('/loopback/off', async (req, res) => {
+        app.get('/loopback/status', async (req, res) => {
 	    let json = JSON.stringify({status: this.client ? "on" : "off"});
 	    res.setHeader('Content-Type', 'application/json');
 	    res.end(json);
