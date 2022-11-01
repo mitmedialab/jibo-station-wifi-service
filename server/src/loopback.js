@@ -35,7 +35,7 @@ class Loopback {
         app.get('/loopback/on', async (req, res) => {
 	    try {
 		this.loopback_on();
-		let json = JSON.stringify({status: true});
+		let json = JSON.stringify({status: "on"});
 		res.setHeader('Content-Type', 'application/json');
 		res.end(json);
 	    } catch(err) {
@@ -46,12 +46,18 @@ class Loopback {
         app.get('/loopback/off', async (req, res) => {
 	    try {
 		this.loopback_off();
-		let json = JSON.stringify({status: true});
+		let json = JSON.stringify({status: "off"});
 		res.setHeader('Content-Type', 'application/json');
 		res.end(json);
 	    } catch(err) {
 		res.status(400).end(`${err}`);
 	    }
+        });
+
+        app.get('/loopback/off', async (req, res) => {
+	    let json = JSON.stringify({status: this.client ? "on" : "off"});
+	    res.setHeader('Content-Type', 'application/json');
+	    res.end(json);
         });
     }
 
