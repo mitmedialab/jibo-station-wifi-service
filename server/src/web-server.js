@@ -14,6 +14,7 @@ const serveIndex = require('serve-index');
 const socketio = require('socket.io');
 const cors = require('cors');
 const WiFi = require ('./wifi');
+const Loopback = require ('./loopback');
 
 const PORT = 80;
 const PORTS = 443;
@@ -45,6 +46,13 @@ class WebServer {
 		console.error(err);
             } else {
 		console.log('wifi listening');
+            }
+	});
+
+	let loopback = new Loopback();
+	loopback.init(app, (err) => {
+            if (err) {
+		console.error(err);
             }
 	});
 
