@@ -17,7 +17,10 @@ const GST_LAUNCH_EXECUTABLE = '/usr/bin/gst-launch-1.0';
 //const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7';
 
 // two loopbacks
-const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! tee name=t ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7 t. ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video8';
+//const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! tee name=t ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7 t. ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video8';
+
+// two loopback, no converions
+const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! videoconvert !  tee name=t ! v4l2sink device=/dev/video7 t. ! v4l2sink device=/dev/video8';
 
 const GST_LAUNCH_ARGS = GST_LAUNCH_STRING.split(' ');
 
