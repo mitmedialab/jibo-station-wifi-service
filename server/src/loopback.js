@@ -14,10 +14,10 @@ let log = console;
 const GST_LAUNCH_EXECUTABLE = '/usr/bin/gst-launch-1.0';
 
 // one loopback
-const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7';
+//const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7';
 
 // two loopbacks
-//const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! tee name=t ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7 t. ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video8';
+const GST_LAUNCH_STRING = '-e v4l2src device=/dev/video0 do-timestamp=true ! queue ! tee name=t ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video7 t. ! videorate ! video/x-raw,width=640,height=360,framerate=15/1 ! videoconvert ! v4l2sink device=/dev/video8';
 
 const GST_LAUNCH_ARGS = GST_LAUNCH_STRING.split(' ');
 
@@ -55,7 +55,7 @@ class Loopback {
         });
 
         app.get('/loopback/status', async (req, res) => {
-	    let json = JSON.stringify({status: this.client ? "on" : "off"});
+	    let json = JSON.stringify({status: this.child ? "on" : "off"});
 	    res.setHeader('Content-Type', 'application/json');
 	    res.end(json);
         });
