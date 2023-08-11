@@ -79,6 +79,12 @@ class WiFi {
 	    res.end();
 	});
 
+	app.post('/poweroff', async (req, res) => {
+            log.log('powering off!');
+	    child_process.exec('poweroff');
+	    res.end();
+	});
+
         app.get('/status', async (req, res) => {
             let json = '{}';
             try {

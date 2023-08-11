@@ -40,6 +40,7 @@ async function monitorServerLoop() {
 	    //console.time('ping');
 	    document.body.classList.add('noserver');
 	    document.body.classList.remove('rebooting');
+	    document.body.classList.remove('poweringoff');
 	}, PING_TIMEOUT);
 	//console.log('ping fetch');
 	//console.timeLog('ping');
@@ -56,6 +57,7 @@ async function monitorServerLoop() {
         console.error(err);
 	document.body.classList.add('noserver');
 	document.body.classList.remove('rebooting');
+	document.body.classList.remove('poweringoff');
     }
     //console.log('ping end');
     if (timeout) {
@@ -114,8 +116,10 @@ function showStatus(status) {
     status_cycles++;
 
     let internet_connected = status.internet_connected && status.server_connected;
-    let jibo_connected = status.jibo_connected;
-    let ros_connected = status.no_ros || status.ros_connected;
+    //let jibo_connected = status.jibo_connected;
+    let jibo_connected = true;  // s06-tweaks
+    //let ros_connected = status.no_ros || status.ros_connected;
+    let ros_connected = true;  // s06-tweaks
 
     switch (status_phase) {
     case 2:
@@ -131,7 +135,7 @@ function showStatus(status) {
 	break;
 
     case 4:
-	if (status.ros_connected || status_cycles > 1) {
+	if (ros_connected || status_cycles > 1) {
 	    status_phase++;
 	}
 	break;
@@ -146,7 +150,6 @@ function showStatus(status) {
 
 
 async function showStatusBoard(status, status_phase, wifi_connected, internet_connected, jibo_connected, ros_connected) {
-
     document.body.classList.remove('internet-connected');
     document.body.classList.remove('internet-not-connected');
     document.body.classList.remove('jibo-connected');
@@ -674,6 +677,14 @@ export function reboot() {
     let reboot_request = new Request(request_prefix+'/reboot', { method:'POST' });
     fetch(reboot_request);
     document.body.classList.add('rebooting');
+    dismiss_all_panels();
+}
+
+
+export function poweroff() {
+    let poweroff_request = new Request(request_prefix+'/poweroff', { method:'POST' });
+    fetch(poweroff_request);
+    document.body.classList.add('poweringoff');
     dismiss_all_panels();
 }
 

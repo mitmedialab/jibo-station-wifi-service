@@ -43,12 +43,18 @@
     display: block !important;
   }
 
+/* s06-tweaks
   :global(.turnjiboonpanel) #turnjiboonpanel,
   :global(.restartstationpanel) #restartstationpanel {
     display: block;
   }
+*/
 
   :global(.rebooting) #rebootingpanel{
+    display: block !important;
+  }
+
+  :global(.poweringoff) #poweringoffpanel{
     display: block !important;
   }
 

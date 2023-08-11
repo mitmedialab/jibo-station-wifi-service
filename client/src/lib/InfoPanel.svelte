@@ -1,5 +1,8 @@
-<button onclick="client.reboot()" class="normal discourage" style="position:absolute;right:84px;top:160px">
+<button onclick="client.reboot()" class="normal discourage" style="width:110px;position:absolute;right:84px;top:160px">
   Reboot<br>Station
+</button>
+<button onclick="client.poweroff()" class="normal discourage" style="width:110px;position:absolute;right:84px;top:260px">
+  Power<br>Off
 </button>
 
 <br>

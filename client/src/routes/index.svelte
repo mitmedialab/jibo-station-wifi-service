@@ -151,7 +151,7 @@
 	        </center>
 	      </div>
 	    </div>
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px">
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
 	      <div id="stage-1-pending">
 	        <span style="font-size:72px">➖ </span>
 	        <br>
@@ -172,6 +172,7 @@
 	      </div>
 	    </div>
 
+<!-- s06-tweaks
 	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px">
 	      <div id="stage-2-pending">
 	        <span style="font-size:72px">➖ </span>
@@ -192,7 +193,9 @@
 	        <h2>Jibo not connected</h2>
 	      </div>
 	    </div>
+-->
 
+<!-- s06-tweaks
 	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px">
 	      <div id="stage-3-pending">
 	        <span style="font-size:72px">➖ </span>
@@ -213,6 +216,8 @@
 	        <h2>There is a problem</h2>
 	      </div>
 	    </div>
+-->
+
 	    <br>
 	    <div id="contactus">
 	      <center>
@@ -374,6 +379,26 @@
         <br>
         <br>
         <h1>Rebooting Jibo Station...</h1>
+        <br>
+        <br>
+        <!--
+	    <div id="contactus0">
+	    </div>
+	    -->
+      </Panel>
+
+
+      <Panel id="poweringoffpanel" noclosebutton>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h1>Internal computer is powering off</h1>
         <br>
         <br>
         <!--

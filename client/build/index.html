@@ -7,12 +7,12 @@
     <link rel="icon" href="/favicon.ico" />
     <meta http-equiv="content-security-policy" content=""><title>JiboStationSetup</title>
 	<link rel="stylesheet" href="/_app/immutable/assets/pages/__layout.svelte-3db504e8.css">
-	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-f9469f0b.css">
-	<link rel="modulepreload" href="/_app/immutable/start-ab92f187.js">
+	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-0c45b429.css">
+	<link rel="modulepreload" href="/_app/immutable/start-5c0d9ed1.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-1831f268.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-b9770ee2.js">
 	<link rel="modulepreload" href="/_app/immutable/pages/__layout.svelte-fdc31542.js">
-	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-37b6d76c.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-85d20125.js">
   </head>
 
   <body class="noserver nostatus">
@@ -67,7 +67,7 @@
 
       <div id="connected" class="svelte-1ytn7ki"><center><br>
 	  <div><div style="height:18px"><div id="checking" class="svelte-1ytn7ki"><center><h1><span style="color:lightgray">Checking connection...</span></h1></center></div></div>
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:6px"><div id="stage-1-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
+	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px"><div id="stage-1-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
 	        <br>
 	        <br>
 	        <h2>Internet</h2></div>
@@ -80,31 +80,10 @@
 	        <br>
 	        <h2>Internet not connected</h2></div></div>
 
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:30px"><div id="stage-2-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
-	        <br>
-	        <br>
-	        <h2>Jibo</h2></div>
-	      <div id="stage-2-good" class="svelte-1ytn7ki"><span style="font-size:72px">✅ </span>
-	        <br>
-	        <br>
-	        <h2>Jibo connected</h2></div>
-	      <div id="stage-2-bad" onclick="window.client.popup_problem_panel()" class="svelte-1ytn7ki"><span style="font-size:72px">❓ </span>
-	        <br>
-	        <br>
-	        <h2>Jibo not connected</h2></div></div>
 
-	    <div style="width:300px;height:70px;display:inline-block;text-align:center;padding-top:60px"><div id="stage-3-pending" class="svelte-1ytn7ki"><span style="font-size:72px">➖ </span>
-	        <br>
-	        <br>
-	        <h2>Station Status</h2></div>
-	      <div id="stage-3-good" class="svelte-1ytn7ki"><span style="font-size:72px">✅ </span>
-	        <br>
-	        <br>
-	        <h2>All Systems Go!</h2></div>
-	      <div id="stage-3-bad" onclick="window.client.popup_problem_panel()" class="svelte-1ytn7ki"><span style="font-size:72px">❓ </span>
-	        <br>
-	        <br>
-	        <h2>There is a problem</h2></div></div>
+
+
+
 	    <br>
 	    <div id="contactus" class="svelte-1ytn7ki"><center><h1><span style="color:lightgray"><br>There might be an issue with your station<br>
 		    <span class="contactinfo">Please contact us</span></span></h1>
@@ -145,8 +124,10 @@
 
 
       <div id="infobutton" class="svelte-1ytn7ki"><div id="clickinfo" class="svelte-1ytn7ki"><span style="font-size:42px;color:darkgray">ⓘ</span></div></div>
-      <div id="infopanel" class="panel svelte-17b6nzd"><div id="dismiss" class="svelte-17b6nzd"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
-  <button onclick="client.reboot()" class="normal discourage svelte-wiozrd" style="position:absolute;right:84px;top:160px">Reboot<br>Station
+      <div id="infopanel" class="panel svelte-4v9mf0"><div id="dismiss" class="svelte-4v9mf0"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
+  <button onclick="client.reboot()" class="normal discourage svelte-wiozrd" style="width:110px;position:absolute;right:84px;top:160px">Reboot<br>Station
+</button>
+<button onclick="client.poweroff()" class="normal discourage svelte-wiozrd" style="width:110px;position:absolute;right:84px;top:260px">Power<br>Off
 </button>
 
 <br>
@@ -188,7 +169,7 @@
 </div>
 
 
-      <div id="turnjiboonpanel" class="panel svelte-17b6nzd"><div id="dismiss" class="svelte-17b6nzd"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
+      <div id="turnjiboonpanel" class="panel svelte-4v9mf0"><div id="dismiss" class="svelte-4v9mf0"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
   <center><br>
 	  <br>
 	  <br>
@@ -202,7 +183,7 @@
 	      <span class="contactinfo">please contact us</span></span></h1></center>
 </div>
 
-      <div id="restartstationpanel" class="panel svelte-17b6nzd"><div id="dismiss" class="svelte-17b6nzd"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
+      <div id="restartstationpanel" class="panel svelte-4v9mf0"><div id="dismiss" class="svelte-4v9mf0"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
   <center><br>
 	  <br>
 	  <br>
@@ -220,7 +201,7 @@
 	      <span class="contactinfo">please contact us</span></span></h1></center>
 </div>
 
-      <div id="donepanel" class="panel svelte-17b6nzd"><div id="dismiss" class="svelte-17b6nzd"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
+      <div id="donepanel" class="panel svelte-4v9mf0"><div id="dismiss" class="svelte-4v9mf0"><img src="cross.png" alt="dismiss" height="35" width="35"></div>
   <center><br>
 	  <br>
 	  <br>
@@ -235,7 +216,7 @@
 	  <h1><span style="color:lightgray"><span id="homeinstructions">Press the Home button on the tablet<br>to go back to the home screen</span></span></h1></center>
 </div>
 
-      <div id="noserverpanel" class="panel svelte-17b6nzd">
+      <div id="noserverpanel" class="panel svelte-4v9mf0">
   <br>
         <br>
         <br>
@@ -254,7 +235,7 @@
 </div>
 
 
-      <div id="rebootingpanel" class="panel svelte-17b6nzd">
+      <div id="rebootingpanel" class="panel svelte-4v9mf0">
   <br>
         <br>
         <br>
@@ -268,15 +249,32 @@
         <br>
         <br>
         
+</div>
+
+
+      <div id="poweringoffpanel" class="panel svelte-4v9mf0">
+  <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h1>Internal computer is powering off</h1>
+        <br>
+        <br>
+        
 </div></section>
 </div>
 </main>
 
 
-		<script type="module" data-sveltekit-hydrate="1dmu3j5">
-		import { start } from "/_app/immutable/start-ab92f187.js";
+		<script type="module" data-sveltekit-hydrate="kzzfmc">
+		import { start } from "/_app/immutable/start-5c0d9ed1.js";
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="1dmu3j5"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="kzzfmc"]').parentNode,
 			paths: {"base":"","assets":""},
 			session: {},
 			route: true,
